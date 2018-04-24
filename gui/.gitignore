@@ -2,3 +2,5 @@ node_modules/
 typings/
 yarn.lock
 *.js
+!/gulpfile.js
+package-lock.json
