@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "global": "^4.3.2",
+	"electron": "^1.8.4"
+  },
+  "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-elm": "^0.7.2",
