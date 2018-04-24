@@ -5,3 +5,4 @@ yarn.lock
 !/gulpfile.js
 package-lock.json
 /elm-stuff/
+*.log
