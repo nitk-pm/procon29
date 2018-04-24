@@ -7,6 +7,7 @@
     "global": "^4.3.2",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
+    "gulp-elm": "^0.7.2",
     "gulp-typescript": "^4.0.2",
     "gulp-typings": "^2.0.4",
     "typescript": "^2.8.3",
