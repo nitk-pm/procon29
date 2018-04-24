@@ -4,3 +4,4 @@ yarn.lock
 *.js
 !/gulpfile.js
 package-lock.json
+/elm-stuff/
