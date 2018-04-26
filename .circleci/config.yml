@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: namachan10777/procon29:latest
+    steps:
+      - checkout
+      - run:
+          name: GUI build
+          command: bash ./src/test.sh
