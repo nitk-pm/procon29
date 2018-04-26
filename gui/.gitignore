@@ -1,9 +1,17 @@
+# yarn
 node_modules/
-typings/
 yarn.lock
-*.js
-!/gulpfile.js
 package-lock.json
+
+# lock file
+*.lock
+*.lck
+
+# elm
 /elm-stuff/
+
+# log file
 *.log
+
+# product
 /app/
