@@ -8,4 +8,5 @@ RUN apt-get -y install git
 RUN apt-get -y install yarn
 
 RUN mkdir /ci
+WORKDIR /ci
 ENTRYPOINT /bin/bash
