@@ -2,4 +2,4 @@
 
 cd $(dirname $0)
 yarn install
-gulp
+./node_modules/gulp/bin/gulp.js
