@@ -1,0 +1,17 @@
+# yarn
+node_modules/
+yarn.lock
+package-lock.json
+
+# lock file
+*.lock
+*.lck
+
+# elm
+/elm-stuff/
+
+# log file
+*.log
+
+# product
+/app/
