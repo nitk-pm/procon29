@@ -12,6 +12,8 @@ RUN apt-get -y install build-essential
 RUN apt-get -y install git
 RUN apt-get -y install yarn
 
+RUN yarn global add elm
+
 RUN mkdir /ci
 WORKDIR /ci
 ENTRYPOINT /bin/bash
