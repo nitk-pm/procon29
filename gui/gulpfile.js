@@ -30,4 +30,18 @@ gulp.task('typescript', () => {
 	.pipe(gulp.dest('./app'));
 });
 
+gulp.task('watch-ts', () =>
+	gulp.watch('./src/*.ts', ['typescript'])
+);
+
+gulp.task('watch-html', () =>
+	gulp.watch('./src/*.html', ['html'])
+);
+
+gulp.task('watch-elm', () =>
+	gulp.watch('./src/*.elm', ['elm'])
+);
+
+gulp.task('watch', ['watch-ts', 'watch-html', 'watch-elm']);
+
 gulp.task('default', ['elm', 'typescript', 'html']);
