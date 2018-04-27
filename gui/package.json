@@ -4,7 +4,8 @@
   "main": "main.js",
   "license": "MIT",
   "dependencies": {
-	"electron": "^1.8.4"
+    "electron": "^1.8.4",
+    "electron-connect": "^0.6.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

@@ -2,6 +2,14 @@ var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var concat = require('gulp-concat');
 var gulp_typings = require('gulp-typings');
+var electron = require('electron-connect').server.create({path: "./app"});
+
+gulp.task('start', () => {
+	electron.start();
+
+	gulp.watch(['./app/main.js'], electron.restart);
+	gulp.watch(['./*.{html, js, css}'], electron.reload);
+});
 
 gulp.task('html', () =>
 	gulp.src(['./src/index.html'])
