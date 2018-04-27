@@ -35,7 +35,7 @@ gulp.task('watch-html', () =>
 );
 
 
-gulp.task('watch-html', () =>
+gulp.task('watch-package.json', () =>
 	gulp.watch('./package.json', ['package.json'])
 );
 
