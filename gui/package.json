@@ -1,7 +1,7 @@
 {
   "name": "gui",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
   "license": "MIT",
   "dependencies": {
 	"electron": "^1.8.4"
@@ -9,7 +9,6 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
-    "gulp-elm": "^0.7.2",
     "gulp-typescript": "^4.0.2",
     "gulp-typings": "^2.0.4",
     "typescript": "^2.8.3",
