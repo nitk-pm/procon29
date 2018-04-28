@@ -1,18 +1,29 @@
 {
   "name": "gui",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "./app/main.js",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^8.0.0",
+    "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.5",
     "electron": "^1.8.4",
-    "electron-connect": "^0.6.3"
+    "electron-connect": "^0.6.3",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.0.0",
+    "browserify": "^16.2.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-typescript": "^4.0.2",
     "gulp-typings": "^2.0.4",
+    "source-map-loader": "^0.2.3",
     "typescript": "^2.8.3",
-    "typings": "^2.1.1"
+    "typings": "^2.1.1",
+    "vinyl-source-stream": "^2.0.0",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15"
   }
 }

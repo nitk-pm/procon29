@@ -1,10 +1,13 @@
 {
 	"compilerOptions":{
-		"target":"es6",
+		"outDir": "./app/",
+		"sourceMap": true,
+		"noImplicitAny": true,
 		"module":"commonjs",
-		"moduleResolution": "node"
+		"target":"es5",
+		"jsx":"react"
 	},
-	"exclude":[
-		"node_modules"
+	"include":[
+		"./src"
 	]
 }

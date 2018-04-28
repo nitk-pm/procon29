@@ -3,6 +3,8 @@ var ts = require('gulp-typescript');
 var concat = require('gulp-concat');
 var gulp_typings = require('gulp-typings');
 var electron = require('electron-connect').server.create({path: "./app"});
+var browserify = require('browserify')
+var source = require('vinyl-source-stream');
 
 gulp.task('start', () => {
 	electron.start();
@@ -21,21 +23,43 @@ gulp.task('package.json', () =>
 		.pipe(gulp.dest('./app'))
 );
 
-gulp.task('typescript', () => {
+gulp.task('ts-main', () => {
 	var proj = ts.createProject('./tsconfig.json');
 	return gulp.src([
-		'./typings/index.d.ts',
-		'./src/**/*.ts',
+		'./src/main.ts',
 		'!./node_modules/**',
 	])
 	.pipe(proj())
 	.js
-	.pipe(concat('main.js'))
 	.pipe(gulp.dest('./app'));
 });
 
-gulp.task('watch-ts', () =>
-	gulp.watch('./src/*.ts', ['typescript'])
+gulp.task('ts-renderer', () => {
+	var proj = ts.createProject('./tsconfig.json');
+	return gulp.src([
+		'!./src/main.ts',
+		'./src/**/*.ts',
+		'./src/**/*.tsx',
+		'!./node_modules/**',
+	])
+	.pipe(proj())
+	.js
+	.pipe(gulp.dest('./app'));
+});
+
+gulp.task('bundle', ['ts-renderer'], () => {
+	var b = browserify('./app/index.js');
+	return b.bundle()
+		.pipe(source('bundle.js'))
+		.pipe(gulp.dest('./app'));
+});
+
+gulp.task('watch-ts-main', () =>
+	gulp.watch('./src/main.ts', ['ts-main'])
+);
+
+gulp.task('watch-ts-renderer', () =>
+	gulp.watch('./src/*.ts', ['bundle'])
 );
 
 gulp.task('watch-html', () =>
@@ -49,4 +73,4 @@ gulp.task('watch-package.json', () =>
 
 gulp.task('watch', ['watch-ts', 'watch-html', 'watch-package.json']);
 
-gulp.task('default', ['typescript', 'html', 'package.json']);
+gulp.task('default', ['ts-main', 'html', 'package.json', 'bundle']);
