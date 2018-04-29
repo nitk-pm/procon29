@@ -17,6 +17,11 @@ gulp.task('html', () =>
 		.pipe(gulp.dest('./dist'))
 );
 
+gulp.task('css', () =>
+	gulp.src(['./src/index.css'])
+		.pipe(gulp.dest('./dist'))
+);
+
 gulp.task('renderer', () =>
 	webpackStream(webpackConfig, webpack)
 		.pipe(gulp.dest('./dist'))
@@ -42,9 +47,13 @@ gulp.task('watch-renderer', () =>
 );
 
 gulp.task('watch-html', () =>
-	gulp.watch('./src/*.html', ['html'])
+	gulp.watch('./src/*.html' ['html'])
 );
 
-gulp.task('watch', ['watch-ts', 'watch-html', 'watch-renderer']);
+gulp.task('watch-css', () =>
+	gulp.watch('./src/*.css', ['css'])
+);
 
-gulp.task('default', ['ts-main', 'html', 'renderer']);
+gulp.task('watch', ['watch-ts', 'watch-html', 'watch-css', 'watch-renderer']);
+
+gulp.task('default', ['ts-main', 'html', 'css', 'renderer']);
