@@ -1,16 +1,15 @@
-var gulp = require('gulp');
-var ts = require('gulp-typescript');
-var concat = require('gulp-concat');
-var gulp_typings = require('gulp-typings');
-var electron = require('electron-connect').server.create({path: "./dist"});
-var browserify = require('browserify')
-var source = require('vinyl-source-stream');
+const gulp          = require('gulp');
+const ts            = require('gulp-typescript');
+const webpackStream = require('webpack-stream');
+const webpack       = require('webpack');
+
+const webpackConfig = require('./webpack.config.js');
 
 gulp.task('start', () => {
 	electron.start();
 
-	gulp.watch(['./dist/main.js'], electron.restart);
 	gulp.watch(['./*.{html, js, css}'], electron.reload);
+	gulp.watch(['./dist/main.js'], electron.restart);
 });
 
 gulp.task('html', () =>
@@ -18,8 +17,8 @@ gulp.task('html', () =>
 		.pipe(gulp.dest('./dist'))
 );
 
-gulp.task('package.json', () =>
-	gulp.src(['./package.json'])
+gulp.task('renderer', () =>
+	webpackStream(webpackConfig, webpack)
 		.pipe(gulp.dest('./dist'))
 );
 
@@ -34,43 +33,18 @@ gulp.task('ts-main', () => {
 	.pipe(gulp.dest('./dist'));
 });
 
-gulp.task('ts-renderer', () => {
-	var proj = ts.createProject('./tsconfig.json');
-	return gulp.src([
-		'!./src/main.ts',
-		'./src/**/*.ts',
-		'./src/**/*.tsx',
-		'!./node_modules/**',
-	])
-	.pipe(proj())
-	.js
-	.pipe(gulp.dest('./dist'));
-});
-
-gulp.task('bundle', ['ts-renderer'], () => {
-	var b = browserify('./dist/index.js');
-	return b.bundle()
-		.pipe(source('bundle.js'))
-		.pipe(gulp.dest('./dist'));
-});
-
 gulp.task('watch-ts-main', () =>
 	gulp.watch('./src/main.ts', ['ts-main'])
 );
 
-gulp.task('watch-ts-renderer', () =>
-	gulp.watch('./src/*.ts', ['bundle'])
+gulp.task('watch-renderer', () =>
+	gulp.watch('./src/*.{ts, tsx}', ['bundle'])
 );
 
 gulp.task('watch-html', () =>
 	gulp.watch('./src/*.html', ['html'])
 );
 
+gulp.task('watch', ['watch-ts', 'watch-html', 'watch-renderer']);
 
-gulp.task('watch-package.json', () =>
-	gulp.watch('./package.json', ['package.json'])
-);
-
-gulp.task('watch', ['watch-ts', 'watch-html', 'watch-package.json']);
-
-gulp.task('default', ['ts-main', 'html', 'package.json', 'bundle']);
+gulp.task('default', ['ts-main', 'html', 'renderer']);
