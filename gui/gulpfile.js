@@ -2,25 +2,25 @@ var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var concat = require('gulp-concat');
 var gulp_typings = require('gulp-typings');
-var electron = require('electron-connect').server.create({path: "./app"});
+var electron = require('electron-connect').server.create({path: "./dist"});
 var browserify = require('browserify')
 var source = require('vinyl-source-stream');
 
 gulp.task('start', () => {
 	electron.start();
 
-	gulp.watch(['./app/main.js'], electron.restart);
+	gulp.watch(['./dist/main.js'], electron.restart);
 	gulp.watch(['./*.{html, js, css}'], electron.reload);
 });
 
 gulp.task('html', () =>
 	gulp.src(['./src/index.html'])
-		.pipe(gulp.dest('./app'))
+		.pipe(gulp.dest('./dist'))
 );
 
 gulp.task('package.json', () =>
 	gulp.src(['./package.json'])
-		.pipe(gulp.dest('./app'))
+		.pipe(gulp.dest('./dist'))
 );
 
 gulp.task('ts-main', () => {
@@ -31,7 +31,7 @@ gulp.task('ts-main', () => {
 	])
 	.pipe(proj())
 	.js
-	.pipe(gulp.dest('./app'));
+	.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('ts-renderer', () => {
@@ -44,14 +44,14 @@ gulp.task('ts-renderer', () => {
 	])
 	.pipe(proj())
 	.js
-	.pipe(gulp.dest('./app'));
+	.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('bundle', ['ts-renderer'], () => {
-	var b = browserify('./app/index.js');
+	var b = browserify('./dist/index.js');
 	return b.bundle()
 		.pipe(source('bundle.js'))
-		.pipe(gulp.dest('./app'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('watch-ts-main', () =>
