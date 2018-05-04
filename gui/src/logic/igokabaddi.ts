@@ -13,6 +13,11 @@ export enum Color {
 	Neut
 }
 
+export enum Turn {
+	Red,
+	Blue
+}
+
 export class Square {
 	color: Color;
 	score: number;

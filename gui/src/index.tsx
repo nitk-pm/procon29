@@ -6,6 +6,6 @@ import * as IgoKabaddi from "./logic/igokabaddi";
 console.log(require('../example/example.json'));
 
 ReactDOM.render(
-	<Game.Game board={new IgoKabaddi.Board(require('../example/example.json'))}/>,
+	<Game.Game board={new IgoKabaddi.Board(require('../example/example.json'))} turn={IgoKabaddi.Turn.Red}/>,
 	document.getElementById("container")
 );

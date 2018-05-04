@@ -24,14 +24,15 @@ class Square extends React.Component<SquareProps> {
 }
 
 interface BoardProps {
+	turn: Igokabaddi.Turn;
 	board: Igokabaddi.Board;
 }
 
 class Board extends React.Component<BoardProps> {
-	state: { board : Igokabaddi.Board };
+	state: { board : Igokabaddi.Board, turn: Igokabaddi.Turn};
 	constructor(props: BoardProps) {
 		super(props);
-		this.state = {board: props.board};
+		this.state = {board: props.board, turn: props.turn};
 	}
 	createBoard () {
 		console.log(this.state.board);
@@ -43,10 +44,23 @@ class Board extends React.Component<BoardProps> {
 		);
 	}
 	render() {
-		const status = "Next player: X";
+		var colorClass: string, playerName: string;
+		if (this.state.turn == Igokabaddi.Turn.Red) {
+			colorClass = "red";
+			playerName = "Red";
+		}
+		else {
+			colorClass = "blue";
+			playerName = "Blue";
+		}
 		return (
 			<div>
-				<div className="status">{status}</div>
+				<div className="status">
+					Next player: 
+					<span className={colorClass}>
+						{playerName}
+					</span>
+				</div>
 				{this.createBoard()}
 			</div>
 		);
@@ -55,19 +69,20 @@ class Board extends React.Component<BoardProps> {
 
 interface GameProps {
 	board: Igokabaddi.Board;
+	turn: Igokabaddi.Turn;
 }
 
 export class Game extends React.Component<GameProps> {
-	state: Igokabaddi.Board;
+	state: { board: Igokabaddi.Board, turn: Igokabaddi.Turn };
 	constructor(props: GameProps) {
 		super(props);
-		this.state = props.board;
+		this.state = { board: props.board, turn: props.turn};
 	}
 	render() {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board board={this.state}/>
+					<Board board={this.state.board} turn={this.state.turn}/>
 				</div>
 				<div className="game-info">
 					<div>{}</div>
