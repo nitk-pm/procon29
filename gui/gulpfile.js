@@ -13,12 +13,12 @@ gulp.task('start', () => {
 });
 
 gulp.task('html', () =>
-	gulp.src(['./src/index.html'])
+	gulp.src(['./src/html/*.html'])
 		.pipe(gulp.dest('./dist'))
 );
 
 gulp.task('css', () =>
-	gulp.src(['./src/index.css'])
+	gulp.src(['./src/stylesheets/*.css'])
 		.pipe(gulp.dest('./dist'))
 );
 
@@ -30,30 +30,12 @@ gulp.task('renderer', () =>
 gulp.task('ts-main', () => {
 	var proj = ts.createProject('./tsconfig.json');
 	return gulp.src([
-		'./src/main.ts',
+		'./src/electron/*.ts',
 		'!./node_modules/**',
 	])
 	.pipe(proj())
 	.js
 	.pipe(gulp.dest('./dist'));
 });
-
-gulp.task('watch-ts-main', () =>
-	gulp.watch('./src/main.ts', ['ts-main'])
-);
-
-gulp.task('watch-renderer', () =>
-	gulp.watch('./src/*.{ts, tsx}', ['bundle'])
-);
-
-gulp.task('watch-html', () =>
-	gulp.watch('./src/*.html' ['html'])
-);
-
-gulp.task('watch-css', () =>
-	gulp.watch('./src/*.css', ['css'])
-);
-
-gulp.task('watch', ['watch-ts', 'watch-html', 'watch-css', 'watch-renderer']);
 
 gulp.task('default', ['ts-main', 'html', 'css', 'renderer']);
