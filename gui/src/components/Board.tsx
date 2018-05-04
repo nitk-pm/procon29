@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Square from './Square';
-import * as Igokabaddi from '../modules/igokabaddi'
+import * as Igokabaddi from '../logic/igokabaddi'
 
 interface BoardProps {
 	turn: Igokabaddi.Turn;

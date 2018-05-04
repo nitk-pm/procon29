@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Igokabaddi from '../modules/igokabaddi';
+import * as Igokabaddi from '../logic/igokabaddi';
 import * as Board from './Board'
 
 interface GameProps {
