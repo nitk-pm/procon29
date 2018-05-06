@@ -1,8 +1,11 @@
 import * as React from 'react'
 import * as Igokabaddi from '../logic/igokabaddi'
+import { ActionDispatcher } from '../container/square';
 
 interface SquareProps {
 	square: Igokabaddi.Square;
+	pos: Igokabaddi.Pos;
+	actions: ActionDispatcher;
 }
 
 export class Square extends React.Component<SquareProps> {

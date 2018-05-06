@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Igokabaddi from '../logic/igokabaddi';
-import * as Board from './board'
+import Board from '../container/board'
 import { ActionDispatcher } from '../container/game';
 
 interface GameProps {
@@ -14,7 +14,7 @@ export class Game extends React.Component<GameProps> {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board.Board board={this.props.board} turn={this.props.turn}/>
+					<Board />
 				</div>
 				<div className="game-info">
 					<div>{}</div>

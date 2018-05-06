@@ -1,30 +1,28 @@
 import * as React from 'react'
-import * as Square from './square';
 import * as Igokabaddi from '../logic/igokabaddi'
+import * as Logic from '../logic/igokabaddi';
+import Square from '../container/square';
+import { ActionDispatcher } from '../container/board';
 
 interface BoardProps {
-	turn: Igokabaddi.Turn;
 	board: Igokabaddi.Board;
+	turn: Igokabaddi.Turn;
+	actions: ActionDispatcher;
 }
 
 export class Board extends React.Component<BoardProps> {
-	state: { board : Igokabaddi.Board, turn: Igokabaddi.Turn};
-	constructor(props: BoardProps) {
-		super(props);
-		this.state = {board: props.board, turn: props.turn};
-	}
 	createBoard () {
-		console.log(this.state.board);
-		return this.state.board.table.map((line, y, table) =>
+		console.log(this.props.board);
+		return this.props.board.table.map((line, y, table) =>
 			<div className="board-row" key={y}>{
 				line.map((square, x, table) =>
-					<Square.Square square={square} key={x*this.state.board.height+y}/>)
+					<Square square={square} pos={new Logic.Pos(x, y)} key={x*this.props.board.height+y}/>)
 			}</div>
 		);
 	}
 	render() {
 		var colorClass: string, playerName: string;
-		if (this.state.turn == Igokabaddi.Turn.Red) {
+		if (this.props.turn == Igokabaddi.Turn.Red) {
 			colorClass = "red";
 			playerName = "Red";
 		}
