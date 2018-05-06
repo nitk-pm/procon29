@@ -41,6 +41,7 @@ export class Board extends React.Component<BoardProps> {
 					</span>
 				</div>
 				{this.createBoard()}
+				<button className="end-turn-button">TurnEnd</button>
 			</div>
 		);
 	}
