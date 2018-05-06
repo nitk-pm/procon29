@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Igokabaddi from '../logic/igokabaddi';
-import * as Board from './Board'
+import * as Board from './board'
 import { ActionDispatcher } from '../container/game';
 
 interface GameProps {
