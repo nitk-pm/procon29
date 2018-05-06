@@ -1,23 +1,20 @@
 import * as React from 'react';
 import * as Igokabaddi from '../logic/igokabaddi';
 import * as Board from './Board'
+import { ActionDispatcher } from '../container/game';
 
 interface GameProps {
 	board: Igokabaddi.Board;
 	turn: Igokabaddi.Turn;
+	actions: ActionDispatcher;
 }
 
 export class Game extends React.Component<GameProps> {
-	state: { board: Igokabaddi.Board, turn: Igokabaddi.Turn };
-	constructor(props: GameProps) {
-		super(props);
-		this.state = { board: props.board, turn: props.turn};
-	}
 	render() {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board.Board board={this.state.board} turn={this.state.turn}/>
+					<Board.Board board={this.props.board} turn={this.props.turn}/>
 				</div>
 				<div className="game-info">
 					<div>{}</div>
