@@ -1,9 +1,10 @@
 import { createStore, combineReducers, Action } from 'redux';
 import * as Logic from './logic/igokabaddi';
-import { ClickSquareAction } from './modules/clickSquare';
-import { EndTurnAction } from './modules/endTurn';
+import * as ClickSquare from './modules/clickSquare';
+import * as EndTurn from './modules/endTurn';
+import * as BoardInit from './modules/boardInit';
 
-export type Actions = ClickSquareAction | EndTurnAction | Action
+export type Actions = ClickSquare.ClickSquareAction | EndTurn.EndTurnAction | Action
 
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
@@ -20,21 +21,11 @@ export const initialState = {
 	turn: Logic.Turn.Red
 }
 
-export function reducer(state = initialState, action: Actions) {
-	switch (action.type) {
-	case ActionNames.CLICK_SQUARE:
-		return state;
-	case ActionNames.END_TURN:
-		return state;
-	default:
-		return state;
-	}
-}
+let reducer = combineReducers({
+	turn: EndTurn.reducer,
+	board: BoardInit.reducer
+});
 
-export default createStore(
-	combineReducers({
-		reducer
-	})
-)
+
 
 export const store = createStore(reducer, initialState);

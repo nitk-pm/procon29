@@ -7,9 +7,13 @@ import { Board } from '../components/board';
 import { endTurn } from '../modules/endTurn';
 
 export class ActionDispatcher {
-	constructor (private dispatch: (action: Reducer.Actions) => void) {}
+	dispatch: Redux.Dispatch<Reducer.Actions>;
 
-	public endTurn() {
+	constructor (dispatch: Redux.Dispatch<Reducer.Actions>) {
+		this.dispatch = dispatch;
+	}
+
+	endTurn() {
 		return this.dispatch(endTurn());
 	}
 }
