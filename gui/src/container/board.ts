@@ -1,24 +1,23 @@
 import * as Redux from 'redux';
+import * as ReactRedux from 'react-redux';
+import * as Store from '../store';
+import * as Board from '../components/board';
+import * as Turn  from '../modules/turn';
 import * as Logic from '../logic/igokabaddi';
-import * as Reducer from '../store';
-
-import { connect } from 'react-redux';
-import { Board } from '../components/board';
-import { endTurn } from '../modules/endTurn';
 
 export class ActionDispatcher {
-	dispatch: Redux.Dispatch<Reducer.Actions>;
+	dispatch: Redux.Dispatch<Store.Actions>;
 
-	constructor (dispatch: Redux.Dispatch<Reducer.Actions>) {
+	constructor (dispatch: Redux.Dispatch<Store.Actions>) {
 		this.dispatch = dispatch;
 	}
 
 	endTurn() {
-		return this.dispatch(endTurn());
+		return this.dispatch(Turn.endTurn());
 	}
 }
 
-export default connect(
-	(state: Reducer.IgokabaddiState) => ({board: state.board, turn: state.turn}),
-	(dispatch: Redux.Dispatch<Reducer.Actions>) => ({actions: new ActionDispatcher(dispatch)})
-)(Board);
+export default ReactRedux.connect(
+	(state: Store.IgokabaddiState) => ({board: state.board, turn: state.turn}),
+	(dispatch: Redux.Dispatch<Store.Actions>) => ({actions: new ActionDispatcher(dispatch)})
+)(Board.Board);

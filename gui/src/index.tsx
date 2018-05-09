@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import * as Redux from 'redux';
 import Game from "./container/game";
 import * as IgoKabaddi from "./logic/igokabaddi";
-import * as Reducer from './store';
+import * as Reducer from './reducer';
 
 ReactDOM.render(
 	<Provider store={Reducer.store}>

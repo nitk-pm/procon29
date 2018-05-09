@@ -1,6 +1,6 @@
 import * as Redux from 'redux';
-import { ActionNames } from '../store';
-import { Pos } from '../logic/igokabaddi';
+import { ActionNames, initialState, Actions } from '../store';
+import { Pos, Board } from '../logic/igokabaddi';
 
 export interface ClickSquareAction extends Redux.Action {
 	type: ActionNames.CLICK_SQUARE;
@@ -16,4 +16,8 @@ export function clickSquare(pos: Pos) {
 			pos: pos
 		}
 	};
+}
+
+export function reducer(board: Board = initialState.board, action: Actions) {
+	return board;
 }

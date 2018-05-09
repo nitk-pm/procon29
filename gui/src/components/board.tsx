@@ -12,7 +12,6 @@ interface BoardProps {
 
 export class Board extends React.Component<BoardProps> {
 	createBoard () {
-		console.log(this.props.board);
 		return this.props.board.table.map((line, y, table) =>
 			<div className="board-row" key={y}>{
 				line.map((square, x, table) =>
