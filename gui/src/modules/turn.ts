@@ -12,7 +12,7 @@ export function endTurn() {
 	};
 }
 
-export function reducer(turn: Logic.Turn = Logic.Turn.Red, action: Store.Actions) {
+export function reducer(turn: Logic.Turn = Store.initialState.turn, action: Store.Actions) {
 	switch (action.type) {
 	case Store.ActionNames.END_TURN:
 		if (turn == Logic.Turn.Red) {
