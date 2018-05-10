@@ -2,8 +2,9 @@ import { createStore, combineReducers, Action } from 'redux';
 import * as Logic from './logic/igokabaddi';
 import * as Board from './modules/board';
 import * as Turn from './modules/turn';
+import * as Game from './modules/game';
 
-export type Actions = Board.ClickSquareAction | Turn.EndTurnAction | Action
+export type Actions = Game.ClickSquareAction | Turn.EndTurnAction | Action
 
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',

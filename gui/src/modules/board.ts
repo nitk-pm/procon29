@@ -1,23 +1,16 @@
 import * as Redux from 'redux';
-import { ActionNames, initialState, Actions } from '../store';
-import { Pos, Board } from '../logic/igokabaddi';
+import * as Store from '../store';
+import * as Logic from '../logic/igokabaddi';
 
-export interface ClickSquareAction extends Redux.Action {
-	type: ActionNames.CLICK_SQUARE;
-	payload: {
-		pos : Pos;
-	};
-}
-
-export function clickSquare(pos: Pos) {
+export function clickSquare(pos: Logic.Pos) {
 	return {
-		type: ActionNames.CLICK_SQUARE,
+		type: Store.ActionNames.CLICK_SQUARE,
 		payload: {
 			pos: pos
 		}
 	};
 }
 
-export function reducer(board: Board = initialState.board, action: Actions) {
+export function reducer(board: Logic.Board = Store.initialState.board, action: Store.Actions) {
 	return board;
 }
