@@ -23,7 +23,9 @@ export class Square extends React.Component<SquareProps> {
 			style = "square neut";
 			break;
 		}
-		return <button className={style} onClick={() => this.props.actions.click(this.props.pos)}></button>;
+		return (<button className={style} onClick={() => this.props.actions.click(this.props.pos)}>
+			{this.props.square.score}
+		</button>);
 	}
 }
 
