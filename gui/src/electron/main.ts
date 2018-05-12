@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron';
+import * as Path from 'path';
 
 class MyApp {
     mainWindow: Electron.BrowserWindow | null = null;
@@ -22,7 +23,8 @@ class MyApp {
                 this.mainWindow = null;
             });
 
-            this.mainWindow.loadURL(`file://${__dirname}/index.html`);
+			//FIXME ad-hoc
+            this.mainWindow.loadURL(`file://${Path.resolve('')}/dist/index.html`);
         });
     }
 }

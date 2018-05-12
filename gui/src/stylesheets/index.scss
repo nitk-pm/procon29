@@ -1,34 +1,34 @@
+$red: #d32f2f;
+$blue: #303F9F;
+$neut: #616161;
+
+$red-highlight:#e57373;
+$blue-highlight:#7986CB;
+$neut-highlight:#E0E0E0;
+
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
 	margin: 20px;
 }
 
-ol, ul {
-	padding-left: 30px;
-}
-
-.board-row:after {
-	clear: both;
+.board-row::after {
+	clear: both; //改行
 	content: "";
 	display: table;
 }
 
-.status {
-	margin-bottom: 10px;
-}
-
 .square {
-	border: 1px solid #999;
-	float: left;
+	border: 1px solid #999; //枠
+	float: left; //要素を左寄せに。次の要素は右に回り込む
 	font-size: 24px;
 	font-weight: bold;
 	line-height: 34px;
 	height: 34px;
+	width: 34px;
 	margin-right: -1px;
 	margin-top: -1px;
 	padding: 0;
 	text-align: center;
-	width: 34px;
 }
 
 .square:focus {
@@ -44,21 +44,17 @@ ol, ul {
 	flex-direction: row;
 }
 
-.game-info {
-	margin-left: 20px;
-}
-
 .end-turn-button {
 }
 
 .red {
-	background: #f44336;
+	background: red;
 }
 
 .blue {
-	background: #3f51b5;
+	background: blue;
 }
 
 .neut {
-	background: #ffffff;
+	background: neut;
 }
