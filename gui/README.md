@@ -1,10 +1,12 @@
 # Igokabaddi GUI
 囲碁カバディの見える化
 # 3rd Party
-## Iconmonster
+## Font Awesome
 ### content
  * icons/\*
 ### License
-© 2018 iconmonstr
+CC-BY 4.0
 
-Please read [it](https://iconmonstr.com/license/)
+(c) Font Awesome
+
+Please read [it](https://fontawesome.com/license).
