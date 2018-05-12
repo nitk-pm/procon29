@@ -29,4 +29,10 @@ gulp.task('main', () => {
 		.pipe(gulp.dest('./dist'))
 });
 
-gulp.task('default', ['main', 'html', 'scss', 'renderer']);
+gulp.task('icons', () =>
+	gulp
+		.src(['./icons/*'])
+		.pipe(gulp.dest('./dist/icons'))
+);
+
+gulp.task('default', ['main', 'html', 'scss', 'renderer', 'icons']);
