@@ -29,6 +29,7 @@ body {
 	margin-top: -1px;
 	padding: 0;
 	text-align: center;
+	background-size: cover;
 }
 
 .square:focus {
@@ -48,13 +49,45 @@ body {
 }
 
 .red {
-	background: red;
+	background: $red;
 }
 
 .blue {
-	background: blue;
+	background: $blue;
 }
 
 .neut {
-	background: neut;
+	background: $neut;
+}
+
+.red-highlight {
+	background: $red-highlight;
+}
+
+.blue-highlight {
+	background: $blue-highlight;
+}
+
+.neut-highlight {
+	background: $neut-highlight;
+}
+
+.agent {
+	background-image: url('./icons/male.svg');
+}
+
+.arrow-up {
+	background-image: url('./icons/arrow-up.svg');
+}
+
+.arrow-down {
+	background-image: url('./icons/arrow-down.svg');
+}
+
+.arrow-left {
+	background-image: url('./icons/arrow-left.svg');
+}
+
+.arrow-right {
+	background-image: url('./icons/arrow-right.svg');
 }
