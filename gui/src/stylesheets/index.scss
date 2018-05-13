@@ -11,6 +11,9 @@ body {
 	margin: 20px;
 }
 
+.root {
+}
+
 .board-row::after {
 	clear: both; //改行
 	content: "";
@@ -22,9 +25,9 @@ body {
 	float: left; //要素を左寄せに。次の要素は右に回り込む
 	font-size: 24px;
 	font-weight: bold;
-	line-height: 34px;
-	height: 34px;
-	width: 34px;
+	line-height: 7vh;
+	height: 7vh;
+	width: 7vh;
 	margin-right: -1px;
 	margin-top: -1px;
 	padding: 0;

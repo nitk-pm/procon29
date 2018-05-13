@@ -3,6 +3,13 @@ import * as Logic from '../logic/igokabaddi';
 import Board from '../container/board'
 import { ActionDispatcher } from '../container/game';
 
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import AppBar from 'material-ui/AppBar';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+
 interface GameProps {
 	board: Logic.Board;
 	turn: Logic.Turn;
@@ -10,27 +17,37 @@ interface GameProps {
 }
 
 export class Game extends React.Component<GameProps> {
+	state: {
+		open: boolean;
+	}
+	constructor(props: GameProps) {
+		super(props);
+		this.state = {
+			open: false
+		};
+	}
+	handleToggle() {
+		this.setState({
+			open: !this.state.open
+		});
+	}
 	render() {
-		var playerNameStyle: string;
-		var playerName: string;
-		if (this.props.turn == Logic.Turn.Red) {
-			playerNameStyle = "blue";
-			playerName = "Blue";
-		}
-		else {
-			playerNameStyle = "red";
-			playerName = "Red";
-		}
 		return (
-			<div className="game">
-				<div className="game-board">
-					turn:<span className={playerNameStyle}>{playerName}</span>
+			<MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+				<div className="root">
+					<AppBar
+						title="囲碁カバディ"
+						onLeftIconButtonClick={() => this.handleToggle()}
+					/>
+					<Drawer open={this.state.open}
+						docked={false}
+						onRequestChange={(open) => this.setState({open: open})}
+					>
+						<MenuItem>open</MenuItem>
+					</Drawer>
 					<Board />
-					<button onClick={() => this.props.actions.endTurn()}>end turn</button>
 				</div>
-				<div className="game-info">
-				</div>
-			</div>
+			</MuiThemeProvider>
 		);
 	}
 }

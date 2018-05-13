@@ -11,19 +11,19 @@ interface SquareProps {
 
 export class Square extends React.Component<SquareProps> {
 	render() {
-		var style: string;
+		var styleName: string;
 		switch (this.props.square.color) {
 		case Logic.Color.Red:
-			style = "square red";
+			styleName = "square red";
 			break;
 		case Logic.Color.Blue:
-			style = "square blue";
+			styleName = "square blue";
 			break;
 		case Logic.Color.Neut:
-			style = "square neut";
+			styleName = "square neut";
 			break;
 		}
-		return (<button className={style} onClick={() => this.props.actions.click(this.props.pos)}>
+		return (<button className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
 			{this.props.square.score}
 		</button>);
 	}
@@ -38,9 +38,15 @@ interface BoardProps {
 
 export class Board extends React.Component<BoardProps> {
 	render() {
-		console.log(this.props.board.table);
+		const boardStyle = {
+			margin: "0 auto",
+			maxWidth: (7*this.props.board.width).toString() + "vh"
+		};
+		console.log(boardStyle);
 		return (
-			<div>{
+			<div
+				style={boardStyle}
+			>{
 				this.props.board.table.map((line, y, table) =>
 					<div className="board-row" key={y}>{
 						line.map((square, x, table) =>
