@@ -9,6 +9,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+
+import { ipcRenderer } from 'electron';
 
 interface GameProps {
 	board: Logic.Board;
@@ -38,6 +43,11 @@ export class Game extends React.Component<GameProps> {
 					<AppBar
 						title="囲碁カバディ"
 						onLeftIconButtonClick={() => this.handleToggle()}
+						onRightIconButtonClick={() => ipcRenderer.send('message', 'exit')}
+						iconElementRight={<IconButton><NavigationClose /></IconButton>}
+						iconStyleLeft={{WebkitAppRegion: 'no-drag'} as React.CSSProperties}
+						iconStyleRight={{WebkitAppRegion: 'no-drag'} as React.CSSProperties}
+						style={{WebkitAppRegion: 'drag'} as React.CSSProperties}
 					/>
 					<Drawer open={this.state.open}
 						docked={false}
@@ -45,7 +55,12 @@ export class Game extends React.Component<GameProps> {
 					>
 						<MenuItem>open</MenuItem>
 					</Drawer>
-					<Board />
+					<div className="board-container">
+						<Board />
+					</div>
+					<div className="info-container">
+						<RaisedButton label="turn end"/>
+					</div>
 				</div>
 			</MuiThemeProvider>
 		);
