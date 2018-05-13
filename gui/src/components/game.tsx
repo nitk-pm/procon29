@@ -14,9 +14,10 @@ import IconButton from 'material-ui/IconButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
 import { ipcRenderer } from 'electron';
+import * as Store from '../store';
 
 interface GameProps {
-	board: Logic.Board;
+	board: Store.BoardState;
 	turn: Logic.Turn;
 	actions: ActionDispatcher;
 }

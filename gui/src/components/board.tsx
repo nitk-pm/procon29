@@ -1,11 +1,11 @@
 import * as React from 'react'
-import * as Igokabaddi from '../logic/igokabaddi'
 import * as Logic from '../logic/igokabaddi';
+import * as Store from '../store';
 import { ActionDispatcher } from '../container/board';
 
 interface SquareProps {
-	square: Logic.Square;
-	pos: Igokabaddi.Pos;
+	square: Store.SquareState;
+	pos: Logic.Pos;
 	actions: ActionDispatcher;
 }
 
@@ -32,25 +32,27 @@ export class Square extends React.Component<SquareProps> {
 
 
 interface BoardProps {
-	board: Logic.Board;
+	board: Store.BoardState;
 	actions: ActionDispatcher;
 }
 
 export class Board extends React.Component<BoardProps> {
 	render() {
+		const width = this.props.board[0].length;
+		const height = this.props.board.length;
 		const boardStyle = {
 			margin: "0 auto",
-			maxWidth: (7*(this.props.board.width+1)).toString() + "vh"
+			maxWidth: (7*(width+1)).toString() + "vh"
 		};
 		console.log(boardStyle);
 		return (
 			<div
 				style={boardStyle}
 			>{
-				this.props.board.table.map((line, y, table) =>
+				this.props.board.map((line, y)  =>
 					<div className="board-row" key={y}>{
-						line.map((square, x, table) =>
-							<Square actions={this.props.actions} square={square} pos={new Logic.Pos(x, y)} key={x*this.props.board.height+y}/>)
+						line.map((square, x) =>
+							<Square actions={this.props.actions} square={square} pos={new Logic.Pos(x, y)} key={x*height+y}/>)
 					}</div>
 				)
 			}</div>
