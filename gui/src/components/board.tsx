@@ -23,9 +23,9 @@ export class Square extends React.Component<SquareProps> {
 			styleName = "square neut";
 			break;
 		}
-		return (<button className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
+		return (<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
 			{this.props.square.score}
-		</button>);
+		</div>);
 	}
 }
 
@@ -40,7 +40,7 @@ export class Board extends React.Component<BoardProps> {
 	render() {
 		const boardStyle = {
 			margin: "0 auto",
-			maxWidth: (7*this.props.board.width).toString() + "vh"
+			maxWidth: (7*(this.props.board.width+1)).toString() + "vh"
 		};
 		console.log(boardStyle);
 		return (
