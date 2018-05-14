@@ -23,6 +23,8 @@ export class Square extends React.Component<SquareProps> {
 			styleName = "square neut";
 			break;
 		}
+		if (this.props.square.agent)
+			styleName += '-highlight'
 		return (<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
 			{this.props.square.score}
 		</div>);

@@ -1,6 +1,6 @@
 $red: #d32f2f;
 $blue: #303F9F;
-$neut: #616161;
+$neut: #FFFFFF;
 
 $red-highlight:#e57373;
 $blue-highlight:#7986CB;
@@ -68,7 +68,6 @@ body {
 	margin-top: -1px;
 	padding: 0;
 	text-align: center;
-	background-size: cover;
 }
 
 .square:focus {
@@ -105,28 +104,4 @@ body {
 
 .blue-highlight {
 	background: $blue-highlight;
-}
-
-.neut-highlight {
-	background: $neut-highlight;
-}
-
-.agent {
-	background-image: url('./icons/male.svg');
-}
-
-.arrow-up {
-	background-image: url('./icons/arrow-up.svg');
-}
-
-.arrow-down {
-	background-image: url('./icons/arrow-down.svg');
-}
-
-.arrow-left {
-	background-image: url('./icons/arrow-left.svg');
-}
-
-.arrow-right {
-	background-image: url('./icons/arrow-right.svg');
 }
