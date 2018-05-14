@@ -25,6 +25,9 @@ export class Square extends React.Component<SquareProps> {
 		}
 		if (this.props.square.agent)
 			styleName += '-highlight'
+		if (this.props.square.suggested)
+			styleName += ' suggested'
+		console.log(styleName);
 		return (<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
 			{this.props.square.score}
 		</div>);
@@ -46,7 +49,6 @@ export class Board extends React.Component<BoardProps> {
 			margin: "0 auto",
 			maxWidth: (7*(width+1)).toString() + "vh"
 		};
-		console.log(boardStyle);
 		return (
 			<div
 				style={boardStyle}

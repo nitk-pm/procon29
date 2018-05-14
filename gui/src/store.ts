@@ -4,7 +4,12 @@ import * as Board from './modules/board';
 import * as Turn from './modules/turn';
 import * as Game from './modules/game';
 
-export type Actions = Game.ClickSquareAction | Turn.EndTurnAction | Action
+export enum ActionNames {
+	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
+	END_TURN     = 'IGOKABADDI_END_TURN'
+}
+
+export type Actions = Board.ClickSquareAction | Turn.EndTurnAction
 
 /* color:     現在の所有者
  * score:     点数
@@ -19,10 +24,9 @@ export type SquareState = {
 	color:     Logic.Color;
 	score:     number;
 	agent:     boolean;
-	selected:  boolean;
 	suggested: boolean;
 	forbidden: boolean;
-	reserved:  Logic.Color;
+	before: Logic.Pos;
 }
 
 export type BoardState = SquareState[][];
@@ -36,19 +40,14 @@ function logicBoardToUIBoard(board: Logic.Board) {
 					color: square.color,
 					score: square.score,
 					agent: atStartPos(board.red, x, y) || atStartPos(board.blue, x, y),
-					selected: false,
 					suggested: false,
 					forbidden: false,
-					reserved: Logic.Color.Neut,
+					before: new Logic.Pos(x,y)
 				})
 			));
 }
 
 
-export enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
-	END_TURN     = 'IGOKABADDI_END_TURN'
-}
 
 export type IgokabaddiState = {
 	board: BoardState;

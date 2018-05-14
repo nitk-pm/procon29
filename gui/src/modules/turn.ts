@@ -6,7 +6,7 @@ export interface EndTurnAction extends Redux.Action {
 	type: Store.ActionNames.END_TURN;
 }
 
-export function endTurn() {
+export function endTurn() : EndTurnAction {
 	return {
 		type: Store.ActionNames.END_TURN
 	};
