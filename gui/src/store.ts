@@ -22,37 +22,30 @@ export type Actions = Board.ClickSquareAction | Action
 export type SquareState = {
 	color:     Logic.Color;
 	score:     number;
+	agent:     boolean;
+	suggested: boolean;
 }
 
 export type BoardState = SquareState[][];
 
-export class Agent {
-	pos: Logic.Pos;
-	before: Logic.Pos;
-}
-
 export class State {
 	table: SquareState[][];
-	blueAgents: Agent[];
-	redAgents : Agent[];
-	suggested: Logic.Pos[];
+	hist: SquareState[][][];
 }
 
 function initializeState (board: Logic.Board) {
+	const isXAgent = (positions: Logic.Pos[], x:number, y:number) => (
+		positions.map(pos => pos == new Logic.Pos(x,y)).reduce((a,b) => a || b));
 	let table = board.table.map((line, y) => (
 		line.map((square, x) => ({
 			color: square.color,
-			score: square.score
+			score: square.score,
+			agent: isXAgent(board.red, x, y) || isXAgent(board.blue, x, y),
+			suggested: false
 		}))));
-	let blueAgents = board.blue.map(pos => ({pos: pos, before: pos}));
-	let redAgents  = board.red.map(pos => ({pos: pos, before: pos}));
-	let suggested = new Array<Logic.Pos>(0);
 	return ({
 		table: table,
-		blueAgents: blueAgents,
-		redAgents: redAgents,
-		suggested: suggested,
-		turn: Logic.Turn.Red
+		hist: new Array<SquareState[][]>(0)
 	});
 }
 
