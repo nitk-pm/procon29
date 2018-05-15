@@ -18,7 +18,6 @@ import * as Store from '../store';
 
 interface GameProps {
 	board: Store.BoardState;
-	turn: Logic.Turn;
 	actions: ActionDispatcher;
 }
 

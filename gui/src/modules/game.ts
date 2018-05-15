@@ -3,7 +3,6 @@ import * as Re from 'reduce-reducers';
 import * as Store from '../store';
 import * as Logic from '../logic/igokabaddi';
 import * as Board from '../modules/board';
-import * as Turn from '../modules/turn';
 import reduceReducers from 'reduce-reducers';
 
 export function clickSquare(pos: Logic.Pos) {
@@ -15,14 +14,8 @@ export function clickSquare(pos: Logic.Pos) {
 	};
 }
 
-function gameReducer(state: Store.IgokabaddiState = Store.initialState, action: Store.Actions) {
+function gameReducer(state: Store.State = Store.initialState, action: Store.Actions) {
 	return state;
 }
 
-export const reducer = reduceReducers(
-	Redux.combineReducers({
-		board: Board.reducer,
-		turn: Turn.reducer
-	}),
-	gameReducer
-);
+export const reducer = gameReducer;

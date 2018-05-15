@@ -1,7 +1,6 @@
 import { createStore, combineReducers, Action } from 'redux';
 import * as Logic from './logic/igokabaddi';
 import * as Board from './modules/board';
-import * as Turn from './modules/turn';
 import * as Game from './modules/game';
 
 export enum ActionNames {
@@ -9,7 +8,7 @@ export enum ActionNames {
 	END_TURN     = 'IGOKABADDI_END_TURN'
 }
 
-export type Actions = Board.ClickSquareAction | Turn.EndTurnAction
+export type Actions = Board.ClickSquareAction | Action
 
 /* color:     現在の所有者
  * score:     点数
@@ -23,38 +22,38 @@ export type Actions = Board.ClickSquareAction | Turn.EndTurnAction
 export type SquareState = {
 	color:     Logic.Color;
 	score:     number;
-	agent:     boolean;
-	suggested: boolean;
-	forbidden: boolean;
-	before: Logic.Pos;
 }
 
 export type BoardState = SquareState[][];
 
-function logicBoardToUIBoard(board: Logic.Board) {
-	const atStartPos = (start_positions: Logic.Pos[], x: number, y: number) => (
-		start_positions.map(pos => pos.x == x && pos.y == y).reduce((x, y) => x || y));
-		
-	return board.table.map((line, y) =>
-			line.map((square, x) => ({
-					color: square.color,
-					score: square.score,
-					agent: atStartPos(board.red, x, y) || atStartPos(board.blue, x, y),
-					suggested: false,
-					forbidden: false,
-					before: new Logic.Pos(x,y)
-				})
-			));
+export class Agent {
+	pos: Logic.Pos;
+	before: Logic.Pos;
 }
 
-
-
-export type IgokabaddiState = {
-	board: BoardState;
-	turn: Logic.Turn;
+export class State {
+	table: SquareState[][];
+	blueAgents: Agent[];
+	redAgents : Agent[];
+	suggested: Logic.Pos[];
 }
 
-export const initialState = {
-	board: logicBoardToUIBoard(new Logic.Board(require('./initial_board.json'))),
-	turn: Logic.Turn.Red
+function initializeState (board: Logic.Board) {
+	let table = board.table.map((line, y) => (
+		line.map((square, x) => ({
+			color: square.color,
+			score: square.score
+		}))));
+	let blueAgents = board.blue.map(pos => ({pos: pos, before: pos}));
+	let redAgents  = board.red.map(pos => ({pos: pos, before: pos}));
+	let suggested = new Array<Logic.Pos>(0);
+	return ({
+		table: table,
+		blueAgents: blueAgents,
+		redAgents: redAgents,
+		suggested: suggested,
+		turn: Logic.Turn.Red
+	});
 }
+
+export const initialState: State = initializeState(new Logic.Board(require('./initial_board.json')));

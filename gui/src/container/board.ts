@@ -18,6 +18,6 @@ export class ActionDispatcher {
 }
 
 export default ReactRedux.connect(
-	(state: Store.IgokabaddiState) => ({board: state.board}),
+	(state: Store.State) => ({board: state.table}),
 	(dispatch: Redux.Dispatch<Store.Actions>) => ({actions: new ActionDispatcher(dispatch)})
 )(BoardComponent.Board);
