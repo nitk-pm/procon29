@@ -39,7 +39,7 @@ export class Game extends React.Component<GameProps> {
 	render() {
 		return (
 			<MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
-				<div className="root">
+				<div>
 					<AppBar
 						title="囲碁カバディ"
 						onLeftIconButtonClick={() => this.handleToggle()}

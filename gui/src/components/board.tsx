@@ -23,8 +23,12 @@ export class Square extends React.Component<SquareProps> {
 			styleName = "square neut";
 			break;
 		}
-		return (<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
-			{this.props.square.score}
+		const walkImg = <img className="square-icon" src='./icons/material-design-icons/baseline-directions_walk-24px.svg'/>;
+		return (
+		<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
+			<div className="square-iconbox">
+			</div>
+			<div className="square-score">{this.props.square.score}</div>
 		</div>);
 	}
 }

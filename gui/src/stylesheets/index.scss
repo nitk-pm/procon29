@@ -12,30 +12,6 @@ body {
 	-webkit-user-select: none;
 }
 
-.appbar {
-	-webkit-app-region: drag;
-}
-
-.appbar-button {
-	-webkit-app-red: no-drag;
-}
-
-.material-icons {
-	font-family: 'Material Icons';
-	font-weight: normal;
-	font-style: normal;
-	font-size: 24px;
-	line-height: 1;
-	letter-spacing: normal;
-	text-transform: none;
-	display: inline-block;
-	white-space: nowrap;
-	word-break: normal;
-	direction: ltr;
-	-webkit-font-feature-settings: 'liga';
-	-weight-font-smoothing: antialiased;
-}
-
 .root {
 	margin: 0 0;
 }
@@ -57,33 +33,28 @@ body {
 }
 
 .square {
+	cursor: pointer;
+	float: left;
 	border: 1px solid #999; //枠
-	float: left; //要素を左寄せに。次の要素は右に回り込む
-	font-size: 24px;
-	font-weight: bold;
-	line-height: 7vh;
 	height: 7vh;
 	width: 7vh;
 	margin-right: -1px;
 	margin-top: -1px;
 	padding: 0;
+}
+
+.square-iconbox {
+	text-align:center;
+	height: 70%;
+}
+
+.square-icon {
+	height: 100%;
+}
+
+.square-score {
 	text-align: center;
-}
-
-.square:focus {
-	outline: none;
-}
-
-.kbd-navigation .square:focus {
-	background: #ddd;
-}
-
-.game {
-	display: flex;
-	flex-direction: row;
-}
-
-.end-turn-button {
+	height: 30%;
 }
 
 .red {

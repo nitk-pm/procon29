@@ -31,8 +31,8 @@ gulp.task('main', () => {
 
 gulp.task('icons', () =>
 	gulp
-		.src(['./icons/*'])
-		.pipe(gulp.dest('./dist/icons'))
+		.src(['./icons/material-design-icons/*.svg'])
+		.pipe(gulp.dest('./dist/icons/material-design-icons'))
 );
 
 gulp.task('default', ['main', 'html', 'scss', 'renderer', 'icons']);
