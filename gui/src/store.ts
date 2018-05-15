@@ -1,14 +1,14 @@
 import { createStore, combineReducers, Action } from 'redux';
 import * as Logic from './logic/igokabaddi';
-import * as Board from './modules/board';
-import * as Game from './modules/game';
+import * as BoardModule from './modules/board';
+import * as HistModule from './modules/history';
 
 export enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
-	END_TURN     = 'IGOKABADDI_END_TURN'
+	CLICK_SQUARE  = 'IGOKABADDI_CLICK_SQUARE',
+	STACK_HISTORY = 'IGOKABADDI_STACK_HISTORY'
 }
 
-export type Actions = Board.ClickSquareAction | Action
+export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAction | Action
 
 /* color:     現在の所有者
  * score:     点数
