@@ -33,6 +33,7 @@ body {
 }
 
 .square {
+	position: relative;
 	cursor: pointer;
 	float: left;
 	border: 1px solid #999; //枠
@@ -45,16 +46,16 @@ body {
 
 .square-iconbox {
 	text-align:center;
-	height: 70%;
 }
 
 .square-icon {
-	height: 100%;
 }
 
 .square-score {
+	position: absolute;
+	bottom: 0;
 	text-align: center;
-	height: 30%;
+	width: 100%;
 }
 
 .red {
