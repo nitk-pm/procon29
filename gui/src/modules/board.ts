@@ -24,14 +24,18 @@ function isValid(x: number, y: number, board: Store.BoardState) {
 
 function suggest(board: Store.BoardState, pos: Logic.Pos): Store.SquareState[][] {
 	const tbl = board.tbl.slice(0, board.w);
-	for (var dx=-1; dx<=1; ++dx) {
-		for (var dy=-1; dy<=1; ++dy) {
-			if (isValid(pos.x+dx, pos.y+dy, board)) {
-				tbl[pos.y+dy][pos.x+dx].suggested = true;
+	tbl[pos.y][pos.x].suggested = tbl[pos.y][pos.x].agent;
+	if (tbl[pos.y][pos.x].agent) {
+		for (var dx=-1; dx<=1; ++dx) {
+			for (var dy=-1; dy<=1; ++dy) {
+				if (isValid(pos.x+dx, pos.y+dy, board) && !tbl[pos.y+dy][pos.x+dx].agent) {
+					tbl[pos.y+dy][pos.x+dx].suggested = true;
+				}
 			}
 		}
+		return tbl;
 	}
-	return tbl;
+	return board.tbl;
 }
 
 //サジェストフラグのクリア、選択されたAgentの移動、塗りつぶし
