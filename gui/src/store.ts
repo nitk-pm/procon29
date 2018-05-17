@@ -45,7 +45,7 @@ export class State {
 
 function initializeState (board: Logic.Board) {
 	const isXAgent = (positions: Logic.Pos[], x:number, y:number) => (
-		positions.map(pos => pos == new Logic.Pos(x,y)).reduce((a,b) => a || b));
+		positions.map(pos => pos.eq(new Logic.Pos(x,y))).reduce((a,b) => a || b));
 	let table = board.table.map((line, y) => (
 		line.map((square, x) => ({
 			color: square.color,

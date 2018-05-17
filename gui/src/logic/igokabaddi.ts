@@ -5,6 +5,9 @@ export class Pos {
 		this.x = x;
 		this.y = y;
 	}
+	eq (p: Pos) {
+		return this.x == p.x && this.y == p.y;
+	}
 }
 
 export enum Color {
