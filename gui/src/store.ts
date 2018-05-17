@@ -8,7 +8,7 @@ export enum ActionNames {
 	STACK_HISTORY = 'IGOKABADDI_STACK_HISTORY'
 }
 
-export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAction | Action
+export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAction
 
 /* color:     現在の所有者
  * score:     点数

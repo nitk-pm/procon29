@@ -4,7 +4,7 @@ import * as Logic from '../logic/igokabaddi';
 
 
 export interface StackHistoryAction extends Redux.Action {
-	type: typeof Store.ActionNames.STACK_HISTORY;
+	type: Store.ActionNames.STACK_HISTORY;
 }
 
 export function clickSquare(pos: Logic.Pos): StackHistoryAction {
