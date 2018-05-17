@@ -34,6 +34,30 @@ function suggest(board: Store.BoardState, pos: Logic.Pos): Store.SquareState[][]
 	return tbl;
 }
 
+//サジェストフラグのクリア、選択されたAgentの移動、塗りつぶし
+function move(board: Store.BoardState, pos: Logic.Pos) {
+	const tbl = board.tbl.slice(0, board.w);
+	//クリックされた箇所が、選択されたAgentだった場合は移動フラグを立てる
+	const shouldMove = tbl[pos.y][pos.x].suggested && !tbl[pos.y][pos.x].agent && tbl[pos.y][pos.x];
+	var color: Logic.Color;
+	for (var x=0; x<board.w; ++x) {
+		for (var y=0; y<board.h; ++y) {
+			//選択されたAgentだった場合、agentフラグを消しAgentの色を設定する。
+			if (tbl[y][x].suggested && tbl[y][x].agent && shouldMove) {
+				tbl[y][x].agent = false;
+				color = tbl[y][x].color;
+			}
+			tbl[y][x].suggested = false;
+		}
+	}
+	//移動フラグが立っている場合、agentフラグを立てて塗りつぶす。
+	if (shouldMove) {
+		tbl[pos.y][pos.x].agent = true;
+		tbl[pos.y][pos.x].color = color;
+	}
+	return tbl;
+}
+
 export function reducer(board: Store.BoardState = Store.initialState.board, action: Store.Actions): Store.BoardState {
 	switch(action.type) {
 	case Store.ActionNames.CLICK_SQUARE:
@@ -46,7 +70,11 @@ export function reducer(board: Store.BoardState = Store.initialState.board, acti
 				state: Store.GameState.Suggested,
 			};
 		case Store.GameState.Suggested:
-			return board;
+			return {
+				...board,
+				tbl: move(board, pos),
+				state: Store.GameState.Wait
+			};
 		}
 		return board;
 	default:
