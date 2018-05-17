@@ -19,6 +19,11 @@ export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAct
  * reserved:  仮移動先かどうか
  */
 
+export enum GameState {
+	Suggested,
+	Wait
+}
+
 export type SquareState = {
 	color:     Logic.Color;
 	score:     number;
@@ -26,11 +31,16 @@ export type SquareState = {
 	suggested: boolean;
 }
 
-export type BoardState = SquareState[][];
+export type BoardState = {
+	tbl: SquareState[][];
+	state: GameState;
+	w: number;
+	h: number;
+};
 
 export class State {
-	table: SquareState[][];
-	hist: SquareState[][][];
+	board: BoardState;
+	hist: BoardState[];
 }
 
 function initializeState (board: Logic.Board) {
@@ -44,8 +54,13 @@ function initializeState (board: Logic.Board) {
 			suggested: false
 		}))));
 	return ({
-		table: table,
-		hist: new Array<SquareState[][]>(0)
+		board: {
+			tbl: table,
+			w: board.width,
+			h: board.height,
+			state: GameState.Wait
+		},
+		hist: new Array<BoardState>(0)
 	});
 }
 

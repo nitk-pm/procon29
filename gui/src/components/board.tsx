@@ -42,8 +42,8 @@ interface BoardProps {
 
 export class Board extends React.Component<BoardProps> {
 	render() {
-		const width = this.props.board[0].length;
-		const height = this.props.board.length;
+		const width = this.props.board.w;
+		const height = this.props.board.h;
 		const boardStyle = {
 			margin: "0 auto",
 			maxWidth: (7*(width+1)).toString() + "vh"
@@ -52,7 +52,7 @@ export class Board extends React.Component<BoardProps> {
 			<div
 				style={boardStyle}
 			>{
-				this.props.board.map((line, y)  =>
+				this.props.board.tbl.map((line, y)  =>
 					<div className="board-row" key={y}>{
 						line.map((square, x) =>
 							<Square actions={this.props.actions} square={square} pos={new Logic.Pos(x, y)} key={x*height+y}/>)

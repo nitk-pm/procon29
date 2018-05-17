@@ -17,7 +17,7 @@ export function reducer(state: Store.State = Store.initialState, action: Store.A
 	switch(action.type) {
 	case Store.ActionNames.STACK_HISTORY:
 		const copy = state.hist.slice(0, state.hist.length);
-		copy.push(state.table);
+		copy.push(state.board);
 		return {
 			...state,
 			hist: copy

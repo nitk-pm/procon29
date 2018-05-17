@@ -19,8 +19,13 @@ export function clickSquare(pos: Logic.Pos): ClickSquareAction {
 	};
 }
 
-export function reducer(board: Store.BoardState = Store.initialState.table, action: Store.Actions) {
+function isValid(x: number, y: number, tbl: Store.SquareState[][]) {
+	return x >= 0 && x < tbl[0].length && y >= 0 && length;
+}
+
+export function reducer(board: Store.BoardState = Store.initialState.board, action: Store.Actions) {
 	switch(action.type) {
+	case Store.ActionNames.CLICK_SQUARE:
 	default:
 		return board;
 	}
