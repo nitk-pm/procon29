@@ -24,9 +24,18 @@ export class Square extends React.Component<SquareProps> {
 			break;
 		}
 		const walkImg = <img className="square-icon" src='./icons/material-design-icons/baseline-directions_walk-24px.svg'/>;
+		const suggestedImg = <img className="square-icon" src='./icons/material-design-icons/baseline-radio_button_unchecked-24px.svg'/>;
+		var imgTag = null;
+		if (this.props.square.agent) {
+			imgTag = walkImg;
+		}
+		else if (this.props.square.suggested) {
+			imgTag = suggestedImg;
+		}
 		return (
 		<div className={styleName} onClick={() => this.props.actions.click(this.props.pos)}>
 			<div className="square-iconbox">
+				{imgTag}
 			</div>
 			<div className="square-score">{this.props.square.score}</div>
 		</div>);
@@ -42,6 +51,7 @@ interface BoardProps {
 
 export class Board extends React.Component<BoardProps> {
 	render() {
+		console.log(this.props.board);
 		const width = this.props.board.w;
 		const height = this.props.board.h;
 		const boardStyle = {
