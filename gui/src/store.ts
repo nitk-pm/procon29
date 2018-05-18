@@ -36,7 +36,15 @@ export type BoardState = {
 	state: GameState;
 	w: number;
 	h: number;
+	clearQue: Logic.Pos[];
+	moveQue: MoveInfo[];
 };
+
+export class MoveInfo {
+	color: Logic.Color;
+	from: Logic.Pos;
+	to: Logic.Pos;
+}
 
 export class State {
 	board: BoardState;
@@ -58,7 +66,9 @@ function initializeState (board: Logic.Board) {
 			tbl: table,
 			w: board.width,
 			h: board.height,
-			state: GameState.Wait
+			state: GameState.Wait,
+			clearQue: new Array<Logic.Pos>(0),
+			moveQue: new Array<MoveInfo>(0)
 		},
 		hist: new Array<BoardState>(0)
 	});
