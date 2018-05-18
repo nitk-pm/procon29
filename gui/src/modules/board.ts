@@ -9,6 +9,16 @@ export interface ClickSquareAction extends Redux.Action {
 	};
 }
 
+export interface ClickEndTurnAction extends Redux.Action {
+	type: Store.ActionNames.CLICK_END_TURN;
+}
+
+export function clickEndTurn() : ClickEndTurnAction {
+	return {
+		type: Store.ActionNames.CLICK_END_TURN
+	};
+}
+
 export function clickSquare(pos: Logic.Pos): ClickSquareAction {
 	return {
 		type: Store.ActionNames.CLICK_SQUARE,

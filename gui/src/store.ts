@@ -4,6 +4,7 @@ import * as BoardModule from './modules/board';
 import * as HistModule from './modules/history';
 
 export enum ActionNames {
+	CLICK_END_TURN = 'IGOKABADDI_CLICK_END_TURN',
 	CLICK_SQUARE  = 'IGOKABADDI_CLICK_SQUARE',
 	STACK_HISTORY = 'IGOKABADDI_STACK_HISTORY'
 }
