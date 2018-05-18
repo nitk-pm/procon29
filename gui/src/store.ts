@@ -35,6 +35,7 @@ export type SquareState = {
 export type BoardState = {
 	tbl: SquareState[][];
 	state: GameState;
+	turn: Logic.Color;
 	w: number;
 	h: number;
 	clearQue: Logic.Pos[];
@@ -68,6 +69,7 @@ function initializeState (board: Logic.Board) {
 			w: board.width,
 			h: board.height,
 			state: GameState.Wait,
+			turn: Logic.Color.Red,
 			clearQue: new Array<Logic.Pos>(0),
 			moveQue: new Array<MoveInfo>(0)
 		},
