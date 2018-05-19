@@ -2,9 +2,9 @@ import * as React from 'react';
 import * as Logic from '../logic/igokabaddi';
 import Board from '../container/board'
 import AppBar from '../container/appbar';
+import Drawer from '../container/drawer';
 import { ActionDispatcher } from '../container/game';
 
-import Drawer from 'material-ui/Drawer';
 import Button from 'material-ui/Button';
 import DoneIcon from 'material-ui-icons/Done';
 
@@ -27,6 +27,7 @@ export const Game = withStyles(styles)<GameProps>(
 		return (
 			<div>
 				<AppBar />
+				<Drawer />
 				<div className='board-container'>
 					<Board />
 				</div>

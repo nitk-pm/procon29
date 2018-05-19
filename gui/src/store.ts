@@ -2,15 +2,17 @@ import { createStore, combineReducers, Action } from 'redux';
 import * as Logic from './logic/igokabaddi';
 import * as BoardModule from './modules/board';
 import * as HistModule from './modules/history';
+import * as DrawerModule from './modules/drawer';
 
 export enum ActionNames {
 	CLICK_END_TURN = 'IGOKABADDI_CLICK_END_TURN',
 	CLICK_SQUARE  = 'IGOKABADDI_CLICK_SQUARE',
 	STACK_HISTORY = 'IGOKABADDI_STACK_HISTORY',
-	CLOSE = 'IGOKABADDI_CLOSE'
+	CLOSE = 'IGOKABADDI_CLOSE',
+	TOGGLE_DRAWER = 'IGOKABADDI_TOGGLE_DRAWER'
 }
 
-export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAction
+export type Actions = BoardModule.ClickSquareAction | HistModule.StackHistoryAction | DrawerModule.ToggleDrawerAction
 
 /* color:     現在の所有者
  * score:     点数
@@ -52,6 +54,7 @@ export class MoveInfo {
 export class State {
 	board: BoardState;
 	hist: BoardState[];
+	drawerOpen: boolean;
 }
 
 function initializeState (board: Logic.Board) {
@@ -74,7 +77,8 @@ function initializeState (board: Logic.Board) {
 			clearQue: new Array<Logic.Pos>(0),
 			moveQue: new Array<MoveInfo>(0)
 		},
-		hist: new Array<BoardState>(0)
+		hist: new Array<BoardState>(0),
+		drawerOpen: false
 	});
 }
 
