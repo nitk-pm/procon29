@@ -6,30 +6,39 @@ import { ActionDispatcher } from '../container/game';
 
 import Drawer from 'material-ui/Drawer';
 import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
+import DoneIcon from 'material-ui-icons/Done';
+
+import { withStyles, WithStyles } from 'material-ui/styles';
 
 import { ipcRenderer } from 'electron';
 import * as Store from '../store';
 
-interface GameProps {
+export interface GameProps {
 	board: Store.BoardState;
 	actions: ActionDispatcher;
 }
 
-export class Game extends React.Component<GameProps> {
-	render() {
+const styles={};
+
+type ClassNames = keyof typeof styles;
+
+export const Game = withStyles(styles)<GameProps>(
+	(props: GameProps & WithStyles<ClassNames>) => {
+		const classes = props.classes;
 		return (
 			<div>
 				<AppBar />
-				<div className="board-container">
+				<div className='board-container'>
 					<Board />
 				</div>
-				<div className="info-container">
-					<Button variant="raised">
-						Turn End
+				<div className='info-container'>
+				</div>
+				<div className='fab'>
+					<Button variant='fab' color='primary' aria-label='done'>
+						<DoneIcon />
 					</Button>
 				</div>
 			</div>
 		);
 	}
-}
+);
