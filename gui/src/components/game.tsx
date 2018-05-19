@@ -10,7 +10,6 @@ import DoneIcon from 'material-ui-icons/Done';
 
 import { withStyles, WithStyles } from 'material-ui/styles';
 
-import { ipcRenderer } from 'electron';
 import * as Store from '../store';
 
 export interface GameProps {

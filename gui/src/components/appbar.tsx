@@ -47,7 +47,7 @@ export const WindowAppBar = withStyles(styles)<WindowAppBarProps>(
 						<Typography variant='title' color='inherit' className={classes.flex}>
 							囲碁カバディ
 						</Typography>
-						<IconButton color='inherit' className={classes.closeButton}>
+						<IconButton color='inherit' className={classes.closeButton} onClick={() => props.actions.close()}>
 							<CloseIcon />
 						</IconButton>
 					</Toolbar>
