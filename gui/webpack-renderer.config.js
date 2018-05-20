@@ -3,7 +3,7 @@ const WebpackMerge = require('webpack-merge');
 const Path = require('path');
 
 module.exports = WebpackMerge(Base.config, {
-	entry: './src/index.tsx',
+	entry: './src/renderer/index.tsx',
 	target: 'electron-renderer',
 	output: {
 		filename: 'renderer.js',

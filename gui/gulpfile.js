@@ -5,13 +5,13 @@ const sass          = require('gulp-sass');
 
 
 gulp.task('html', () =>
-	gulp.src(['./src/html/*.html'])
+	gulp.src(['./src/renderer/html/*.html'])
 		.pipe(gulp.dest('./dist'))
 );
 
 gulp.task('scss', () =>
 	gulp
-		.src(['./src/stylesheets/*.scss'])
+		.src(['./src/renderer/stylesheets/*.scss'])
 		.pipe(sass({outputStyle: 'expanded'}))
 		.pipe(gulp.dest('./dist'))
 );
