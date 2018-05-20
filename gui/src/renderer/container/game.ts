@@ -10,6 +10,6 @@ export class ActionDispatcher {
 }
 
 export default ReactRedux.connect(
-	(state: Store.State) => ({board: state.board}),
+	(state: Store.State) => ({board: state.game.board}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

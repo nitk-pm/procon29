@@ -13,16 +13,16 @@ export function clickSquare(pos: Logic.Pos): StackHistoryAction {
 	};
 }
 
-export function reducer(state: Store.State = Store.initialState, action: Actions.T) {
+export function reducer(game: Store.GameState = Store.initialState.game, action: Actions.T) {
 	switch(action.type) {
 	case Actions.Names.STACK_HISTORY:
-		const copy = state.hist.slice(0, state.hist.length);
-		copy.push(state.board);
+		let copy = game.hist.slice(0, game.hist.length);
+		copy.push(game.board);
 		return {
-			...state,
+			...game,
 			hist: copy
 		};
 	default:
-		return state;
+		return game;
 	}
 }

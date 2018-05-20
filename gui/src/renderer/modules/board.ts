@@ -59,7 +59,7 @@ function suggest(board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
 	return {
 		...board,
 		tbl: tbl,
-		state: Store.GameState.Suggested
+		state: Store.ScreenState.Suggested
 	};
 }
 
@@ -89,23 +89,28 @@ function move(board: Store.BoardState, pos: Logic.Pos) {
 	return {
 		...board, 
 		tbl: tbl,
-		state: Store.GameState.Wait
+		state: Store.ScreenState.Wait
 	};
 }
 
-export function reducer(board: Store.BoardState = Store.initialState.board, action: Actions.T): Store.BoardState {
-	console.log(board);
+export function reducer(game: Store.GameState = Store.initialState.game, action: Actions.T): Store.GameState {
 	switch(action.type) {
 	case Actions.Names.CLICK_SQUARE:
 		const pos = action.payload.pos;
-		switch (board.state) {
-		case Store.GameState.Wait:
-			return suggest(board, pos);
-		case Store.GameState.Suggested:
-			return move(board, pos);
+		switch (game.board.state) {
+		case Store.ScreenState.Wait:
+			return {
+				...game,
+				board: suggest(game.board, pos)
+			}
+		case Store.ScreenState.Suggested:
+			return {
+				...game,
+				board: move(game.board, pos)
+			}
 		}
-		return board;
+		return game;
 	default:
-		return board;
+		return game;
 	}
 }

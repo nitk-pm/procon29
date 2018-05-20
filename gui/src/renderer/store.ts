@@ -1,7 +1,7 @@
 import { createStore, combineReducers } from 'redux';
 import * as Logic from './logic/igokabaddi';
 
-export enum GameState {
+export enum ScreenState {
 	Suggested,
 	Wait
 }
@@ -44,21 +44,26 @@ export class Table {
 
 export type BoardState = {
 	tbl: Table;
-	state: GameState;
+	state: ScreenState;
 	turn: Logic.Color;
 	clearQue: Logic.Pos[];
 	moveQue: MoveInfo[];
 };
 
-export class MoveInfo {
+export type MoveInfo = {
 	color: Logic.Color;
 	from: Logic.Pos;
 	to: Logic.Pos;
 }
 
-export class State {
+export type GameState = {
 	board: BoardState;
 	hist: BoardState[];
+	turnLog: Table[];
+}
+
+export type State  = {
+	game: GameState;
 	drawerOpen: boolean;
 }
 
@@ -74,14 +79,17 @@ function initializeState (board: Logic.Board) {
 			moved: false
 		}))));
 	return ({
-		board: {
-			tbl: new Table(table),
-			state: GameState.Wait,
-			turn: Logic.Color.Red,
-			clearQue: new Array<Logic.Pos>(0),
-			moveQue: new Array<MoveInfo>(0)
+		game: {
+			board: {
+				tbl: new Table(table),
+				state: ScreenState.Wait,
+				turn: Logic.Color.Red,
+				clearQue: new Array<Logic.Pos>(0),
+				moveQue: new Array<MoveInfo>(0)
+			},
+			hist: new Array<BoardState>(0),
+			turnLog: new Array<Table>(0)
 		},
-		hist: new Array<BoardState>(0),
 		drawerOpen: false
 	});
 }
