@@ -1,27 +1,28 @@
 import * as Redux from 'redux';
 import * as Store from '../store';
 import * as Logic from '../logic/igokabaddi';
+import * as Actions from '../actions';
 
 export interface ClickSquareAction extends Redux.Action {
-	type: Store.ActionNames.CLICK_SQUARE;
+	type: Actions.Names.CLICK_SQUARE;
 	payload: {
 		pos : Logic.Pos;
 	};
 }
 
 export interface ClickEndTurnAction extends Redux.Action {
-	type: Store.ActionNames.CLICK_END_TURN;
+	type: Actions.Names.CLICK_END_TURN;
 }
 
 export function clickEndTurn() : ClickEndTurnAction {
 	return {
-		type: Store.ActionNames.CLICK_END_TURN
+		type: Actions.Names.CLICK_END_TURN
 	};
 }
 
 export function clickSquare(pos: Logic.Pos): ClickSquareAction {
 	return {
-		type: Store.ActionNames.CLICK_SQUARE,
+		type: Actions.Names.CLICK_SQUARE,
 		payload: {
 			pos: pos
 		}
@@ -91,10 +92,10 @@ function move(board: Store.BoardState, pos: Logic.Pos) {
 	};
 }
 
-export function reducer(board: Store.BoardState = Store.initialState.board, action: Store.Actions): Store.BoardState {
+export function reducer(board: Store.BoardState = Store.initialState.board, action: Actions.T): Store.BoardState {
 	console.log(board);
 	switch(action.type) {
-	case Store.ActionNames.CLICK_SQUARE:
+	case Actions.Names.CLICK_SQUARE:
 		const pos = action.payload.pos;
 		switch (board.state) {
 		case Store.GameState.Wait:
