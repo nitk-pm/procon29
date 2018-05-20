@@ -33,6 +33,7 @@ export type SquareState = {
 	score:     number;
 	agent:     boolean;
 	suggested: boolean;
+	moved: boolean;
 }
 
 export type BoardState = {
@@ -65,7 +66,8 @@ function initializeState (board: Logic.Board) {
 			color: square.color,
 			score: square.score,
 			agent: isXAgent(board.red, x, y) || isXAgent(board.blue, x, y),
-			suggested: false
+			suggested: false,
+			moved: false
 		}))));
 	return ({
 		board: {
