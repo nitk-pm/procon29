@@ -51,7 +51,6 @@ interface BoardProps {
 
 export class Board extends React.Component<BoardProps> {
 	render() {
-		console.log(this.props.board);
 		const width = this.props.board.w;
 		const height = this.props.board.h;
 		const boardStyle = {

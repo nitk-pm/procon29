@@ -20,7 +20,6 @@ export function toggleDrawer(state: boolean) : Store.Actions{
 export function reducer(open: boolean = Store.initialState.drawerOpen, action: Store.Actions) {
 	switch(action.type) {
 	case Store.ActionNames.TOGGLE_DRAWER:
-		console.log(action.payload.open);
 		return action.payload.open;
 	default:
 		return open;

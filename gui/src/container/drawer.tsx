@@ -8,7 +8,6 @@ export class ActionDispatcher {
 	constructor(private dispatch: (action: Store.Actions) => void) {}
 
 	toggleDrawer(state: boolean) {
-		console.log('from drawer');
 		return this.dispatch(DrawerModule.toggleDrawer(state));
 	}
 }
