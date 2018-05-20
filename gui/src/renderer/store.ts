@@ -1,15 +1,6 @@
 import { createStore, combineReducers } from 'redux';
 import * as Logic from './logic/igokabaddi';
 
-/* color:     現在の所有者
- * score:     点数
- * agent:     エージェントが居るかどうか
- * selected:  現在選択中かどうか agentがtrueで無いと意味がない
- * suggested: 移動可能先としてハイライトされているかどうか
- * forbidden: 移動不可能/選択不可能状態にあるか
- * reserved:  仮移動先かどうか
- */
-
 export enum GameState {
 	Suggested,
 	Wait
@@ -23,12 +14,38 @@ export type SquareState = {
 	moved: boolean;
 }
 
+export class Table {
+	private raw: SquareState[][];
+	public readonly w: number;
+	public readonly h: number;
+
+	constructor (raw: SquareState[][]) {
+		this.raw = raw;
+		this.h = raw.length;
+		this.w = raw[0].length;
+	}
+	
+	public getRawTbl(): SquareState[][] {
+		return this.raw;
+	}
+
+	public get (pos: Logic.Pos): SquareState {
+		return this.raw[pos.y][pos.x];
+	}
+
+	public set (pos: Logic.Pos, square: SquareState) {
+		this.raw[pos.y][pos.x] = square;
+	}
+
+	public dup(): Table {
+		return new Table(this.raw);
+	}
+}
+
 export type BoardState = {
-	tbl: SquareState[][];
+	tbl: Table;
 	state: GameState;
 	turn: Logic.Color;
-	w: number;
-	h: number;
 	clearQue: Logic.Pos[];
 	moveQue: MoveInfo[];
 };
@@ -58,9 +75,7 @@ function initializeState (board: Logic.Board) {
 		}))));
 	return ({
 		board: {
-			tbl: table,
-			w: board.width,
-			h: board.height,
+			tbl: new Table(table),
 			state: GameState.Wait,
 			turn: Logic.Color.Red,
 			clearQue: new Array<Logic.Pos>(0),

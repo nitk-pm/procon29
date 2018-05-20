@@ -29,29 +29,30 @@ export function clickSquare(pos: Logic.Pos): ClickSquareAction {
 	};
 }
 
-function mapTbl(tbl_orig: Store.SquareState[][], f: ((square: Store.SquareState, x: number, y: number) => Store.SquareState)) {
-	const tbl = tbl_orig.slice(0, tbl_orig.length);
-	for (var y = 0; y < tbl.length; ++y) {
-		for (var x = 0; x < tbl[y].length; ++x) {
-			tbl[y][x] = f(tbl[y][x], x, y);
+function mapTbl(tbl_orig: Store.Table, f: ((square: Store.SquareState, x: number, y: number) => Store.SquareState)) {
+	const tbl = tbl_orig.dup();
+	for (var y = 0; y < tbl.h; ++y) {
+		for (var x = 0; x < tbl.w; ++x) {
+			const pos = new Logic.Pos(x,y);
+			tbl.set(pos, f(tbl.get(pos), x, y));
 		}
 	}
 	return tbl;
 }
 
-function isValid(x: number, y: number, board: Store.BoardState) {
-	return x >= 0 && x < board.w && y >= 0 && y < board.h;
+function isValid(x: number, y: number, tbl: Store.Table) {
+	return x >= 0 && x < tbl.w && y >= 0 && y < tbl.h;
 }
 
 //サジェストの作成
 function suggest(board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
-	if (!board.tbl[pos.y][pos.x].agent || board.tbl[pos.y][pos.x].moved || board.tbl[pos.y][pos.x].color != board.turn) return board;
-	const tbl = board.tbl.slice(0, board.w);
-	tbl[pos.y][pos.x].suggested = true;
+	if (!board.tbl.get(pos).agent || board.tbl.get(pos).moved || board.tbl.get(pos).color != board.turn) return board;
+	const tbl = board.tbl.dup();
+	tbl.get(pos).suggested = true;
 	for (var dx=-1; dx<=1; ++dx) {
 		for (var dy=-1; dy<=1; ++dy) {
-			if (isValid(pos.x+dx, pos.y+dy, board) && !tbl[pos.y+dy][pos.x+dx].agent) {
-				tbl[pos.y+dy][pos.x+dx].suggested = true;
+			if (isValid(pos.x+dx, pos.y+dy, board.tbl) && !tbl.get(new Logic.Pos(pos.x+dx, pos.y+dy)).agent) {
+				tbl.get(new Logic.Pos(pos.x+dx, pos.y+dy)).suggested = true;
 			}
 		}
 	}
@@ -62,14 +63,14 @@ function suggest(board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
 	};
 }
 
-function clearSuggest(tbl: Store.SquareState[][]) {
+function clearSuggest(tbl: Store.Table) {
 	return mapTbl(tbl, (square, x, y) => ({...square, suggested: false}));
 }
 
 //サジェストフラグのクリア、選択されたAgentの移動、塗りつぶし
 //クリック箇所がサジェストされた範囲ならそこにAgentを移動、範囲外ならサジェストのクリア
 function move(board: Store.BoardState, pos: Logic.Pos) {
-	if (board.tbl[pos.y][pos.x].agent || !board.tbl[pos.y][pos.x].suggested) return {...board, tbl: clearSuggest(board.tbl)};
+	if (board.tbl.get(pos).agent || !board.tbl.get(pos).suggested) return {...board, tbl: clearSuggest(board.tbl)};
 	var to = pos;
 	var from: Logic.Pos;
 	var color = board.turn;
