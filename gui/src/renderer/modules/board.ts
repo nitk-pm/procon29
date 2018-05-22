@@ -110,6 +110,17 @@ export function reducer(game: Store.GameState = Store.initialState.game, action:
 			}
 		}
 		return game;
+	case Actions.Names.CLICK_END_TURN:
+		if (game.board.turn == Logic.Color.Red) {
+			return {
+				...game
+			}
+		}
+		else {
+			return {
+				...game
+			}
+		}
 	default:
 		return game;
 	}

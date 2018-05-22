@@ -8,4 +8,4 @@ export enum Names {
 	TOGGLE_DRAWER = 'IGOKABADDI_TOGGLE_DRAWER'
 }
 
-export type T = BoardModule.ClickSquareAction | DrawerModule.ToggleDrawerAction
+export type T = BoardModule.ClickSquareAction | DrawerModule.ToggleDrawerAction | BoardModule.ClickEndTurnAction

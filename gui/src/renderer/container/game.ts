@@ -5,8 +5,14 @@ import * as Store from '../store';
 import * as GameComponent from '../components/game';
 import * as Actions from '../actions';
 
+import * as BoardModule from '../modules/board';
+
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
+
+	endTurn() {
+		this.dispatch(BoardModule.clickEndTurn());
+	}
 }
 
 export default ReactRedux.connect(

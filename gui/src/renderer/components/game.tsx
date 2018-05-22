@@ -34,8 +34,8 @@ export const Game = withStyles(styles)<GameProps>(
 				<div className='info-container'>
 				</div>
 				<div className='fab'>
-					<Button variant='fab' color='primary' aria-label='done'>
-						<DoneIcon />
+					<Button variant='fab' color='primary' aria-label='done' onClick={() => props.actions.endTurn()}>
+ 						<DoneIcon />
 					</Button>
 				</div>
 			</div>
