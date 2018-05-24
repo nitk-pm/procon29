@@ -15,16 +15,21 @@ export type SquareState = {
 }
 
 export class Table {
-	private raw: SquareState[][];
+	readonly raw: SquareState[][];
 	public readonly w: number;
 	public readonly h: number;
 
 	constructor (raw: SquareState[][]) {
-		this.raw = raw;
+		this.raw = raw.slice(0, raw.length);
 		this.h = raw.length;
 		this.w = raw[0].length;
 	}
-	
+
+	public dup() {
+		let tbl = this.raw.map(l => l.map(s => s));
+		return new Table(tbl);
+	}
+
 	public getRawTbl(): SquareState[][] {
 		return this.raw;
 	}
