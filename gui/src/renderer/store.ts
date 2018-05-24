@@ -41,10 +41,6 @@ export class Table {
 	public set (pos: Logic.Pos, square: SquareState) {
 		this.raw[pos.y][pos.x] = square;
 	}
-
-	public dup(): Table {
-		return new Table(this.raw);
-	}
 }
 
 export type BoardState = {
