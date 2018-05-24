@@ -26,7 +26,7 @@ export class Table {
 	}
 
 	public dup() {
-		let tbl = this.raw.map(l => l.map(s => s));
+		let tbl = this.raw.map(l => l.map(s => ({...s,})));
 		return new Table(tbl);
 	}
 
