@@ -89,7 +89,7 @@ function initializeState (board: Logic.Board) {
 				moveQue: new Array<MoveInfo>(0)
 			},
 			hist: new Array<BoardState>(0),
-			turnLog: new Array<Table>(0)
+			turnLog: [new Table(table)]
 		},
 		drawerOpen: false
 	});
