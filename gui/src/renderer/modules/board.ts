@@ -45,13 +45,12 @@ function isValid(x: number, y: number, tbl: Store.Table) {
 }
 
 //サジェストの作成
-function suggest(board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
+function suggest(game: Store.GameState, board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
 	if (!board.tbl.get(pos).agent || board.tbl.get(pos).moved || board.tbl.get(pos).color != board.turn) return board;
 	const tbl = board.tbl.dup();
-	tbl.get(pos).suggested = true;
 	for (var dx=-1; dx<=1; ++dx) {
 		for (var dy=-1; dy<=1; ++dy) {
-			if (isValid(pos.x+dx, pos.y+dy, board.tbl) && !tbl.get(new Logic.Pos(pos.x+dx, pos.y+dy)).agent) {
+			if (isValid(pos.x+dx, pos.y+dy, board.tbl)) {
 				tbl.get(new Logic.Pos(pos.x+dx, pos.y+dy)).suggested = true;
 			}
 		}
@@ -61,6 +60,10 @@ function suggest(board: Store.BoardState, pos: Logic.Pos):Store.BoardState {
 		tbl: tbl,
 		state: Store.ScreenState.Suggested
 	};
+}
+
+function clearMovedFlag(tbl: Store.Table) {
+	return mapTbl(tbl, (square, x, y) => ({...square, moved: false}));
 }
 
 function clearSuggest(tbl: Store.Table) {
@@ -86,11 +89,26 @@ function move(board: Store.BoardState, pos: Logic.Pos) {
 			return {...square, suggested: false};
 		}
 	});
+	const info = { from, to, color};
 	return {
 		...board, 
 		tbl: tbl,
+		moveQue: [...board.moveQue, info],
 		state: Store.ScreenState.Wait
 	};
+}
+
+function applyQue(tbl_orig: Store.Table, moveQue: Array<Store.MoveInfo>, clearQue: Array<Logic.Pos>) {
+	const tbl = tbl_orig.dup();
+	for (var i = 0; i < moveQue.length; ++i) {
+		tbl.set(moveQue[i].from, {...tbl.get(moveQue[i].from), agent: false});
+		tbl.set(moveQue[i].to, {...tbl.get(moveQue[i].to), agent: true});
+		tbl.set(moveQue[i].to, {...tbl.get(moveQue[i].to), color: moveQue[i].color});
+	}
+	for (var i = 0; i < clearQue.length; ++i) {
+		tbl.set(clearQue[i], {...tbl.get(clearQue[i]), color: Logic.Color.Neut});
+	}
+	return tbl;
 }
 
 export function reducer(game: Store.GameState = Store.initialState.game, action: Actions.T): Store.GameState {
@@ -99,9 +117,10 @@ export function reducer(game: Store.GameState = Store.initialState.game, action:
 		const pos = action.payload.pos;
 		switch (game.board.state) {
 		case Store.ScreenState.Wait:
+			const board = suggest(game, game.board, pos);
 			return {
 				...game,
-				board: suggest(game.board, pos)
+				board: board
 			}
 		case Store.ScreenState.Suggested:
 			return {
@@ -112,13 +131,31 @@ export function reducer(game: Store.GameState = Store.initialState.game, action:
 		return game;
 	case Actions.Names.CLICK_END_TURN:
 		if (game.board.turn == Logic.Color.Red) {
+			//turnLogから前回のターンの状態を引っ張り出し、赤のエージェントを動かす前の状態にtblを戻す。
+			//turn, stateを初期化する。
+			const board: Store.BoardState = {
+				...game.board,
+				tbl: game.turnLog[game.turnLog.length-1],
+				turn: Logic.Color.Blue,
+				state: Store.ScreenState.Wait
+			};
 			return {
-				...game
+				...game,
+				board: board
 			}
 		}
 		else {
+			const board: Store.BoardState = {
+				tbl: applyQue(game.board.tbl, game.board.moveQue, game.board.clearQue),
+				turn: Logic.Color.Red,
+				state: Store.ScreenState.Wait,
+				moveQue: new Array<Store.MoveInfo>(0),
+				clearQue: new Array<Logic.Pos>(0)
+			}
 			return {
-				...game
+				...game,
+				turnLog: [...game.turnLog, clearMovedFlag(board.tbl)],
+				board: board
 			}
 		}
 	default:
