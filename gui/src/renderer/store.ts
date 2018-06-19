@@ -111,6 +111,7 @@ function loadBoard(json: any): Table {
 			};
 		}
 	}
+	console.log(json);
 	for (var i = 0; i < 2; ++i) {
 		const x = json.blue[i].x;
 		const y = json.blue[i].y;
@@ -119,7 +120,7 @@ function loadBoard(json: any): Table {
 	for (var i = 0; i < 2; ++i) {
 		const x = json.red[i].x;
 		const y = json.red[i].y;
-		this.red[i].state = SquareState.Wait;
+		table[y][x].state = SquareState.Wait;
 	}
 	return new Table(table, height, width);
 }
