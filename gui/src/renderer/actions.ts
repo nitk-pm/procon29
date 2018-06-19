@@ -1,5 +1,4 @@
-import * as BoardModule from './modules/board';
-import * as DrawerModule from './modules/drawer';
+import * as Redux from 'redux';
 
 export enum Names {
 	CLICK_END_TURN = 'IGOKABADDI_CLICK_END_TURN',
@@ -8,4 +7,4 @@ export enum Names {
 	TOGGLE_DRAWER = 'IGOKABADDI_TOGGLE_DRAWER'
 }
 
-export type T = BoardModule.ClickSquareAction | DrawerModule.ToggleDrawerAction | BoardModule.ClickEndTurnAction
+export type T = Redux.Action;

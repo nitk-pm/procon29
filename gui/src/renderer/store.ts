@@ -1,98 +1,138 @@
 import { createStore, combineReducers } from 'redux';
-import * as Logic from './logic/igokabaddi';
 
-export enum ScreenState {
-	Suggested,
-	Wait
+export type Pos = {
+	x: number,
+	y: number
 }
 
-export type SquareState = {
-	color:     Logic.Color;
-	score:     number;
-	agent:     boolean;
-	suggested: boolean;
-	moved: boolean;
+export enum SquareType {
+	Red,
+	Blue,
+	Neut
+}
+
+export enum SquareState {
+	//空(サジェスト)
+	Suggested,
+	//エージェント(移動後)
+	Moved,
+	//エージェント(サジェスト元)
+	Ready,
+	//エージェント(移動前)
+	Wait,
+	//誰もいない
+	Empty
+}
+
+export type Square = {
+	type: SquareType,
+	state: SquareState,
+	score: number
 }
 
 export class Table {
-	readonly raw: SquareState[][];
+	public readonly tbl: Square[][];
 	public readonly w: number;
 	public readonly h: number;
 
-	constructor (raw: SquareState[][]) {
-		this.raw = raw.slice(0, raw.length);
-		this.h = raw.length;
-		this.w = raw[0].length;
+	constructor (raw: Square[][], h: number, w: number) {
+		this.tbl = raw.map(l => l.map(s => ({...s,})));
+		this.h = h;
+		this.w = w;
 	}
 
 	public dup() {
-		let tbl = this.raw.map(l => l.map(s => ({...s,})));
-		return new Table(tbl);
+		let tbl = this.tbl.map(l => l.map(s => ({...s,})));
+		return new Table(tbl, this.h, this.w);
 	}
 
-	public getRawTbl(): SquareState[][] {
-		return this.raw;
+	public get (pos: Pos): Square {
+		return this.tbl[pos.y][pos.x];
 	}
 
-	public get (pos: Logic.Pos): SquareState {
-		return this.raw[pos.y][pos.x];
-	}
-
-	public set (pos: Logic.Pos, square: SquareState) {
-		this.raw[pos.y][pos.x] = square;
+	public set (pos: Pos, square: Square) {
+		this.tbl[pos.y][pos.x] = square;
 	}
 }
 
-export type BoardState = {
-	tbl: Table;
-	state: ScreenState;
-	turn: Logic.Color;
-	clearQue: Logic.Pos[];
-	moveQue: MoveInfo[];
-};
-
-export type MoveInfo = {
-	color: Logic.Color;
-	from: Logic.Pos;
-	to: Logic.Pos;
+export enum Controller {
+	Human,
+	//今流行りのビッグデータでIoTのやつです
+	Ai
 }
 
-export type GameState = {
-	board: BoardState;
-	hist: BoardState[];
-	turnLog: Table[];
+export type Config = {
+	red: Controller,
+	blue: Controller
 }
 
-export type State  = {
-	game: GameState;
+export enum InputState {
+	Ready,
+	Suggested
+}
+
+export type State = {
+	//設定
+	config: Config;
+	//赤、青がそれぞれ手を確定させると追加される。基本的に変更は出来ない。
+	log: Table[];
+	//Undo用。人間が操作した場合のみ残し、手を確定させる度に消去する。
+	hist: Table[];
+	//人間が入力中のみ有効
+	inputState: InputState;
+	//drawerの状況
 	drawerOpen: boolean;
 }
 
-function initializeState (board: Logic.Board) {
-	const isXAgent = (positions: Logic.Pos[], x:number, y:number) => (
-		positions.map(pos => pos.eq(new Logic.Pos(x,y))).reduce((a,b) => a || b));
-	let table = board.table.map((line, y) => (
-		line.map((square, x) => ({
-			color: square.color,
-			score: square.score,
-			agent: isXAgent(board.red, x, y) || isXAgent(board.blue, x, y),
-			suggested: false,
-			moved: false
-		}))));
-	return ({
-		game: {
-			board: {
-				tbl: new Table(table),
-				state: ScreenState.Wait,
-				turn: Logic.Color.Red,
-				clearQue: new Array<Logic.Pos>(0),
-				moveQue: new Array<MoveInfo>(0)
-			},
-			hist: new Array<BoardState>(0),
-			turnLog: [new Table(table)]
-		},
-		drawerOpen: false
-	});
+function loadBoard(json: any): Table {
+	const height = parseInt(json.height);
+	const width  = parseInt(json.width);
+	let table = new Array<Array<Square>>(height);
+	for (var y = 0; y < height; ++y) {
+		table[y] = new Array<Square>(width);
+		for (var x = 0; x < width; ++x) {
+			let score = parseInt(json.table[y][x].score);
+			let squareType;
+			switch (json.table[y][x].color) {
+			case "Red":
+				squareType = SquareType.Red;
+				break;
+			case "Blue":
+				squareType = SquareType.Blue;
+				break;
+			case "Neut":
+				squareType = SquareType.Neut;
+				break;
+			}
+			table[y][x] = {
+				type: squareType,
+				score: score,
+				state: SquareState.Empty
+			};
+		}
+	}
+	for (var i = 0; i < 2; ++i) {
+		const x = json.blue[i].x;
+		const y = json.blue[i].y;
+		table[y][x].state = SquareState.Wait;
+	}
+	for (var i = 0; i < 2; ++i) {
+		const x = json.red[i].x;
+		const y = json.red[i].y;
+		this.red[i].state = SquareState.Wait;
+	}
+	return new Table(table, height, width);
 }
 
-export const initialState: State = initializeState(new Logic.Board(require('./initial_board.json')));
+export const initialBoard = loadBoard(require('./initial_board.json'));
+
+export const initialState: State = {
+	config: {
+		red: Controller.Human,
+		blue: Controller.Human
+	},
+	log: [initialBoard],
+	hist: [initialBoard],
+	inputState: InputState.Ready,
+	drawerOpen: true
+};

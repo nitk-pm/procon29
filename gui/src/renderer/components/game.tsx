@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as Logic from '../logic/igokabaddi';
 import Board from '../container/board'
 import AppBar from '../container/appbar';
 import Drawer from '../container/drawer';
@@ -13,7 +12,7 @@ import { withStyles, WithStyles } from 'material-ui/styles';
 import * as Store from '../store';
 
 export interface GameProps {
-	board: Store.BoardState;
+	board: Store.Table;
 	actions: ActionDispatcher;
 }
 
@@ -34,7 +33,7 @@ export const Game = withStyles(styles)<GameProps>(
 				<div className='info-container'>
 				</div>
 				<div className='fab'>
-					<Button variant='fab' color='primary' aria-label='done' onClick={() => props.actions.endTurn()}>
+					<Button variant='fab' color='primary' aria-label='done'>
  						<DoneIcon />
 					</Button>
 				</div>

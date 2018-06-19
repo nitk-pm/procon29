@@ -41,13 +41,13 @@ export const WindowAppBar = withStyles(styles)<WindowAppBarProps>(
 			<div className={classes.root}>
 				<AppBar position='static'>
 					<Toolbar>
-						<IconButton className={classes.menuButton} color='inherit' aria-label='Menu' onClick={() => props.actions.toggleDrawer(true)}>
+						<IconButton className={classes.menuButton} color='inherit' aria-label='Menu'>
 							<MenuIcon />
 						</IconButton>
 						<Typography variant='title' color='inherit' className={classes.flex}>
 							囲碁カバディ
 						</Typography>
-						<IconButton color='inherit' className={classes.closeButton} onClick={() => props.actions.close()}>
+						<IconButton color='inherit' className={classes.closeButton}>
 							<CloseIcon />
 						</IconButton>
 					</Toolbar>

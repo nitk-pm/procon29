@@ -30,12 +30,12 @@ export class WindowDrawerComp extends React.Component<WindowDrawerProps & WithSt
 	render() {
 		const classes = this.props.classes;
 		return (
-			<Drawer anchor='left' open={this.props.state} onClose={() => this.props.actions.toggleDrawer(false)}>
+			<Drawer anchor='left' open={this.props.state} onClick={() => {}}>
 				<div
 					tabIndex={0}
 					role='button'
-					onClick={() => {this.props.actions.toggleDrawer(false)}}
-					onKeyDown={() => {this.props.actions.toggleDrawer(false)}}>
+					onClick={() => {}}
+					onKeyDown={() => {}}>
 					<div className={classes.list}>
 						<List>
 							<ListItem>
