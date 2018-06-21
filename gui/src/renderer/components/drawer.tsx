@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import FileDownloadIcon from '@material-ui/icons/FileDownload';
 
+
 import { ActionDispatcher } from '../container/drawer';
 
 const styles = {
@@ -30,12 +31,12 @@ export class WindowDrawerComp extends React.Component<WindowDrawerProps & WithSt
 	render() {
 		const classes = this.props.classes;
 		return (
-			<Drawer anchor='left' open={this.props.state} onClick={() => {}}>
+			<Drawer anchor='left' open={this.props.state} onClick={() => this.props.actions.toggleDrawer(false)}>
 				<div
 					tabIndex={0}
 					role='button'
-					onClick={() => {}}
-					onKeyDown={() => {}}>
+					onClick={() => this.props.actions.toggleDrawer(false)}
+					onKeyDown={() => this.props.actions.toggleDrawer(false)}>
 					<div className={classes.list}>
 						<List>
 							<ListItem>
