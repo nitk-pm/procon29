@@ -72,6 +72,7 @@ export enum InputState {
 }
 
 export type State = {
+	board: Table;
 	//設定
 	config: Config;
 	//赤、青がそれぞれ手を確定させると追加される。基本的に変更は出来ない。
@@ -132,8 +133,9 @@ export const initialState: State = {
 		red: Controller.Human,
 		blue: Controller.Human
 	},
-	log: [initialBoard],
-	hist: [initialBoard],
+	log: [],
+	hist: [],
+	board: initialBoard,
 	inputState: InputState.Ready,
 	drawerOpen: true
 };

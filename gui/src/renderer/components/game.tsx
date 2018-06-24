@@ -12,7 +12,6 @@ import { withStyles, WithStyles } from '@material-ui/core/styles';
 import * as Store from '../store';
 
 export interface GameProps {
-	board: Store.Table;
 	actions: ActionDispatcher;
 }
 

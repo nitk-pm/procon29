@@ -23,7 +23,7 @@ export class ActionDispatcher {
 
 export default ReactRedux.connect(
 	(state: Store.State) => ({
-		table: state.hist[state.hist.length-1]
+		table: state.board
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(BoardComponent.Board);

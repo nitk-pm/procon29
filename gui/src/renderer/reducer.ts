@@ -8,6 +8,12 @@ import * as GameModule from './module/game';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
+function boardDummyReducer(
+	state: Store.Table = Store.initialState.board,
+	action: Actions.T) {
+	return state;
+}
+
 function configDummyReducer(
 	state: Store.Config = Store.initialState.config,
 	action: Actions.T) {
@@ -33,6 +39,7 @@ function histDummyReducer(
 }
 
 let combinedReducer = combineReducers({
+	board: boardDummyReducer,
 	drawerOpen: DrawerModule.reducer,
 	config: configDummyReducer,
 	log: logDummyReducer,

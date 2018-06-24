@@ -43,14 +43,11 @@ export function done(): DoneAction {
  * ターン終了時には盤面をlogに追加し、histをクリア
  * 操作を一度行う度にlogに盤面を保存
  */
-
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
-		console.log(action.payload);
 		return state;
 	case ActionNames.DONE:
-		console.log('done');
 		return state;
 	default:
 		return state;
