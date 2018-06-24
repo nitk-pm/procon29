@@ -26,7 +26,13 @@ gulp.task('renderer', () => {
 gulp.task('main', () => {
 	const webpackConfig = require('./webpack-main.config.js');
 	return webpackStream(webpackConfig, webpack)
-		.pipe(gulp.dest('./dist'))
+		.pipe(gulp.dest('./dist'));
+});
+
+gulp.task('server', () => {
+	const webpackConfig = require('./webpack-server.config.js');
+	return webpackStream(webpackConfig, webpack)
+		.pipe(gulp.dest('./server'));
 });
 
 gulp.task('icons', () =>
