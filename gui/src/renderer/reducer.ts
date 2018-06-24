@@ -4,6 +4,7 @@ import * as Store from './store';
 import * as Actions from './actions';
 import * as DrawerModule from './module/drawer';
 import * as AppbarModule from './module/appbar';
+import * as GameModule from './module/game';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
@@ -39,7 +40,7 @@ let combinedReducer = combineReducers({
 	hist: histDummyReducer
 });
 
-let rootReducers = [combinedReducer, AppbarModule.reducer];
+let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
 
 let reducer  = rootReducers.reduce((acc, x) => reduceReducers(x, acc), rootReducer);
 

@@ -27,7 +27,9 @@ export class Square extends React.Component<SquareProps> {
 		case Store.SquareState.Empty: imgTag=null;break;
 		}
 		return (
-		<div className={styleName}>
+		<div className={styleName}
+			onClick={() => this.props.actions.lclick(this.props.pos)}
+			onContextMenu={() => this.props.actions.rclick(this.props.pos)}>
 			<div className="square-iconbox">
 				{imgTag}
 			</div>
