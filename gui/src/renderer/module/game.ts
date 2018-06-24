@@ -3,7 +3,8 @@ import * as Action from '../actions';
 import * as Store from '../store';
 
 enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE'
+	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
+	DONE = 'IGOKABADDI_DONE'
 }
 
 export enum ClickType {
@@ -27,6 +28,16 @@ export function clickSquare(pos: Store.Pos, type: ClickType): ClickSquareAction 
 	};
 }
 
+export type DoneAction = {
+	type: ActionNames.DONE;
+}
+
+export function done(): DoneAction {
+	return {
+		type: ActionNames.DONE,
+	};
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
@@ -37,6 +48,9 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		console.log(action.payload);
+		return state;
+	case ActionNames.DONE:
+		console.log('done');
 		return state;
 	default:
 		return state;

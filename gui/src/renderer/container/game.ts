@@ -4,8 +4,14 @@ import * as Store from '../store';
 import * as GameComponent from '../components/game';
 import * as Actions from '../actions';
 
+import * as GameModule from '../module/game';
+
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
+
+	done () {
+		return this.dispatch(GameModule.done());
+	}
 }
 
 export default ReactRedux.connect(
