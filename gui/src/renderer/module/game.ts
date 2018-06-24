@@ -27,6 +27,12 @@ export function clickSquare(pos: Store.Pos, type: ClickType): ClickSquareAction 
 	};
 }
 
+/*
+ * 手番切替時、cofigを参照して状態遷移
+ * ターン終了時には盤面をlogに追加し、histをクリア
+ * 操作を一度行う度にlogに盤面を保存
+ */
+
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
