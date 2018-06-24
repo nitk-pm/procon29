@@ -71,7 +71,13 @@ export enum InputState {
 	Suggested
 }
 
+export enum Turn {
+	Red,
+	Blue
+}
+
 export type State = {
+	turn: Turn;
 	board: Table;
 	//設定
 	config: Config;
@@ -137,5 +143,6 @@ export const initialState: State = {
 	hist: [],
 	board: initialBoard,
 	inputState: InputState.Ready,
-	drawerOpen: true
+	drawerOpen: true,
+	turn: Turn.Red
 };
