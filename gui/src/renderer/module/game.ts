@@ -4,7 +4,23 @@ import * as Store from '../store';
 
 enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
-	DONE = 'IGOKABADDI_DONE'
+	DONE = 'IGOKABADDI_DONE',
+	CONFIG = 'IGOKABADDI_CONFIG'
+}
+
+export type ConfigAction = {
+	type: ActionNames.CONFIG;
+	payload: {
+		config: Store.Config
+	}
+}
+export function config(config: Store.Config): ConfigAction {
+	return {
+		type: ActionNames.CONFIG,
+		payload: {
+			config
+		}
+	};
 }
 
 export enum ClickType {

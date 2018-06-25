@@ -4,4 +4,5 @@ import * as GameModule from './module/game';
 export type T =
 	AppbarModule.CloseAction
 	| GameModule.ClickSquareAction
-	| GameModule.DoneAction;
+	| GameModule.DoneAction
+	| GameModule.ConfigAction;
