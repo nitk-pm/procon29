@@ -10,7 +10,7 @@ export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	close() {
-		return this.dispatch(AppBarModule.close());
+		return this.dispatch({type: AppBarModule.ActionNames.CLOSE_WINDOW});
 	}
 }
 

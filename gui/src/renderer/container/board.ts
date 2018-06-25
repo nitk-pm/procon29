@@ -13,11 +13,23 @@ export class ActionDispatcher {
 	}
 
 	lclick(pos: Store.Pos) {
-		return this.dispatch(GameModule.clickSquare(pos, GameModule.ClickType.Left));
+		return this.dispatch({
+			type: GameModule.ActionNames.CLICK_SQUARE,
+			payload: {
+				pos,
+				type: GameModule.ClickType.Left
+			}
+		});
 	}
 
 	rclick(pos: Store.Pos) {
-		return this.dispatch(GameModule.clickSquare(pos, GameModule.ClickType.Right));
+		return this.dispatch({
+			type: GameModule.ActionNames.CLICK_SQUARE,
+			payload: {
+				pos,
+				type: GameModule.ClickType.Right
+			}
+		});
 	}
 }
 

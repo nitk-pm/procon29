@@ -10,7 +10,7 @@ export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	done () {
-		return this.dispatch(GameModule.done());
+		return this.dispatch({type: GameModule.ActionNames.DONE});
 	}
 }
 

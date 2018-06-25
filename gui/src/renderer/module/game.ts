@@ -2,7 +2,7 @@ import * as Redux from 'redux';
 import * as Action from '../actions';
 import * as Store from '../store';
 
-enum ActionNames {
+export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
 	CONFIG = 'IGOKABADDI_CONFIG'
@@ -13,14 +13,6 @@ export type ConfigAction = {
 	payload: {
 		config: Store.Config
 	}
-}
-export function config(config: Store.Config): ConfigAction {
-	return {
-		type: ActionNames.CONFIG,
-		payload: {
-			config
-		}
-	};
 }
 
 export enum ClickType {
@@ -35,24 +27,10 @@ export type ClickSquareAction = {
 	}
 }
 
-export function clickSquare(pos: Store.Pos, type: ClickType): ClickSquareAction {
-	return {
-		type: ActionNames.CLICK_SQUARE,
-		payload: {
-			pos, type
-		}
-	};
-}
-
 export type DoneAction = {
 	type: ActionNames.DONE;
 }
 
-export function done(): DoneAction {
-	return {
-		type: ActionNames.DONE,
-	};
-}
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア

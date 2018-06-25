@@ -4,18 +4,12 @@ import * as Store from '../store';
 
 import { ipcRenderer } from 'electron';
 
-enum ActionNames {
+export enum ActionNames {
 	CLOSE_WINDOW = 'IGOKABADDI_CLOSE_WINDOW'
 }
 
 export type CloseAction = {
 	type: ActionNames.CLOSE_WINDOW;
-}
-
-export function close(): CloseAction {
-	return {
-		type: ActionNames.CLOSE_WINDOW
-	};
 }
 
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
