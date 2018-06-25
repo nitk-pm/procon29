@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from 'redux';
 import * as Common from '../common';
+import { Socket } from 'socket.io-client';
 
 export type Pos = {
 	x: number,
@@ -40,6 +41,7 @@ export type State = {
 	hist: Array<Array<Common.Operation>>;
 	inputState: InputState;
 	server: Server;
+	socket: any;
 }
 
 
@@ -51,5 +53,6 @@ export const initialState: State = {
 	hist: [],
 	board: initialBoard,
 	inputState: InputState.Ready,
-	server: {ip: '', port: ''}
+	server: {ip: '', port: ''},
+	socket: null
 };

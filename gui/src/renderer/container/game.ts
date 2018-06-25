@@ -12,6 +12,10 @@ export class ActionDispatcher {
 	done () {
 		return this.dispatch({type: GameModule.ActionNames.DONE});
 	}
+
+	applyConfig(config: Store.Config) {
+		
+	}
 }
 
 export default ReactRedux.connect(
