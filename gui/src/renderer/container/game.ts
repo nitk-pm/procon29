@@ -16,7 +16,9 @@ export class ActionDispatcher {
 
 export default ReactRedux.connect(
 	(state: Store.State) => ({
-		turn: state.turn
+		ip: state.server.ip,
+		port: state.server.port,
+		inDialog: state.inDialog,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

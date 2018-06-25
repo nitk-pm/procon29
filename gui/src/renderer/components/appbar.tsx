@@ -44,8 +44,7 @@ export const WindowAppBar = withStyles(styles)<WindowAppBarProps>(
 					<Toolbar>
 						<IconButton className={classes.menuButton}
 							color='inherit'
-							aria-label='Menu'
-							onClick={() => props.actions.toggleDrawer(true)}>
+							aria-label='Menu'>
 							<MenuIcon />
 						</IconButton>
 						<Typography variant='title' color='inherit' className={classes.flex}>

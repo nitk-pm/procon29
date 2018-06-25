@@ -2,56 +2,54 @@ import { createStore, combineReducers } from 'redux';
 import reduceReducers from 'reduce-reducers';
 import * as Store from './store';
 import * as Actions from './actions';
-import * as DrawerModule from './module/drawer';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
-function turnDummyReducer(
-	state: Store.Turn = Store.initialState.turn,
-	actions: Actions.T) {
-	return state;
-}
-
-function boardDummyReducer(
-	state: Store.Table = Store.initialState.board,
+function inDialogDummyReducer(
+	state = Store.initialState.inDialog,
 	action: Actions.T) {
 	return state;
 }
 
 function configDummyReducer(
-	state: Store.Config = Store.initialState.config,
-	action: Actions.T) {
-	return state;
-}
-
-function logDummyReducer(
-	state: Store.Table[] = [],
+	state = Store.initialState.config,
 	action: Actions.T) {
 	return state;
 }
 
 function inputStateDummyReducer(
-	state: Store.InputState = Store.initialState.inputState,
+	state = Store.initialState.inputState,
 	action: Actions.T) {
 	return state;
 }
 
 function histDummyReducer(
-	state: Store.Table[] = [],
+	state = Store.initialState.hist,
+	action: Actions.T) {
+	return state;
+}
+
+function serverDummyReducer(
+	state = Store.initialState.server,
+	action: Actions.T) {
+	return state;
+}
+
+function boardDummyReducer(
+	state = Store.initialState.board,
 	action: Actions.T) {
 	return state;
 }
 
 let combinedReducer = combineReducers({
-	turn: turnDummyReducer,
-	board: boardDummyReducer,
-	drawerOpen: DrawerModule.reducer,
+	inDialog: inDialogDummyReducer,
 	config: configDummyReducer,
-	log: logDummyReducer,
+	board: boardDummyReducer,
+	hist: histDummyReducer,
 	inputState: inputStateDummyReducer,
-	hist: histDummyReducer
+	server: serverDummyReducer,
 });
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
