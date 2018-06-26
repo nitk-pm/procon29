@@ -5,9 +5,15 @@
 		"noImplicitAny": true,
 		"module":"commonjs",
 		"target":"es6",
-		"jsx":"react"
+		"jsx":"react",
+		"esModuleInterop": true
 	},
+	"typeRoots": [
+		"node_modules/@types",
+		"typings"
+	],
 	"include":[
-		"./src"
+		"./src",
+		"typings"
 	]
 }
