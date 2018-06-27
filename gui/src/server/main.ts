@@ -27,30 +27,34 @@ export class Server {
 		const io = IO.listen(8080);
 		io.sockets.on('connection', (socket) => {
 			let id = socket.id;
-			console.log('connected');
+			console.log('connected: ', id);
 
 			socket.on('disconnect', () => {
-				console.log('disconnect');
+				console.log('disconnect', id);
 			});
 
 			socket.on('post-operation', (operation: Common.Operation) => {
-				console.log('operation');
+				console.log('operation from ', id);
 				this.operations.push(operation);
 				if (this.operations.length >= 2) {
 					this.updateBoard();
+					console.log('broadcast board');
 					io.emit('board', this.tbl);
 				}
 				else {
+					console.log('distribute operation');
 					this.opSubscribers
 						.forEach((id: string) => {io.to(id).emit('operation-distribute', operation);});
 				}
 			});
 
 			socket.on('subscribe-operation', ()=> {
+				console.log('subscribe-operation id: ', id);
 				this.opSubscribers.add(id);
 			});
 
 			socket.on('request-board', () => {
+				console.log('request board from ', id);
 				io.to(id).emit('board', this.tbl);
 			});
 		});
