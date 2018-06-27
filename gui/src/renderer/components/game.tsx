@@ -33,11 +33,13 @@ export const Game = withStyles(styles)<GameProps>(
 					<TextField
 						id='ip'
 						label='ip'
-						value={props.ip} />
+						value={props.ip}
+				 		onChange={(e) => props.actions.changeIp(e.target.value)}/>
 					<TextField
 						id='port'
 						label='port'
-						value={props.port} />
+						value={props.port}
+				 		onChange={(e) => props.actions.changePort(e.target.value)}/>
 					<Button variant='contained' color='primary'>
 						Player
 					</Button>

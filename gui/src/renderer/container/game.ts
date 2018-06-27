@@ -5,6 +5,7 @@ import * as GameComponent from '../components/game';
 import * as Actions from '../actions';
 
 import * as GameModule from '../module/game';
+import * as IpModule from '../module/ip';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
@@ -15,6 +16,14 @@ export class ActionDispatcher {
 
 	applyConfig(config: Store.Config) {
 		
+	}
+
+	changeIp(ip: string) {
+		this.dispatch({type: IpModule.ActionNames.CHANGE_IP_ADDRESS, payload: {ip}});
+	}
+
+	changePort(port: string) {
+		this.dispatch({type: IpModule.ActionNames.CHANGE_PORT, payload: {port}});
 	}
 }
 

@@ -4,6 +4,7 @@ import * as Store from './store';
 import * as Actions from './actions';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
+import * as IpModule from './module/ip';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
@@ -55,8 +56,8 @@ let combinedReducer = combineReducers({
 	board: boardDummyReducer,
 	hist: histDummyReducer,
 	inputState: inputStateDummyReducer,
-	server: serverDummyReducer,
-	socket: socketDummyReducer
+	server: IpModule.reducer,
+	socket: socketDummyReducer,
 });
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
