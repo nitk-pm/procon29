@@ -1,5 +1,6 @@
 import * as IO from 'socket.io';
 import * as Common from '../common';
+import * as fs from 'fs';
 
 export class Server {
 	public static readonly PORT: number = 8080;
@@ -7,6 +8,10 @@ export class Server {
 	private tbl: Common.Table;
 	private operations: Common.Operation[];
 	private opSubscribers: Set<string>;
+
+	constructor (json: any) {
+		this.tbl = Common.loadBoard(json);
+	}
 
 	private updateBoard() {
 	}
@@ -61,5 +66,11 @@ export class Server {
 	}
 }
 
-const server = new Server();
-server.listen();
+if (process.argv.length > 2) {
+	let json = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
+	const server = new Server(json);
+	server.listen();
+}
+else {
+	console.log('usage: node </path/to/server.js> </path/to/<board>.json>')
+}
