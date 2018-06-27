@@ -8,7 +8,7 @@ export class Server {
 	private operations: Common.Operation[];
 	private opSubscribers: Set<string>;
 
-	updateBoard() {
+	private updateBoard() {
 	}
 
 	/*
@@ -23,6 +23,7 @@ export class Server {
 	 *   現在の盤面の配信要求
 	 */
 	listen() {
+		console.log('server: start');
 		const io = IO.listen(8080);
 		io.sockets.on('connection', (socket) => {
 			let id = socket.id;
@@ -55,3 +56,6 @@ export class Server {
 		});
 	}
 }
+
+const server = new Server();
+server.listen();
