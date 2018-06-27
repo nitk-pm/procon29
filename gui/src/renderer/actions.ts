@@ -8,4 +8,5 @@ export type T =
 	| GameModule.DoneAction
 	| GameModule.ConfigAction
 	| ServerModule.ChangeIpAddressAction
-	| ServerModule.ChangePortAction;
+	| ServerModule.ChangePortAction
+	| ServerModule.UpdateSocketAction;
