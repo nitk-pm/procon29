@@ -8,12 +8,6 @@ import * as ServerModule from './module/server';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
-function inDialogDummyReducer(
-	state = Store.initialState.inDialog,
-	action: Actions.T) {
-	return state;
-}
-
 function configDummyReducer(
 	state = Store.initialState.config,
 	action: Actions.T) {
@@ -45,7 +39,6 @@ function boardDummyReducer(
 }
 
 let combinedReducer = combineReducers({
-	inDialog: inDialogDummyReducer,
 	config: configDummyReducer,
 	board: boardDummyReducer,
 	hist: histDummyReducer,

@@ -31,7 +31,7 @@ export default ReactRedux.connect(
 	(state: Store.State) => ({
 		ip: state.server.ip,
 		port: state.server.port,
-		inDialog: state.inDialog,
+		inDialog: state.server.socket == null,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);
