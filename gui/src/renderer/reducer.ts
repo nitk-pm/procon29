@@ -43,6 +43,12 @@ function boardDummyReducer(
 	return state;
 }
 
+function socketDummyReducer(
+	state = Store.initialState.socket,
+	action: Actions.T) {
+	return state;
+}
+
 let combinedReducer = combineReducers({
 	inDialog: inDialogDummyReducer,
 	config: configDummyReducer,
@@ -50,6 +56,7 @@ let combinedReducer = combineReducers({
 	hist: histDummyReducer,
 	inputState: inputStateDummyReducer,
 	server: serverDummyReducer,
+	socket: socketDummyReducer
 });
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
