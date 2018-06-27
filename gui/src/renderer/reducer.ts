@@ -4,7 +4,7 @@ import * as Store from './store';
 import * as Actions from './actions';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
-import * as IpModule from './module/ip';
+import * as ServerModule from './module/server';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
@@ -44,20 +44,13 @@ function boardDummyReducer(
 	return state;
 }
 
-function socketDummyReducer(
-	state = Store.initialState.socket,
-	action: Actions.T) {
-	return state;
-}
-
 let combinedReducer = combineReducers({
 	inDialog: inDialogDummyReducer,
 	config: configDummyReducer,
 	board: boardDummyReducer,
 	hist: histDummyReducer,
 	inputState: inputStateDummyReducer,
-	server: IpModule.reducer,
-	socket: socketDummyReducer,
+	server: ServerModule.reducer,
 });
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];

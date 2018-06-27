@@ -1,11 +1,11 @@
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
-import * as IpModule from './module/ip';
+import * as ServerModule from './module/server';
 
 export type T =
 	AppbarModule.CloseAction
 	| GameModule.ClickSquareAction
 	| GameModule.DoneAction
 	| GameModule.ConfigAction
-	| IpModule.ChangeIpAddressAction
-	| IpModule.ChangePortAction;
+	| ServerModule.ChangeIpAddressAction
+	| ServerModule.ChangePortAction;

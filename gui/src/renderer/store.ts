@@ -30,7 +30,8 @@ export enum Config {
 
 export type Server = {
 	ip: string,
-	port: string
+	port: string,
+	socket: IO.Socket
 }
 
 export type State = {
@@ -41,7 +42,6 @@ export type State = {
 	hist: Array<Array<Common.Operation>>;
 	inputState: InputState;
 	server: Server;
-	socket: IO.Socket;
 }
 
 
@@ -53,6 +53,5 @@ export const initialState: State = {
 	hist: [],
 	board: initialBoard,
 	inputState: InputState.Ready,
-	server: {ip: '', port: ''},
-	socket: null
+	server: {ip: '', port: '', socket: null},
 };
