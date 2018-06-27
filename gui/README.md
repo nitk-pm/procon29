@@ -1,5 +1,14 @@
 # Igokabaddi GUI
 囲碁カバディの見える化
+# Usage
+## server start
+```
+node ./server/server.js <board>.json
+```
+## UI start
+```
+electron .
+```
 # 3rd Party
 ## Font Awesome
 ### content
