@@ -14,9 +14,8 @@ type ConnectAction = {
 
 export function* connectServer(action: Actions.T) {
 	const server = yield Effects.select(Store.getServerInfo);
-	const socket = yield io(server.ip + ':' + server.port);
+	const socket = yield io('http://' + server.ip + ':' + server.port);
 	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload: {socket}});
-
 }
 
 export function* connectSaga() {
