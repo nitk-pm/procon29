@@ -1,6 +1,7 @@
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
+import * as ServerSaga from './saga/server';
 
 export type T =
 	AppbarModule.CloseAction
@@ -9,4 +10,5 @@ export type T =
 	| GameModule.ConfigAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
-	| ServerModule.UpdateSocketAction;
+	| ServerModule.UpdateSocketAction
+	| ServerSaga.ConnectAction;

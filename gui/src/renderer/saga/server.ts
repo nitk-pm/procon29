@@ -4,11 +4,11 @@ import * as Store from '../store';
 import * as ServerModule from '../module/server';
 import io from 'socket.io-client';
 
-enum ActionNames {
+export enum ActionNames {
 	CONNECT_SOCKET = 'IGOKABADDI_CONNECT_SOCKET'
 }
 
-type ConnectAction = {
+export type ConnectAction = {
 	type: ActionNames.CONNECT_SOCKET;
 }
 

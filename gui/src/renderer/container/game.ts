@@ -6,6 +6,7 @@ import * as Actions from '../actions';
 
 import * as GameModule from '../module/game';
 import * as ServerModule from '../module/server';
+import * as ServerSaga from '../saga/server';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
@@ -24,6 +25,15 @@ export class ActionDispatcher {
 
 	changePort(port: string) {
 		this.dispatch({type: ServerModule.ActionNames.CHANGE_PORT, payload: {port}});
+	}
+
+	connectAsPlayer() {
+		this.dispatch({type: ServerSaga.ActionNames.CONNECT_SOCKET});
+	}
+
+
+	connectAsUser() {
+		this.dispatch({type: ServerSaga.ActionNames.CONNECT_SOCKET});
 	}
 }
 

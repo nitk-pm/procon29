@@ -43,6 +43,7 @@ export function reducer(state: {ip: string; port: string} = Store.initialState.s
 			port: action.payload.port
 		};
 	case ActionNames.UPDATE_SOCKET:
+		console.log(action);
 		return {
 			...state,
 			socket: action.payload.socket

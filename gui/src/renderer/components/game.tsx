@@ -40,10 +40,10 @@ export const Game = withStyles(styles)<GameProps>(
 						label='port'
 						value={props.port}
 				 		onChange={(e) => props.actions.changePort(e.target.value)}/>
-					<Button variant='contained' color='primary'>
+					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer()}>
 						Player
 					</Button>
-					<Button variant='contained' color='secondary'>
+					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser()}>
 						User
 					</Button>
 				</div>);
