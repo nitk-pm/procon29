@@ -1,10 +1,12 @@
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import reduceReducers from 'reduce-reducers';
 import * as Store from './store';
 import * as Actions from './actions';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
+import { connectSaga } from './saga/server';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
@@ -50,4 +52,8 @@ let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
 
 let reducer  = rootReducers.reduce((acc, x) => reduceReducers(x, acc), rootReducer);
 
-export const store = createStore(reducer, Store.initialState);
+let sagaMiddleware = createSagaMiddleware();
+
+export const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+
+sagaMiddleware.run(connectSaga);

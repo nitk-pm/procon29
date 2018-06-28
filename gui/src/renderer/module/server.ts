@@ -26,7 +26,7 @@ export type ChangePortAction = {
 export type UpdateSocketAction = {
 	type: ActionNames.UPDATE_SOCKET;
 	payload: {
-		socket: IO.Socket;
+		socket: any;
 	}
 }
 

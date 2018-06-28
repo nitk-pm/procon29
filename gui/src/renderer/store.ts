@@ -31,7 +31,7 @@ export enum Config {
 export type Server = {
 	ip: string,
 	port: string,
-	socket: IO.Socket
+	socket: any
 }
 
 export type State = {
@@ -53,3 +53,5 @@ export const initialState: State = {
 	inputState: InputState.Ready,
 	server: {ip: '', port: '', socket: null},
 };
+
+export const getServerInfo = (state: State) => state.server;
