@@ -1,0 +1,12 @@
+{
+	"name": "server",
+	"authors": [
+		"Nakano Masaki"
+	],
+	"dependencies": {
+		"vibe-d": "~>0.8.4"
+	},
+	"description": "Igokabaddi Server",
+	"copyright": "Copyright © 2018, Nakano Masaki",
+	"license": "MIT"
+}
