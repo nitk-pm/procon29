@@ -7,8 +7,10 @@ server.dylib
 server.dll
 server.a
 server.lib
+server
 server-test-*
 *.exe
 *.o
 *.obj
 *.lst
+dub.selections.json
