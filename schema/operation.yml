@@ -1,0 +1,33 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: "Board"
+
+definitions:
+  pos:
+    type: "object"
+      required:
+        - "x"
+        - "y"
+      properties:
+        x:
+          type: "integer"
+        y:
+          type: "integer"
+
+type: "array"
+items:
+  type: "object"
+    required:
+      - "color"
+      - "type"
+      - "from"
+    properties:
+      color:
+        type: "string"
+        pattern: "Red|Blue|Neut"
+      type:
+        type: "string"
+        pattern: "Move|Clear"
+      from:
+        $ref: "#/definitions/pos"
+      to:
+        $ref: "#/definitions/pos"

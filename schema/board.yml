@@ -1,0 +1,20 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: "Board"
+
+type: "array"
+items:
+  type: "array"
+  items:
+    type: "object"
+    required:
+      - "score"
+      - "color"
+      - "agent"
+    properties:
+      score:
+        type: "integer"
+      color:
+        type: "string"
+        pattern: "Red|Blue|Neut"
+      agent:
+        type: "boolean"
