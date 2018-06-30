@@ -1,7 +1,6 @@
 import * as Redux from 'redux';
 import * as Action from '../actions';
 import * as Store from '../store';
-import * as IO from 'socket.io-client';
 
 export enum ActionNames {
 	CHANGE_IP_ADDRESS = 'IGOKABADDI_CHANGE_IP_ADDRESS',
@@ -26,7 +25,7 @@ export type ChangePortAction = {
 export type UpdateSocketAction = {
 	type: ActionNames.UPDATE_SOCKET;
 	payload: {
-		socket: any;
+		socket: WebSocket;
 	}
 }
 

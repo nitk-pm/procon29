@@ -1,6 +1,5 @@
 import { createStore, combineReducers } from 'redux';
 import * as Common from '../common';
-import * as IO from 'socket.io-client';
 
 export type Pos = {
 	x: number,
@@ -31,7 +30,7 @@ export enum Config {
 export type Server = {
 	ip: string,
 	port: string,
-	socket: any
+	socket: WebSocket
 }
 
 export type State = {
