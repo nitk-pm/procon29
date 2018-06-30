@@ -29,12 +29,6 @@ gulp.task('main', () => {
 		.pipe(gulp.dest('./dist'));
 });
 
-gulp.task('server', () => {
-	const webpackConfig = require('./webpack-server.config.js');
-	return webpackStream(webpackConfig, webpack)
-		.pipe(gulp.dest('./server'));
-});
-
 gulp.task('icons', () =>
 	gulp
 		.src(['./icons/material-design-icons/*.svg'])
