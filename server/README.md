@@ -1,5 +1,7 @@
 # Igokabaddi Server
+
 # Usage
 ```
-dub run <board>.json
+dub run
 ```
+rootにあるboard.jsonを読み込みます
