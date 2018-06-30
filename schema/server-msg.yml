@@ -1,0 +1,14 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: "Container"
+
+type: "object"
+required:
+  - "type"
+  - "payload"
+properties:
+  type:
+    type: "string"
+    pattern: "distribute-board|distribute-op"
+  payload:
+    description: "distribute-boardの時はboard, distribute-opの時はOperation"
+
