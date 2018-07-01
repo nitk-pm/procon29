@@ -4,6 +4,7 @@ import * as Actions from '../actions';
 import * as Store from '../store';
 import * as ServerModule from '../module/server';
 import * as GameModule from '../module/game';
+import * as Common from '../../common';
 
 export enum ActionNames {
 	CONNECT_SOCKET = 'IGOKABADDI_CONNECT_SOCKET',
@@ -44,7 +45,15 @@ function connect(url: string) {
 // TODO もっとたくさんのActionをなげる!
 function genListenChannel(socket: WebSocket) {
 	return eventChannel(emit => {
-		socket.addEventListener('open', (event: any) => {
+		socket.addEventListener('message', (event: any) => {
+			const msg = JSON.parse(event.data);
+			switch (msg.type) {
+			case 'distribute-board':
+				const board = Common.loadBoard(msg.payload);
+				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
+				break;
+			default:
+			}
 			emit({type: ActionNames.RECEIVE_MSG, payload:{msg: event.data}});
 		});
 		return () => {};
