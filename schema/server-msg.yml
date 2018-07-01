@@ -5,10 +5,15 @@ type: "object"
 required:
   - "type"
   - "payload"
+  - "addressies"
 properties:
   type:
     type: "string"
     pattern: "distribute-board|distribute-op"
   payload:
     description: "distribute-boardの時はboard, distribute-opの時はOperation"
+  addressies:
+    type: "array"
+    items:
+      type: "string"
 
