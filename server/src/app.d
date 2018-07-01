@@ -20,6 +20,11 @@ struct Square {
 
 alias Board = Square[][];
 
+Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
+	// TODO 実装しろ
+	return [];
+}
+
 Board boardOfJson(JSONValue json) {
 	Square[][] tbl;
 	foreach(colJson; json.array) {
@@ -62,7 +67,40 @@ JSONValue jsonOfBoard(Board board) {
 	return JSONValue(boardJson);
 }
 
+struct Pos {
+	int x, y;
+}
+
+enum OpType {
+	Move,
+	Clear
+}
+
+struct Operation {
+	Color color;
+	OpType type;
+	// fromはtype == OpType.Moveのときのみ有効
+	Pos from, to;
+}
+
+Operation[] operationsOfJson(JSONValue json) {
+	//TODO 実装しろ
+	return [];
+}
+
+JSONValue jsonOfOperations(Operation[] operations) {
+	//TODO 実装しろ
+	return JSONValue(0);
+}
+
 Board board;
+// operation購読者のsocketのリスト
+WebSocket[] opSubscribers;
+// 接続してるSokcet
+WebSocket[] sockets;
+
+Operation[] blueOp, redOp;
+bool blueOpPushed, redOpPushed;
 
 shared static this () {
 	auto boardJson = "./board.json".readText.parseJSON;
@@ -77,10 +115,70 @@ shared static this () {
 	listenHTTP(settings, router);
 }
 
-void handleConn(scope WebSocket sock) {
-	while (sock.connected) {
-		auto msg = sock.receiveText();
-		sock.send(msg);
+// red, blue共にoperationが揃ったら盤面を更新して配信
+// 片方だけしか来て無ければOperationの購読者だけに配信
+void handlePush(JSONValue msg) {
+	switch (msg["color"].str) {
+		case "Red":
+			redOp = msg["payload"].operationsOfJson;
+			redOpPushed = true;
+			break;
+		case "Blue":
+			blueOp = msg["payload"].operationsOfJson;
+			blueOpPushed = true;
+			break;
+		default:
+			assert (false);
+	}
+	if (redOpPushed && blueOpPushed) {
+		board = updateBoard(board, blueOp, redOp);
+		JSONValue res;
+		res["type"] = JSONValue("distribute-board");
+		res["payload"] = board.jsonOfBoard;
+		foreach(sock; sockets) {
+			sock.send(res.toString);
+		}
+	}
+	else {
+		JSONValue res;
+		res["type"] = JSONValue("distribute-op");
+		res["payload"] = msg["payload"];
+		foreach (sock; opSubscribers) {
+			sock.send(res.toString);
+		}
 	}
 }
 
+void handleConn(scope WebSocket sock) {
+	// 接続中のソケットに登録
+	sockets ~= sock;
+	while (sock.connected) {
+		auto msg = sock.receiveText.parseJSON;
+		switch (msg["type"].str) {
+		case "req-board":
+			sock.send(board.jsonOfBoard.toString);
+			break;
+		case "subscribe-op":
+			//TODO 重複排除処理
+			opSubscribers ~= sock;
+			break;
+		case "push":
+			handlePush(msg);
+			break;
+		case "req-op":
+			switch (msg["color"].str) {
+			case "Red":
+				sock.send(blueOp.jsonOfOperations.toString);
+				break;
+			case "Blue":
+				sock.send(redOp.jsonOfOperations.toString);
+				break;
+			default:
+				assert (false);
+			}
+			break;
+		default:
+			assert(false);
+		}
+	}
+}
