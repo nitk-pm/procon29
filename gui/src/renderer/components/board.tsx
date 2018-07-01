@@ -17,11 +17,14 @@ export class Square extends React.Component<SquareProps> {
 		case Common.Color.Blue: styleName = "square blue"; break
 		case Common.Color.Neut: styleName = "square neut"; break
 		}
+		let img = this.props.square.agent ?
+			(<img src='./icons/material-design-icons/baseline-directions_walk-24px.svg' />) : null;
 		return (
 		<div className={styleName}
 			onClick={() => this.props.actions.lclick(this.props.pos)}
 			onContextMenu={() => this.props.actions.rclick(this.props.pos)}>
 			<div className="square-iconbox">
+				{img}
 			</div>
 			<div className="square-score">{this.props.square.score}</div>
 		</div>);
