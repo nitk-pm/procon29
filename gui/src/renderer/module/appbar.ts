@@ -16,7 +16,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	switch (action.type) {
 	case ActionNames.CLOSE_WINDOW:
 		ipcRenderer.send('message', 'exit');
-		console.log('send message');
 		return state;
 	default:
 		return state;
