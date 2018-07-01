@@ -50,7 +50,7 @@ export const initialState: State = {
 	hist: [],
 	board: initialBoard,
 	inputState: InputState.Ready,
-	server: {ip: '', port: '', socket: null},
+	server: {ip: '127.0.0.1', port: '8080', socket: null},
 };
 
 export const getServerInfo = (state: State) => state.server;

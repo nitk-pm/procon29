@@ -6,7 +6,7 @@ import * as Actions from './actions';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
-import { connectSaga } from './saga/server';
+import { rootSaga } from './saga/server';
 
 let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
 
@@ -56,4 +56,4 @@ let sagaMiddleware = createSagaMiddleware();
 
 export const store = createStore(reducer, applyMiddleware(sagaMiddleware));
 
-sagaMiddleware.run(connectSaga);
+sagaMiddleware.run(rootSaga);

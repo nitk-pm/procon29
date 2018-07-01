@@ -8,7 +8,9 @@ export type T =
 	| GameModule.ClickSquareAction
 	| GameModule.DoneAction
 	| GameModule.ConfigAction
+	| GameModule.UpdateBoardAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.UpdateSocketAction
-	| ServerSaga.ConnectAction;
+	| ServerSaga.ConnectAction
+	| ServerSaga.ReceiveMsgAction;

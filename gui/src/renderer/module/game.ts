@@ -1,11 +1,13 @@
 import * as Redux from 'redux';
 import * as Action from '../actions';
 import * as Store from '../store';
+import * as Common from '../../common';
 
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
-	CONFIG = 'IGOKABADDI_CONFIG'
+	CONFIG = 'IGOKABADDI_CONFIG',
+	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD'
 }
 
 export type ConfigAction = {
@@ -27,6 +29,13 @@ export type ClickSquareAction = {
 	}
 }
 
+export type UpdateBoardAction = {
+	type: ActionNames.UPDATE_BOARD;
+	payload: {
+		board: Common.Table;
+	};
+}
+
 export type DoneAction = {
 	type: ActionNames.DONE;
 }
@@ -42,6 +51,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return state;
 	case ActionNames.DONE:
 		return state;
+	case ActionNames.UPDATE_BOARD:
+		return {
+			...state,
+			board: action.payload.board
+		};
 	default:
 		return state;
 	}
