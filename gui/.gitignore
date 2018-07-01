@@ -14,4 +14,5 @@ package-lock.json
 *.log
 
 # product
-/app/
+/dist/
+/server/

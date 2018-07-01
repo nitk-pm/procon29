@@ -1,33 +1,38 @@
-var gulp = require('gulp');
-var ts = require('gulp-typescript');
-var concat = require('gulp-concat');
-var gulp_typings = require('gulp-typings');
-var gulp_elm = require('gulp-elm');
+const gulp          = require('gulp');
+const webpackStream = require('webpack-stream');
+const webpack       = require('webpack');
+const sass          = require('gulp-sass');
 
-gulp.task('elm-init', gulp_elm.init);
-
-gulp.task('elm', ['elm-init'], () =>
-	gulp.src('src/*.elm')
-		.pipe(gulp_elm())
-		.pipe(gulp.dest('./app'))
-);
 
 gulp.task('html', () =>
-	gulp.src(['./src/index.html'])
-		.pipe(gulp.dest('./app'))
+	gulp.src(['./src/renderer/html/*.html'])
+		.pipe(gulp.dest('./dist'))
 );
 
-gulp.task('typescript', () => {
-	var proj = ts.createProject('./tsconfig.json');
-	return gulp.src([
-		'./typings/index.d.ts',
-		'./src/**/*.ts',
-		'!./node_modules/**',
-	])
-	.pipe(proj())
-	.js
-	.pipe(concat('index.js'))
-	.pipe(gulp.dest('./app'));
+gulp.task('scss', () =>
+	gulp
+		.src(['./src/renderer/stylesheets/*.scss'])
+		.pipe(sass({outputStyle: 'expanded'}))
+		.pipe(gulp.dest('./dist'))
+);
+
+gulp.task('renderer', () => {
+		const webpackConfig = require('./webpack-renderer.config.js');
+		return webpackStream(webpackConfig, webpack)
+			.pipe(gulp.dest('./dist'));
+	}
+);
+
+gulp.task('main', () => {
+	const webpackConfig = require('./webpack-main.config.js');
+	return webpackStream(webpackConfig, webpack)
+		.pipe(gulp.dest('./dist'));
 });
 
-gulp.task('default', ['elm', 'typescript', 'html']);
+gulp.task('icons', () =>
+	gulp
+		.src(['./icons/material-design-icons/*.svg'])
+		.pipe(gulp.dest('./dist/icons/material-design-icons'))
+);
+
+gulp.task('default', ['main', 'html', 'scss', 'renderer', 'icons']);

@@ -17,13 +17,9 @@ type: "array"
 items:
   type: "object"
     required:
-      - "color"
       - "type"
       - "from"
     properties:
-      color:
-        type: "string"
-        pattern: "Red|Blue|Neut"
       type:
         type: "string"
         pattern: "Move|Clear"

@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import * as Path from 'path';
 
 class MyApp {
     mainWindow: Electron.BrowserWindow | null = null;
@@ -15,15 +16,22 @@ class MyApp {
                 width: 800,
                 height: 545,
                 minWidth: 80,
-                minHeight: 45
+                minHeight: 45,
+				frame: false
             });
        
             this.mainWindow.on('closed', (event: Electron.Event) => {
                 this.mainWindow = null;
             });
 
-            this.mainWindow.loadURL(`file://${__dirname}/index.html`);
+			//FIXME ad-hoc
+            this.mainWindow.loadURL(`file://${Path.resolve('')}/dist/index.html`);
         });
+
+		ipcMain.on('message', (event: any, arg: string) => {
+			if (arg == 'exit')
+				this.app.quit();
+		});
     }
 }
 

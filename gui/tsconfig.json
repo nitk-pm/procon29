@@ -1,10 +1,19 @@
 {
 	"compilerOptions":{
-		"target":"es6",
+		"outDir": "./app/",
+		"sourceMap": true,
+		"noImplicitAny": true,
 		"module":"commonjs",
-		"moduleResolution": "node"
+		"target":"es6",
+		"jsx":"react",
+		"esModuleInterop": true
 	},
-	"exclude":[
-		"node_modules"
+	"typeRoots": [
+		"node_modules/@types",
+		"typings"
+	],
+	"include":[
+		"./src",
+		"typings"
 	]
 }
