@@ -39,11 +39,15 @@ export function loadBoard(json: Array<Array<any>>): Table {
 	let w = json[0].length;
 	let arr = json.map(line =>
 		line.map(square => {
-			let color = square.color ==
-				'Red' ? Color.Red :
-				'Blue' ? Color.Blue : Color.Neut;
+			let color;
+			switch(square.color) {
+			case 'Red': color = Color.Red;break;
+			case 'Blue': color = Color.Blue;break;
+			case 'Neut': color = Color.Neut;break;
+			default: throw 'unexpected color'
+			}
 			let score = parseInt(square.score);
-			let agent = square.agent == 'true';
+			let agent = square.agent as boolean;
 			return {color, score, agent};
 		}));
 	return {w, h, arr};
