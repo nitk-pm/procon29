@@ -7,10 +7,35 @@ import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
 import { rootSaga } from './saga/server';
+import * as Redux from 'redux';
 
-let rootReducer = (state: Store.State = Store.initialState, action: Actions.T) => state;
+// TODO initialStateに含まれてないキーのreducerが来たら例外
+function combinePartialReducers(reducers: any, initialState: any) {
+	var newReducers: {[key: string]: any} = {};
 
-function configDummyReducer(
+	Object.keys(initialState)
+		.forEach(key => {
+			let fn: any;
+			let defaultState: any = initialState[key];
+			if (reducers[key] === 'function') {
+				fn = reducers[key];
+			}
+			else {
+				// 何もしない
+				fn = (state:any, action:any) => {
+					return state;
+				}
+			}
+			// stateがnull(チェック時)ならdefaultStateを返す
+			newReducers[key ] = (state:any, action:any) => {
+				if (state == null) return defaultState;
+				return fn(state, action);
+			};
+		});
+	return Redux.combineReducers(newReducers);
+}
+
+/*function configDummyReducer(
 	state = Store.initialState.config,
 	action: Actions.T) {
 	return state;
@@ -53,11 +78,17 @@ let combinedReducer = combineReducers({
 	inputState: inputStateDummyReducer,
 	server: ServerModule.reducer,
 	connectError: connectErrorDummyReducer
-});
+});*/
+
+let combinedReducer = combinePartialReducers({
+	server: ServerModule.reducer
+},
+	Store.initialState
+);
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
 
-let reducer  = rootReducers.reduce((acc, x) => reduceReducers(x, acc), rootReducer);
+let reducer  = rootReducers.reduce((acc, x) => reduceReducers(x, acc));
 
 let sagaMiddleware = createSagaMiddleware();
 
