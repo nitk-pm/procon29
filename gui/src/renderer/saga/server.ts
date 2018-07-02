@@ -9,7 +9,9 @@ import * as Common from '../../common';
 export enum ActionNames {
 	CONNECT_SOCKET = 'IGOKABADDI_CONNECT_SOCKET',
 	RECEIVE_MSG = 'IGOKABADDI_RECEIVE_MESSAGE',
-	PUSH_MSG = 'IGOKABADDI_PUSH_MESSAGE'
+	PUSH_MSG = 'IGOKABADDI_PUSH_MESSAGE',
+	CONNECTED = 'IGOKABADDI_SOCKET_CONNECTED',	//Actionを定義しなくても良い(payloadも無くsaga内でしか投げられないので)
+	FAIL = 'IGOKABADDI_SOCKET_FAIL'
 }
 
 export type ConnectAction = {
@@ -30,14 +32,19 @@ export type PushMsgAction = {
 	};
 }
 
-// WebSocketをサーバと繋ぐだけ
-// 結果はpromiseで返す
-function connect(url: string) {
-	const socket = new WebSocket(url);
-	return new Promise(resolve => {
-		socket.addEventListener('open', (event) => {
-			resolve(socket);
+// 接続完了まで待機するだけのチャンネル
+function genOpenChannel(socket: WebSocket) {
+	return eventChannel(emit => {
+		socket.addEventListener('open', (event: any) => {
+			emit({type: ActionNames.CONNECTED});
 		});
+		socket.addEventListener('close', (event: any) => {
+			emit({type: ActionNames.FAIL});
+		});
+		socket.addEventListener('error', (event: any) => {
+			emit({type: ActionNames.FAIL});
+		});
+		return () => {};
 	});
 }
 
@@ -82,8 +89,18 @@ function* sendMsg(socket: WebSocket) {
 function* flow() {
 	const server = yield Effects.select(Store.getServerInfo);
 	// Socketを作成
-	yield Effects.take(ActionNames.CONNECT_SOCKET);
-	const socket = yield Effects.call(connect, 'ws://'+server.ip+':'+server.port);
+	let socket;
+	let tryConnecting = true;
+	while(tryConnecting) {
+		yield Effects.take(ActionNames.CONNECT_SOCKET);
+		socket = new WebSocket('ws://'+server.ip+':'+server.port);
+		// socketのopenを待ち受けるチャンネルを作成
+		const channel = yield Effects.call(genOpenChannel, socket);
+		const action = yield Effects.take(channel);
+		if (action.type == ActionNames.CONNECTED) {
+			break;
+		}
+	}
 	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
