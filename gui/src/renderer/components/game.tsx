@@ -17,6 +17,7 @@ export interface GameProps {
 	inDialog: boolean;
 	ip: string;
 	port: string;
+	connectError: boolean;
 }
 
 const styles={};
@@ -27,6 +28,10 @@ export const Game = withStyles(styles)<GameProps>(
 	(props: GameProps & WithStyles<ClassNames>) => {
 		const classes = props.classes;
 		let page;
+		let errorMsg;
+		if (props.connectError) {
+			errorMsg = <span>CONNECT FAILED</span>;
+		}
 		if (props.inDialog) {
 			 page = (
 				<div>
@@ -46,6 +51,7 @@ export const Game = withStyles(styles)<GameProps>(
 					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser()}>
 						User
 					</Button>
+					{errorMsg}
 				</div>);
 		}
 		else {

@@ -9,6 +9,7 @@ export type T =
 	| GameModule.DoneAction
 	| GameModule.ConfigAction
 	| GameModule.UpdateBoardAction
+	| GameModule.ConnectErrorAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.UpdateSocketAction

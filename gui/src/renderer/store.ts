@@ -34,6 +34,7 @@ export type Server = {
 }
 
 export type State = {
+	connectError: boolean;
 	config: Config;
 	board: Common.Table;
 	//Undo用
@@ -46,6 +47,7 @@ export type State = {
 let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
+	connectError: false,
 	config: Config.Player,
 	hist: [],
 	board: initialBoard,

@@ -7,7 +7,8 @@ export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
 	CONFIG = 'IGOKABADDI_CONFIG',
-	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD'
+	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
+	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR'
 }
 
 export type ConfigAction = {
@@ -15,6 +16,10 @@ export type ConfigAction = {
 	payload: {
 		config: Store.Config
 	}
+}
+
+export type ConnectErrorAction = {
+	type: ActionNames.CONNECT_ERROR;
 }
 
 export enum ClickType {
@@ -55,6 +60,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: action.payload.board
+		};
+	case ActionNames.CONNECT_ERROR:
+		return {
+			...state,
+			connectError: true
 		};
 	default:
 		return state;

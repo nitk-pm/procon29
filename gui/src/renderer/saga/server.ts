@@ -100,6 +100,9 @@ function* flow() {
 		if (action.type == ActionNames.CONNECTED) {
 			break;
 		}
+		else if (action.type == ActionNames.FAIL) {
+			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
+		}
 	}
 	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求

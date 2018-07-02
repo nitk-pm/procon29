@@ -16,6 +16,12 @@ function configDummyReducer(
 	return state;
 }
 
+function connectErrorDummyReducer(
+	state = Store.initialState.connectError,
+	action: Actions.T) {
+	return state;
+}
+
 function inputStateDummyReducer(
 	state = Store.initialState.inputState,
 	action: Actions.T) {
@@ -46,6 +52,7 @@ let combinedReducer = combineReducers({
 	hist: histDummyReducer,
 	inputState: inputStateDummyReducer,
 	server: ServerModule.reducer,
+	connectError: connectErrorDummyReducer
 });
 
 let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
