@@ -14,3 +14,4 @@ server-test-*
 *.lst
 *.json
 !dub.json
+!board.json
