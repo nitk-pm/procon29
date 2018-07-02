@@ -20,7 +20,7 @@ RUN curl -fsS https://dlang.org/install.sh | bash -s dmd
 RUN sh ~/dlang/dmd-2.080.1/activate
 RUN apt-get install -qy dub
 RUN echo 'source ~/dlang/dmd-2.080.1/activate' >> ~/.bashrc
-RUN dub fetch vibe-d
+RUN dub run vibe-d
 
 RUN mkdir /ci
 WORKDIR /ci
