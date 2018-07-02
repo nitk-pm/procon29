@@ -4,9 +4,9 @@ export type Pos = {
 }
 
 export enum Color {
-	Red,
-	Blue,
-	Neut
+	Red = 'Red',
+	Blue = 'Blue',
+	Neut = 'Neut'
 }
 
 export type Square = {
@@ -22,8 +22,8 @@ export type Table = {
 }
 
 export enum OperationType {
-	Move,
-	Clear
+	Move = 'Move',
+	Clear = 'Clear'
 }
 
 export type Operation = {
@@ -53,3 +53,15 @@ export function loadBoard(json: Array<Array<any>>): Table {
 	return {w, h, arr};
 }
 
+export function loadOperations(json: Array<any> ): Operation[] {
+	return json.map(op => {
+		let pos = {x: parseInt(op.pos.x), y: parseInt(op.pos.y)};
+		let type;
+		switch (op.type) {
+		case 'Move': type = OperationType.Move; break;
+		case 'Clear': type = OperationType.Clear; break;
+		default: throw 'unexpected Operation type';
+		}
+		return { pos, type };
+	});
+}
