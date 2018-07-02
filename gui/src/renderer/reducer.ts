@@ -12,25 +12,21 @@ import * as Redux from 'redux';
 // TODO initialStateに含まれてないキーのreducerが来たら例外
 function combinePartialReducers(reducers: any, initialState: any) {
 	var newReducers: {[key: string]: any} = {};
-
 	Object.keys(initialState)
 		.forEach(key => {
-			let fn: any;
 			let defaultState: any = initialState[key];
-			if (reducers[key] === 'function') {
-				fn = reducers[key];
-			}
-			else {
-				// 何もしない
-				fn = (state:any, action:any) => {
+			if (typeof reducers[key] === 'undefined') {
+				newReducers[key] = (state:any, action:any) => {
+					if (state == null) return defaultState;
 					return state;
 				}
 			}
-			// stateがnull(チェック時)ならdefaultStateを返す
-			newReducers[key ] = (state:any, action:any) => {
-				if (state == null) return defaultState;
-				return fn(state, action);
-			};
+			else {
+				newReducers[key] = (state:any, action:any) => {
+					if (state == null) return defaultState;
+					return reducers[key](state, action);
+				}
+			}
 		});
 	return Redux.combineReducers(newReducers);
 }
