@@ -46,34 +46,39 @@ export type DoneAction = {
 	type: ActionNames.DONE;
 }
 
-function stackOperation(highlight: Option<Common.Pos>, pos: Common.Pos, clickType: ClickType) {
-	let {x, y} = pos;
-	return highlight.match({
-		Some: p => {
-			// クリック箇所がハイライト箇所の八方1マスにあるか
-			if ((x <= p.x+1 && x >= p.x-1) && (y <= p.y+1 && y >= p.y-1) && !(p.x == x && p.y == y)) {
-				let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
-				return Option({pos: p, to: pos, type});
-			}
-			else {
-				return None;
-			}
-		},
-		None: () => None 
-	});
-}
-
-function putOp(ops: Common.Operation[], op: Common.Operation) {
+// posをキーにopsからCommon.Operationを削除する
+function removeOp(ops: Common.Operation[], pos: Common.Pos) {
 	let newOps = new Array<Common.Operation>(0);
 	for (var i=0; i < ops.length; ++i) {
-		let p1 = op.pos;
+		let p1 = pos;
 		let p2 = ops[i].pos;
 		// 被っていたら古い方をスキップ
 		if (p1.x == p2.x && p1.y == p2.y) continue;
 		newOps.push(ops[i]);
 	}
-	newOps.push(op);
 	return newOps;
+}
+
+// クリック箇所がvalidならoperationを積む
+function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickType, ops: Common.Operation[]) {
+	// クリック箇所がハイライト箇所の八方1マスにあるか
+	if ((to.x <= from.x+1 && to.x >= from.x-1) && (to.y <= from.y+1 && to.y >= from.y-1) && !(from.x == to.x && from.y == to.y)) {
+		let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
+		let newOps = removeOp(ops, from);
+		newOps.push({pos: from, to, type});
+		return newOps;
+	}
+	else {
+		return ops;
+	}
+}
+
+// クリック箇所がhighlight位置と同じなら
+function tryReset(from: Common.Pos, to: Common.Pos, ops: Common.Operation[]) {
+	if (from.x == to.x && from.y == to.y)
+		return removeOp(ops, from);
+	else
+		return ops;
 }
 
 /*
@@ -89,10 +94,13 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			Some: p => None,
 			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
 		});
-		let ops = stackOperation(state.highlight, action.payload.pos, action.payload.type).match({
-				Some: op => putOp(state.ops, op),
-				None: () => state.ops
-			});
+		let ops = state.highlight.match({
+			Some: p => {
+					let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state.ops);
+					return tryReset(p, action.payload.pos, ops);
+				},
+			None: () => state.ops
+		});
 		return {
 			...state,
 			highlight,
