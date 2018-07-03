@@ -53,13 +53,25 @@ export type DoneAction = {
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
-		if (state.inputState == Store.InputState.Ready) {
+		let {x, y} = action.payload.pos;
+		if (state.inputState == Store.InputState.Ready
+			&& state.board.arr[y][x].agent) {
 			return {
 				...state,
-				highlight: action.payload.pos
+				highlight: {y, x},
+				inputState: Store.InputState.Suggested
 			};
 		}
-		return state;
+		else if (state.inputState == Store.InputState.Suggested) {
+			return {
+				...state,
+				highlight: null as any,
+				inputState: Store.InputState.Ready
+			};
+		}
+		else {
+			return state;
+		}
 	case ActionNames.DONE:
 		return state;
 	case ActionNames.UPDATE_BOARD:
