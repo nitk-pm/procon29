@@ -46,6 +46,22 @@ export type DoneAction = {
 	type: ActionNames.DONE;
 }
 
+function stackOperation(highlight: Option<Common.Pos>, pos: Common.Pos, clickType: ClickType) {
+	let {x, y} = pos;
+	return highlight.match({
+		Some: p => {
+			if (x <= p.x+1 && x >= p.x-1 && y <= p.y+2 && y >= p.y-1 && !(p.x == x && p.y == p.y)) {
+				let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
+				return Option({pos: p, type});
+			}
+			else {
+				return None;
+			}
+		},
+		None: () => None 
+	});
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
@@ -59,9 +75,14 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			Some: p => None,
 			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
 		});
+		let ops = stackOperation(state.highlight, action.payload.pos, action.payload.type).match({
+				Some: op => state.ops.concat([op]),
+				None: () => state.ops
+			});
 		return {
 			...state,
-			highlight
+			highlight,
+			ops
 		};
 	case ActionNames.DONE:
 		return state;
