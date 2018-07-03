@@ -63,6 +63,19 @@ function stackOperation(highlight: Option<Common.Pos>, pos: Common.Pos, clickTyp
 	});
 }
 
+function putOp(ops: Common.Operation[], op: Common.Operation) {
+	let newOps = new Array<Common.Operation>(0);
+	for (var i=0; i < ops.length; ++i) {
+		let p1 = op.pos;
+		let p2 = ops[i].pos;
+		// 被っていたら古い方をスキップ
+		if (p1.x == p2.x && p1.y == p2.y) continue;
+		newOps.push(ops[i]);
+	}
+	newOps.push(op);
+	return newOps;
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
@@ -77,7 +90,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
 		});
 		let ops = stackOperation(state.highlight, action.payload.pos, action.payload.type).match({
-				Some: op => state.ops.concat([op]),
+				Some: op => putOp(state.ops, op),
 				None: () => state.ops
 			});
 		return {
