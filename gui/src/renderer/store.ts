@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from 'redux';
 import * as Common from '../common';
+import { Option, None } from 'monapt';
 
 export type Pos = {
 	x: number,
@@ -15,11 +16,6 @@ export type ViewState = {
 	color: Common.Color,
 	light: boolean, 
 	icon: Icon
-}
-
-export enum InputState {
-	Ready,
-	Suggested
 }
 
 export enum Config {
@@ -39,11 +35,10 @@ export type State = {
 	board: Common.Table;
 	//Undo用
 	hist: Array<Array<Common.Operation>>;
-	inputState: InputState;
 	server: Server;
 	rivalOps: Common.Operation[];
 	ops: Common.Operation[];
-	highlight: Common.Pos;
+	highlight: Option<Common.Pos>;
 }
 
 
@@ -54,11 +49,10 @@ export const initialState: State = {
 	config: Config.Player,
 	hist: [],
 	board: initialBoard,
-	inputState: InputState.Ready,
 	server: {ip: '127.0.0.1', port: '8080', socket: null},
 	rivalOps: [],
 	ops: [],
-	highlight: null
+	highlight: None
 };
 
 export const getServerInfo = (state: State) => state.server;

@@ -2,6 +2,7 @@ import * as Redux from 'redux';
 import * as Action from '../actions';
 import * as Store from '../store';
 import * as Common from '../../common';
+import { None, Option } from 'monapt';
 
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
@@ -54,24 +55,14 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		let {x, y} = action.payload.pos;
-		if (state.inputState == Store.InputState.Ready
-			&& state.board.arr[y][x].agent) {
-			return {
-				...state,
-				highlight: {y, x},
-				inputState: Store.InputState.Suggested
-			};
-		}
-		else if (state.inputState == Store.InputState.Suggested) {
-			return {
-				...state,
-				highlight: null as any,
-				inputState: Store.InputState.Ready
-			};
-		}
-		else {
-			return state;
-		}
+		let highlight = state.highlight.match({
+			Some: p => None,
+			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
+		});
+		return {
+			...state,
+			highlight
+		};
 	case ActionNames.DONE:
 		return state;
 	case ActionNames.UPDATE_BOARD:

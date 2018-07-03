@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as Store from '../store';
 import { ActionDispatcher } from '../container/board';
 import * as Common from '../../common';
+import { Option, None } from 'monapt';
 
 // 方向(東西南北表記)
 enum Direction {
@@ -74,7 +75,7 @@ export class Square extends React.Component<SquareProps> {
 interface BoardProps {
 	table: Common.Table;
 	actions: ActionDispatcher;
-	highlight: Common.Pos;
+	highlight: Option<Common.Pos>;
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -85,8 +86,9 @@ export class Board extends React.Component<BoardProps> {
 			margin: "0 auto",
 			maxWidth: (7*(width+1)).toString() + "vh"
 		};
-		let isHighlighted = (x: number, y: number) =>
-			this.props.highlight && x == this.props.highlight.x && y == this.props.highlight.y;
+		let isHighlighted = (x: number, y: number) => this.props.highlight.match({
+				Some: p => p.x == x && p.y == y,
+				None: () => false});
 		return (
 			<div style={boardStyle}>{
 				this.props.table.arr.map((line, y)  =>
