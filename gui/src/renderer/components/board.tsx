@@ -4,18 +4,6 @@ import { ActionDispatcher } from '../container/board';
 import * as Common from '../../common';
 import { Option, None } from 'monapt';
 
-// 方向(東西南北表記)
-enum Direction {
-	N = '0',
-	NE = '45',
-	E = '90',
-	SE = '135',
-	S = '180',
-	SW = '225',
-	W = '270',
-	NW = '315'
-}
-
 enum SquareState {
 	Wait,
 	Clear,
@@ -26,7 +14,7 @@ interface SquareProps {
 	square: Common.Square;
 	pos: Store.Pos;
 	actions: ActionDispatcher;
-	dir: Direction;
+	dir: number; // rad MoveまたはClearの場合
 	state: SquareState;
 	highlight: boolean;
 }
@@ -40,7 +28,7 @@ export class Square extends React.Component<SquareProps> {
 		case Common.Color.Neut: styleName = "square neut"; break
 		}
 		const imgStyle = {
-			transform: 'rotate(' + this.props.dir + 'deg)'
+			transform: 'rotate(' + this.props.dir + 'rad)'
 		};
 		let img = null;
 		if (this.props.square.agent) {
@@ -50,10 +38,10 @@ export class Square extends React.Component<SquareProps> {
 				imgPath = './icons/material-design-icons/baseline-adjust-24px.svg';
 				break;
 			case SquareState.Clear:
-				imgPath = './icons/material-design-icons/baseline-forward-24px.svg';
+				imgPath = './icons/material-design-icons/outline-forward-24px.svg';
 				break;
 			case SquareState.Move:
-				imgPath = './icons/material-design-icons/outline-forward-24px.svg';
+				imgPath = './icons/material-design-icons/baseline-forward-24px.svg';
 				break;
 			}
 			img = <img style={imgStyle} src={imgPath} />;
@@ -76,6 +64,7 @@ interface BoardProps {
 	table: Common.Table;
 	actions: ActionDispatcher;
 	highlight: Option<Common.Pos>;
+	operation: Array<Common.Operation>;
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -86,23 +75,46 @@ export class Board extends React.Component<BoardProps> {
 			margin: "0 auto",
 			maxWidth: (7*(width+1)).toString() + "vh"
 		};
+
 		let isHighlighted = (x: number, y: number) => this.props.highlight.match({
 				Some: p => p.x == x && p.y == y,
 				None: () => false});
+
+		// FIXME 読みにくくないですか
+		let calcIconAndDir = (pos: Common.Pos, ops: Array<Common.Operation>) => {
+			for(var i=0; i < ops.length; ++i) {
+				if (ops[i].pos.x == pos.x && ops[i].pos.y == pos.y) {
+					let dir = Math.atan2(ops[i].to.y-pos.y, ops[i].to.x-pos.x);
+					let state = SquareState.Wait;
+					if (ops[i].type == Common.OperationType.Move) {
+						state = SquareState.Move;
+					}
+					else if (ops[i].type == Common.OperationType.Clear){
+						state = SquareState.Clear;
+					}
+					//console.log({dir, state});
+					return {dir, state};
+				}
+			}
+			return {dir: 0, state: SquareState.Wait};
+		};
+		console.log(this.props.operation);
 		return (
 			<div style={boardStyle}>{
 				this.props.table.arr.map((line, y)  =>
 					<div className="board-row" key={y}>{
-						line.map((square, x) =>
-							<Square
+						line.map((square, x) => {
+							let {dir, state} = calcIconAndDir({x, y}, this.props.operation);
+							return (<Square
 								actions={this.props.actions}
 								square={square}
 								pos={{x, y}}
 								key={x*height+y}
-								dir={null}
-								state={SquareState.Wait}
+								dir={dir}
+								state={state}
 								highlight={isHighlighted(x, y)}
-							/>)
+							/>);
+						})
 					}</div>
 				)
 			}</div>

@@ -50,9 +50,10 @@ function stackOperation(highlight: Option<Common.Pos>, pos: Common.Pos, clickTyp
 	let {x, y} = pos;
 	return highlight.match({
 		Some: p => {
-			if (x <= p.x+1 && x >= p.x-1 && y <= p.y+2 && y >= p.y-1 && !(p.x == x && p.y == p.y)) {
+			// クリック箇所がハイライト箇所の八方1マスにあるか
+			if ((x <= p.x+1 && x >= p.x-1) && (y <= p.y+1 && y >= p.y-1) && !(p.x == x && p.y == y)) {
 				let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
-				return Option({pos: p, type});
+				return Option({pos: p, to: pos, type});
 			}
 			else {
 				return None;

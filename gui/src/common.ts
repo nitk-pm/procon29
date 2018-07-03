@@ -28,7 +28,8 @@ export enum OperationType {
 
 export type Operation = {
 	pos: Pos,
-	type: OperationType
+	type: OperationType,
+	to: Pos
 }
 
 /*
@@ -56,12 +57,13 @@ export function loadBoard(json: Array<Array<any>>): Table {
 export function loadOperations(json: Array<any> ): Operation[] {
 	return json.map(op => {
 		let pos = {x: parseInt(op.pos.x), y: parseInt(op.pos.y)};
+		let to  = {x: parseInt(op.to.x), y: parseInt(op.to.y)};
 		let type;
 		switch (op.type) {
 		case 'Move': type = OperationType.Move; break;
 		case 'Clear': type = OperationType.Clear; break;
 		default: throw 'unexpected Operation type';
 		}
-		return { pos, type };
+		return { pos, to, type };
 	});
 }
