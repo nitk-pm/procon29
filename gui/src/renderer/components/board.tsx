@@ -74,6 +74,7 @@ export class Square extends React.Component<SquareProps> {
 interface BoardProps {
 	table: Common.Table;
 	actions: ActionDispatcher;
+	highlight: Common.Pos;
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -84,6 +85,8 @@ export class Board extends React.Component<BoardProps> {
 			margin: "0 auto",
 			maxWidth: (7*(width+1)).toString() + "vh"
 		};
+		let isHighlighted = (x: number, y: number) =>
+			this.props.highlight && x == this.props.highlight.x && y == this.props.highlight.y;
 		return (
 			<div style={boardStyle}>{
 				this.props.table.arr.map((line, y)  =>
@@ -96,7 +99,7 @@ export class Board extends React.Component<BoardProps> {
 								key={x*height+y}
 								dir={null}
 								state={SquareState.Wait}
-								highlight={false}
+								highlight={isHighlighted(x, y)}
 							/>)
 					}</div>
 				)

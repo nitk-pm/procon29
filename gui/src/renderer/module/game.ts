@@ -53,6 +53,12 @@ export type DoneAction = {
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
+		if (state.inputState == Store.InputState.Ready) {
+			return {
+				...state,
+				highlight: action.payload.pos
+			};
+		}
 		return state;
 	case ActionNames.DONE:
 		return state;
