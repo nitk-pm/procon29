@@ -41,6 +41,8 @@ export type State = {
 	hist: Array<Array<Common.Operation>>;
 	inputState: InputState;
 	server: Server;
+	rivalOps: Common.Operation[];
+	ops: Common.Operation[];
 }
 
 
@@ -53,6 +55,8 @@ export const initialState: State = {
 	board: initialBoard,
 	inputState: InputState.Ready,
 	server: {ip: '127.0.0.1', port: '8080', socket: null},
+	rivalOps: [],
+	ops: []
 };
 
 export const getServerInfo = (state: State) => state.server;
