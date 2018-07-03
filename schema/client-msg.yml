@@ -1,0 +1,20 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: "Container"
+
+type: "object"
+required:
+  - "type"
+  - "color"
+  - "payload"
+  - "from"
+properties:
+  type:
+    type: "string"
+    pattern: "req-board|subscribe-op|push|req-op"
+  color:
+    type: "string"
+    pattern: "Red|Blue"
+  payload:
+    description: "subscribe-opだけOperation、それ以外は空"
+  from:
+    type: "string"
