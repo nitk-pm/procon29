@@ -3,10 +3,31 @@ import * as Store from '../store';
 import { ActionDispatcher } from '../container/board';
 import * as Common from '../../common';
 
+// 方向(東西南北表記)
+enum Direction {
+	N = '0',
+	NE = '45',
+	E = '90',
+	SE = '135',
+	S = '180',
+	SW = '225',
+	W = '270',
+	NW = '315'
+}
+
+enum SquareState {
+	Wait,
+	Clear,
+	Move
+}
+
 interface SquareProps {
 	square: Common.Square;
 	pos: Store.Pos;
 	actions: ActionDispatcher;
+	dir: Direction;
+	state: SquareState;
+	highlight: boolean;
 }
 
 export class Square extends React.Component<SquareProps> {
@@ -17,10 +38,29 @@ export class Square extends React.Component<SquareProps> {
 		case Common.Color.Blue: styleName = "square blue"; break
 		case Common.Color.Neut: styleName = "square neut"; break
 		}
-		let img = this.props.square.agent ?
-			(<img src='./icons/material-design-icons/baseline-directions_walk-24px.svg' />) : null;
+		const imgStyle = {
+			transform: 'rotate(' + this.props.dir + 'deg)'
+		};
+		let img = null;
+		if (this.props.square.agent) {
+			let imgPath;
+			switch (this.props.state) {
+			case SquareState.Wait:
+				imgPath = './icons/material-design-icons/baseline-adjust-24px.svg';
+				break;
+			case SquareState.Clear:
+				imgPath = './icons/material-design-icons/baseline-forward-24px.svg';
+				break;
+			case SquareState.Move:
+				imgPath = './icons/material-design-icons/outline-forward-24px.svg';
+				break;
+			}
+			img = <img style={imgStyle} src={imgPath} />;
+		}
+		let containerOpacity = this.props.highlight ? 0.6 : 1.0;
 		return (
 		<div className={styleName}
+			style={{ opacity: containerOpacity }}
 			onClick={() => this.props.actions.lclick(this.props.pos)}
 			onContextMenu={() => this.props.actions.rclick(this.props.pos)}>
 			<div className="square-iconbox">
@@ -49,7 +89,15 @@ export class Board extends React.Component<BoardProps> {
 				this.props.table.arr.map((line, y)  =>
 					<div className="board-row" key={y}>{
 						line.map((square, x) =>
-							<Square actions={this.props.actions} square={square} pos={{x, y}} key={x*height+y}/>)
+							<Square
+								actions={this.props.actions}
+								square={square}
+								pos={{x, y}}
+								key={x*height+y}
+								dir={null}
+								state={SquareState.Wait}
+								highlight={false}
+							/>)
 					}</div>
 				)
 			}</div>
