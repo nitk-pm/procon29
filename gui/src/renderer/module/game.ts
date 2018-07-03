@@ -51,7 +51,7 @@ function removeOp(ops: Common.Operation[], pos: Common.Pos) {
 	let newOps = new Array<Common.Operation>(0);
 	for (var i=0; i < ops.length; ++i) {
 		let p1 = pos;
-		let p2 = ops[i].pos;
+		let p2 = ops[i].from;
 		// 被っていたら古い方をスキップ
 		if (p1.x == p2.x && p1.y == p2.y) continue;
 		newOps.push(ops[i]);
@@ -65,7 +65,7 @@ function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickTyp
 	if ((to.x <= from.x+1 && to.x >= from.x-1) && (to.y <= from.y+1 && to.y >= from.y-1) && !(from.x == to.x && from.y == to.y)) {
 		let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
 		let newOps = removeOp(ops, from);
-		newOps.push({pos: from, to, type});
+		newOps.push({from, to, type});
 		return newOps;
 	}
 	else {
