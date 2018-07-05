@@ -115,6 +115,13 @@ shared static this () {
 	listenHTTP(settings, router);
 }
 
+string genReplyMsg(string type, JSONValue json) {
+	JSONValue res;
+	res["type"] = JSONValue(type);
+	res["payload"] = json;
+	return res.toString;
+}
+
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
 void handlePush(JSONValue msg) {
@@ -132,19 +139,16 @@ void handlePush(JSONValue msg) {
 	}
 	if (redOpPushed && blueOpPushed) {
 		board = updateBoard(board, blueOp, redOp);
-		JSONValue res;
-		res["type"] = JSONValue("distribute-board");
-		res["payload"] = board.jsonOfBoard;
+		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
 		foreach(sock; sockets) {
-			sock.send(res.toString);
+			sock.send(reply);
 		}
 	}
 	else {
 		JSONValue res;
-		res["type"] = JSONValue("distribute-op");
-		res["payload"] = msg["payload"];
+		auto reply = genReplyMsg("distribute-op", msg["payload"]);
 		foreach (sock; opSubscribers) {
-			sock.send(res.toString);
+			sock.send(reply);
 		}
 	}
 }
@@ -156,7 +160,8 @@ void handleConn(scope WebSocket sock) {
 		auto msg = sock.receiveText.parseJSON;
 		switch (msg["type"].str) {
 		case "req-board":
-			sock.send(board.jsonOfBoard.toString);
+			auto reply= genReplyMsg("distribute-board", board.jsonOfBoard);
+			sock.send(reply);
 			break;
 		case "subscribe-op":
 			//TODO 重複排除処理
@@ -168,10 +173,12 @@ void handleConn(scope WebSocket sock) {
 		case "req-op":
 			switch (msg["color"].str) {
 			case "Red":
-				sock.send(blueOp.jsonOfOperations.toString);
+				auto reply= genReplyMsg("distribute-op", blueOp.jsonOfOperations);
+				sock.send(reply);
 				break;
 			case "Blue":
-				sock.send(redOp.jsonOfOperations.toString);
+				auto reply= genReplyMsg("distribute-op", redOp.jsonOfOperations);
+				sock.send(reply);
 				break;
 			default:
 				assert (false);

@@ -1,11 +1,15 @@
 import * as Redux from 'redux';
 import * as Action from '../actions';
 import * as Store from '../store';
+import * as Common from '../../common';
+import { None, Option } from 'monapt';
 
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
-	CONFIG = 'IGOKABADDI_CONFIG'
+	CONFIG = 'IGOKABADDI_CONFIG',
+	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
+	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR'
 }
 
 export type ConfigAction = {
@@ -13,6 +17,10 @@ export type ConfigAction = {
 	payload: {
 		config: Store.Config
 	}
+}
+
+export type ConnectErrorAction = {
+	type: ActionNames.CONNECT_ERROR;
 }
 
 export enum ClickType {
@@ -27,8 +35,50 @@ export type ClickSquareAction = {
 	}
 }
 
+export type UpdateBoardAction = {
+	type: ActionNames.UPDATE_BOARD;
+	payload: {
+		board: Common.Table;
+	};
+}
+
 export type DoneAction = {
 	type: ActionNames.DONE;
+}
+
+// posをキーにopsからCommon.Operationを削除する
+function removeOp(ops: Common.Operation[], pos: Common.Pos) {
+	let newOps = new Array<Common.Operation>(0);
+	for (var i=0; i < ops.length; ++i) {
+		let p1 = pos;
+		let p2 = ops[i].from;
+		// 被っていたら古い方をスキップ
+		if (p1.x == p2.x && p1.y == p2.y) continue;
+		newOps.push(ops[i]);
+	}
+	return newOps;
+}
+
+// クリック箇所がvalidならoperationを積む
+function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickType, ops: Common.Operation[]) {
+	// クリック箇所がハイライト箇所の八方1マスにあるか
+	if ((to.x <= from.x+1 && to.x >= from.x-1) && (to.y <= from.y+1 && to.y >= from.y-1) && !(from.x == to.x && from.y == to.y)) {
+		let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
+		let newOps = removeOp(ops, from);
+		newOps.push({from, to, type});
+		return newOps;
+	}
+	else {
+		return ops;
+	}
+}
+
+// クリック箇所がhighlight位置と同じなら
+function tryReset(from: Common.Pos, to: Common.Pos, ops: Common.Operation[]) {
+	if (from.x == to.x && from.y == to.y)
+		return removeOp(ops, from);
+	else
+		return ops;
 }
 
 /*
@@ -39,9 +89,35 @@ export type DoneAction = {
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
-		return state;
+		let {x, y} = action.payload.pos;
+		let highlight = state.highlight.match({
+			Some: p => None,
+			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
+		});
+		let ops = state.highlight.match({
+			Some: p => {
+					let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state.ops);
+					return tryReset(p, action.payload.pos, ops);
+				},
+			None: () => state.ops
+		});
+		return {
+			...state,
+			highlight,
+			ops
+		};
 	case ActionNames.DONE:
 		return state;
+	case ActionNames.UPDATE_BOARD:
+		return {
+			...state,
+			board: action.payload.board
+		};
+	case ActionNames.CONNECT_ERROR:
+		return {
+			...state,
+			connectError: true
+		};
 	default:
 		return state;
 	}

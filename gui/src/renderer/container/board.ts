@@ -35,7 +35,9 @@ export class ActionDispatcher {
 
 export default ReactRedux.connect(
 	(state: Store.State) => ({
-		table: state.board
+		table: state.board,
+		highlight: state.highlight,
+		operation: state.ops
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(BoardComponent.Board);

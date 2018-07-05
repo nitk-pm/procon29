@@ -11,6 +11,7 @@
     "bufferutil": "^3.0.5",
     "electron": "^1.8.4",
     "electron-json-storage": "^4.1.0",
+    "monapt": "^2.1.0",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",

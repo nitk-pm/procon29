@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from 'redux';
 import * as Common from '../common';
+import { Option, None } from 'monapt';
 
 export type Pos = {
 	x: number,
@@ -17,11 +18,6 @@ export type ViewState = {
 	icon: Icon
 }
 
-export enum InputState {
-	Ready,
-	Suggested
-}
-
 export enum Config {
 	Player,
 	User
@@ -34,23 +30,29 @@ export type Server = {
 }
 
 export type State = {
+	connectError: boolean;
 	config: Config;
 	board: Common.Table;
 	//Undo用
 	hist: Array<Array<Common.Operation>>;
-	inputState: InputState;
 	server: Server;
+	rivalOps: Common.Operation[];
+	ops: Common.Operation[];
+	highlight: Option<Common.Pos>;
 }
 
 
 let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
+	connectError: false,
 	config: Config.Player,
 	hist: [],
 	board: initialBoard,
-	inputState: InputState.Ready,
-	server: {ip: '', port: '', socket: null},
+	server: {ip: '127.0.0.1', port: '8080', socket: null},
+	rivalOps: [],
+	ops: [],
+	highlight: None
 };
 
 export const getServerInfo = (state: State) => state.server;
