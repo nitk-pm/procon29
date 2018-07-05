@@ -12,7 +12,7 @@ export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	done () {
-		return this.dispatch({type: GameModule.ActionNames.DONE});
+		return this.dispatch({type: ServerSaga.ActionNames.PUSH_OP});
 	}
 
 	applyConfig(config: Store.Config) {

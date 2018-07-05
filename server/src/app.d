@@ -125,6 +125,7 @@ string genReplyMsg(string type, JSONValue json) {
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
 void handlePush(JSONValue msg) {
+	writefln!"pushed: %s"(msg.toPrettyString);
 	switch (msg["color"].str) {
 		case "Red":
 			redOp = msg["payload"].operationsOfJson;

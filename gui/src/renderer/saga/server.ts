@@ -9,9 +9,13 @@ import * as Common from '../../common';
 export enum ActionNames {
 	CONNECT_SOCKET = 'IGOKABADDI_CONNECT_SOCKET',
 	RECEIVE_MSG = 'IGOKABADDI_RECEIVE_MESSAGE',
-	PUSH_MSG = 'IGOKABADDI_PUSH_MESSAGE',
 	CONNECTED = 'IGOKABADDI_SOCKET_CONNECTED',	//Actionを定義しなくても良い(payloadも無くsaga内でしか投げられないので)
-	FAIL = 'IGOKABADDI_SOCKET_FAIL'
+	FAIL = 'IGOKABADDI_SOCKET_FAIL',
+	PUSH_OP = 'IGOKABADDI_PUSH_OP'
+}
+
+export type PushOp = {
+	type: ActionNames.PUSH_OP;
 }
 
 export type ConnectAction = {
@@ -20,13 +24,6 @@ export type ConnectAction = {
 
 export type ReceiveMsgAction = {
 	type: ActionNames.RECEIVE_MSG;
-	payload: {
-		data: any;
-	};
-}
-
-export type PushMsgAction = {
-	type: ActionNames.PUSH_MSG;
 	payload: {
 		data: any;
 	};
@@ -56,6 +53,7 @@ function genListenChannel(socket: WebSocket) {
 			const msg = JSON.parse(event.data);
 			switch (msg.type) {
 			case 'distribute-board':
+				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload);
 				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				break;
@@ -76,13 +74,26 @@ function* listenMsg(socket: WebSocket) {
 	}
 }
 
-// Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
-// TODO もっとたくさんのActionをうけとる!
-function* sendMsg(socket: WebSocket) {
-	while(true) {
-		const { payload } = yield Effects.take(ActionNames.PUSH_MSG);
-		socket.send(JSON.stringify(payload));
+// PUSH_OPを待機して、PUSH_OPが来たらメッセージ投げる処理をforkする
+function* pushOp(socket: WebSocket) {
+	while (true) {
+		yield Effects.take(ActionNames.PUSH_OP);
+		yield Effects.fork(function* (socket: WebSocket) {
+			const ops = yield Effects.select(Store.getOps);
+			// メッセージ作成
+			const msg = JSON.stringify({
+				type: 'push',
+				color: 'Red', // TODO 色の選択を可能に
+				payload: ops
+			});
+			socket.send(msg);
+		}, socket);
 	}
+}
+
+// Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
+function* sendMsg(socket: WebSocket) {
+	yield Effects.fork(pushOp, socket);
 }
 
 // 一連の流れ

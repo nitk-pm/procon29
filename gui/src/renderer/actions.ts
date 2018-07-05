@@ -14,4 +14,5 @@ export type T =
 	| ServerModule.ChangePortAction
 	| ServerModule.UpdateSocketAction
 	| ServerSaga.ConnectAction
+	| ServerSaga.PushOp
 	| ServerSaga.ReceiveMsgAction;

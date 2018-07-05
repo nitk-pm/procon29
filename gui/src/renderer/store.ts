@@ -56,3 +56,4 @@ export const initialState: State = {
 };
 
 export const getServerInfo = (state: State) => state.server;
+export const getOps = (state: State) => state.ops;
