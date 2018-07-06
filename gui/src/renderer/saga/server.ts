@@ -59,7 +59,10 @@ function genListenChannel(socket: WebSocket) {
 			case 'distribute-board':
 				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload);
+				// 盤面の更新
 				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
+				// 操作の解凍
+				emit({type: GameModule.ActionNames.THAWING});
 				break;
 			default:
 			}
@@ -82,6 +85,7 @@ function* listenMsg(socket: WebSocket) {
 function* pushOp(socket: WebSocket) {
 	while (true) {
 		yield Effects.take(ActionNames.PUSH_OP);
+		// メッセージを投げる処理
 		yield Effects.fork(function* (socket: WebSocket) {
 			const ops = yield Effects.select(Store.getOps);
 			// メッセージ作成
@@ -92,6 +96,7 @@ function* pushOp(socket: WebSocket) {
 			});
 			socket.send(msg);
 		}, socket);
+		// メッセージを投げるのとは独立にGUIの操作を無効化する。
 		yield Effects.put({type: GameModule.ActionNames.FREEZE});
 	}
 }
@@ -101,17 +106,23 @@ function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
 }
 
-// 一連の流れ
+/*
+ * socketが正常に接続できるまで接続画面を出し続ける。
+ * PUSH_OPが来たらサーバにメッセージを投げる
+ * distribute-boardが来たらmodule/gameに盤面の更新を依頼し、盤面を解凍
+ */
 function* flow() {
 	const server = yield Effects.select(Store.getServerInfo);
 	// Socketを作成
 	let socket;
-	let tryConnecting = true;
-	while(tryConnecting) {
+	// 正常に接続できるまで再接続を試みる
+	while(true) {
+		// Viewからサーバ接続要求を受けるまで待機
 		const { payload } = yield Effects.take(ActionNames.CONNECT_SOCKET);
 		socket = new WebSocket('ws://'+server.ip+':'+server.port);
 		// socketのopenを待ち受けるチャンネルを作成
 		const channel = yield Effects.call(genOpenChannel, socket);
+		// socketがopenした時のメッセージを受け取る
 		const action = yield Effects.take(channel);
 		// 通信回線が開くと、configとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
@@ -130,6 +141,7 @@ function* flow() {
 			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
 		}
 	}
+	// 接続したsocketをstoreに保存
 	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に

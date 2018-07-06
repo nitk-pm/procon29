@@ -10,6 +10,7 @@ export type T =
 	| GameModule.UpdateBoardAction
 	| GameModule.ConnectErrorAction
 	| GameModule.FreezeAction
+	| GameModule.ThawingAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.UpdateSocketAction

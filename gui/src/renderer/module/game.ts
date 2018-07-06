@@ -10,7 +10,8 @@ export enum ActionNames {
 	CONFIG = 'IGOKABADDI_CONFIG',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
-	FREEZE = 'IGOKABADDI_FREEZE'
+	FREEZE = 'IGOKABADDI_FREEZE',
+	THAWING = 'IGOKABADDI_THAWING'
 }
 
 export type ConfigAction = {
@@ -27,6 +28,10 @@ export type ConnectErrorAction = {
 
 export type FreezeAction = {
 	type: ActionNames.FREEZE;
+}
+
+export type ThawingAction = {
+	type: ActionNames.THAWING;
 }
 
 export enum ClickType {
@@ -125,11 +130,15 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			...state,
 			freeze: true
 		};
+	case ActionNames.THAWING:
+		return {
+			...state,
+			freeze: false
+		};
 	case ActionNames.UPDATE_BOARD:
 		return {
 			...state,
 			board: action.payload.board,
-			freeze: false
 		};
 	case ActionNames.CONNECT_ERROR:
 		return {
