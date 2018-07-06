@@ -85,13 +85,14 @@ function* listenMsg(socket: WebSocket) {
 function* pushOp(socket: WebSocket) {
 	while (true) {
 		yield Effects.take(ActionNames.PUSH_OP);
+		const color = Effects.select(Store.getColor);
 		// メッセージを投げる処理
 		yield Effects.fork(function* (socket: WebSocket) {
 			const ops = yield Effects.select(Store.getOps);
 			// メッセージ作成
 			const msg = JSON.stringify({
 				type: 'push',
-				color: 'Red', // TODO 色の選択を可能に
+				color,
 				payload: ops
 			});
 			socket.send(msg);
