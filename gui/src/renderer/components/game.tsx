@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Common from '../../common';
 import Board from '../container/board'
 import AppBar from '../container/appbar';
 import { ActionDispatcher } from '../container/game';
@@ -46,10 +47,16 @@ export const Game = withStyles(styles)<GameProps>(
 						label='port'
 						value={props.port}
 				 		onChange={(e) => props.actions.changePort(e.target.value)}/>
-					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer()}>
+					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
 						Player
 					</Button>
-					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser()}>
+					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsUser(Common.Color.Blue)}>
+						User
+					</Button>
+					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsPlayer(Common.Color.Red)}>
+						Player
+					</Button>
+					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser(Common.Color.Red)}>
 						User
 					</Button>
 					{errorMsg}

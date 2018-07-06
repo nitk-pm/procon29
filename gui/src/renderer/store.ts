@@ -30,6 +30,7 @@ export type Server = {
 }
 
 export type State = {
+	color: Common.Color;
 	connectError: boolean;
 	config: Config;
 	board: Common.Table;
@@ -46,6 +47,7 @@ export type State = {
 let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
+	color: Common.Color.Red,
 	connectError: false,
 	config: Config.Player,
 	hist: [],

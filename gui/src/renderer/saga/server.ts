@@ -20,6 +20,10 @@ export type PushOp = {
 
 export type ConnectAction = {
 	type: ActionNames.CONNECT_SOCKET;
+	payload: {
+		config: Store.Config;
+		color: Common.Color;
+	}
 }
 
 export type ReceiveMsgAction = {
@@ -104,14 +108,24 @@ function* flow() {
 	let socket;
 	let tryConnecting = true;
 	while(tryConnecting) {
-		yield Effects.take(ActionNames.CONNECT_SOCKET);
+		const { payload } = yield Effects.take(ActionNames.CONNECT_SOCKET);
 		socket = new WebSocket('ws://'+server.ip+':'+server.port);
 		// socketのopenを待ち受けるチャンネルを作成
 		const channel = yield Effects.call(genOpenChannel, socket);
 		const action = yield Effects.take(channel);
+		// 通信回線が開くと、configとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
+			console.log(payload);
+			yield Effects.put({
+				type: GameModule.ActionNames.CONFIG,
+				payload:{
+					color: payload.color,
+					config: payload.config
+				}
+			});
 			break;
 		}
+		// configとcolorは変えずに失敗を通知
 		else if (action.type == ActionNames.FAIL) {
 			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
 		}

@@ -16,7 +16,8 @@ export enum ActionNames {
 export type ConfigAction = {
 	type: ActionNames.CONFIG;
 	payload: {
-		config: Store.Config
+		config: Store.Config;
+		color: Common.Color;
 	}
 }
 
@@ -94,7 +95,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			let {x, y} = action.payload.pos;
 			let highlight = state.highlight.match({
 				Some: p => None,
-				None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
+				None: () => state.board.arr[y][x].agent && state.board.arr[y][x].color == state.color ? Option({x, y}) : None
 			});
 			let ops = state.highlight.match({
 				Some: p => {
@@ -112,6 +113,13 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
+	case ActionNames.CONFIG:
+		console.log(action);
+		return {
+			...state,
+			color: action.payload.color,
+			config: action.payload.config
+		};
 	case ActionNames.FREEZE:
 		return {
 			...state,
