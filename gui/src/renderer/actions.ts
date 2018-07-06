@@ -6,10 +6,10 @@ import * as ServerSaga from './saga/server';
 export type T =
 	AppbarModule.CloseAction
 	| GameModule.ClickSquareAction
-	| GameModule.DoneAction
 	| GameModule.ConfigAction
 	| GameModule.UpdateBoardAction
 	| GameModule.ConnectErrorAction
+	| GameModule.FreezeAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.UpdateSocketAction

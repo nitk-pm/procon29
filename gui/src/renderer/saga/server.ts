@@ -88,6 +88,7 @@ function* pushOp(socket: WebSocket) {
 			});
 			socket.send(msg);
 		}, socket);
+		yield Effects.put({type: GameModule.ActionNames.FREEZE});
 	}
 }
 

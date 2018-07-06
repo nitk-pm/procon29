@@ -9,7 +9,8 @@ export enum ActionNames {
 	DONE = 'IGOKABADDI_DONE',
 	CONFIG = 'IGOKABADDI_CONFIG',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
-	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR'
+	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
+	FREEZE = 'IGOKABADDI_FREEZE'
 }
 
 export type ConfigAction = {
@@ -21,6 +22,10 @@ export type ConfigAction = {
 
 export type ConnectErrorAction = {
 	type: ActionNames.CONNECT_ERROR;
+}
+
+export type FreezeAction = {
+	type: ActionNames.FREEZE;
 }
 
 export enum ClickType {
@@ -40,10 +45,6 @@ export type UpdateBoardAction = {
 	payload: {
 		board: Common.Table;
 	};
-}
-
-export type DoneAction = {
-	type: ActionNames.DONE;
 }
 
 // posをキーにopsからCommon.Operationを削除する
@@ -89,29 +90,38 @@ function tryReset(from: Common.Pos, to: Common.Pos, ops: Common.Operation[]) {
 export function reducer(state: Store.State = Store.initialState, action: Action.T) {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
-		let {x, y} = action.payload.pos;
-		let highlight = state.highlight.match({
-			Some: p => None,
-			None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
-		});
-		let ops = state.highlight.match({
-			Some: p => {
-					let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state.ops);
-					return tryReset(p, action.payload.pos, ops);
-				},
-			None: () => state.ops
-		});
+		if (!state.freeze) {
+			let {x, y} = action.payload.pos;
+			let highlight = state.highlight.match({
+				Some: p => None,
+				None: () => state.board.arr[y][x].agent ? Option({x, y}) : None
+			});
+			let ops = state.highlight.match({
+				Some: p => {
+						let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state.ops);
+						return tryReset(p, action.payload.pos, ops);
+					},
+				None: () => state.ops
+			});
+			return {
+				...state,
+				highlight,
+				ops
+			};
+		}
+		else {
+			return state;
+		}
+	case ActionNames.FREEZE:
 		return {
 			...state,
-			highlight,
-			ops
+			freeze: true
 		};
-	case ActionNames.DONE:
-		return state;
 	case ActionNames.UPDATE_BOARD:
 		return {
 			...state,
-			board: action.payload.board
+			board: action.payload.board,
+			freeze: false
 		};
 	case ActionNames.CONNECT_ERROR:
 		return {

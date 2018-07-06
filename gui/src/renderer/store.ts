@@ -39,6 +39,7 @@ export type State = {
 	rivalOps: Common.Operation[];
 	ops: Common.Operation[];
 	highlight: Option<Common.Pos>;
+	freeze: boolean;
 }
 
 
@@ -52,7 +53,8 @@ export const initialState: State = {
 	server: {ip: '127.0.0.1', port: '8080', socket: null},
 	rivalOps: [],
 	ops: [],
-	highlight: None
+	highlight: None,
+	freeze: true
 };
 
 export const getServerInfo = (state: State) => state.server;

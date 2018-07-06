@@ -18,6 +18,7 @@ export interface GameProps {
 	ip: string;
 	port: string;
 	connectError: boolean;
+	freeze: boolean;
 }
 
 const styles={};
@@ -55,15 +56,23 @@ export const Game = withStyles(styles)<GameProps>(
 				</div>);
 		}
 		else {
+			let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 			page = (
 				<div>
 					<div className='board-container'>
 						<Board />
 					</div>
 					<div className='info-container'>
+						{msg}
 					</div>
 					<div className='fab'>
-						<Button variant='fab' color='primary' aria-label='done' onClick={() => props.actions.done()}>
+						<Button
+							variant='fab'
+							color='primary'
+							aria-label='done'
+							disabled={props.freeze}
+							onClick={() => props.actions.done()}
+							>
 							<DoneIcon />
 						</Button>
 					</div>
