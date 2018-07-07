@@ -9,7 +9,6 @@ $neut-highlight:#E0E0E0;
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
 	margin: 0;
-	-webkit-user-select: none;
 }
 
 .root {
@@ -49,6 +48,7 @@ body {
 }
 
 .square-icon {
+	-webkit-user-drag: none;
 }
 
 .square-score {
