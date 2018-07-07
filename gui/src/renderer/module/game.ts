@@ -139,6 +139,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: action.payload.board,
+			ops: []
 		};
 	case ActionNames.CONNECT_ERROR:
 		return {
