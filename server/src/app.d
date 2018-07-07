@@ -22,7 +22,7 @@ alias Board = Square[][];
 
 Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 	// TODO 実装しろ
-	return [];
+	return board;
 }
 
 Board boardOfJson(JSONValue json) {
@@ -144,6 +144,8 @@ void handlePush(JSONValue msg) {
 		foreach(sock; sockets) {
 			sock.send(reply);
 		}
+		redOpPushed = false;
+		blueOpPushed = false;
 	}
 	else {
 		JSONValue res;
