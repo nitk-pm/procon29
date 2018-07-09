@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Common from '../../common';
 import Board from '../container/board'
 import AppBar from '../container/appbar';
 import { ActionDispatcher } from '../container/game';
@@ -18,6 +19,7 @@ export interface GameProps {
 	ip: string;
 	port: string;
 	connectError: boolean;
+	freeze: boolean;
 }
 
 const styles={};
@@ -45,25 +47,39 @@ export const Game = withStyles(styles)<GameProps>(
 						label='port'
 						value={props.port}
 				 		onChange={(e) => props.actions.changePort(e.target.value)}/>
-					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer()}>
+					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
 						Player
 					</Button>
-					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser()}>
+					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsUser(Common.Color.Blue)}>
+						User
+					</Button>
+					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsPlayer(Common.Color.Red)}>
+						Player
+					</Button>
+					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser(Common.Color.Red)}>
 						User
 					</Button>
 					{errorMsg}
 				</div>);
 		}
 		else {
+			let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 			page = (
 				<div>
 					<div className='board-container'>
 						<Board />
 					</div>
 					<div className='info-container'>
+						{msg}
 					</div>
 					<div className='fab'>
-						<Button variant='fab' color='primary' aria-label='done' onClick={() => props.actions.done()}>
+						<Button
+							variant='fab'
+							color='primary'
+							aria-label='done'
+							disabled={props.freeze}
+							onClick={() => props.actions.done()}
+							>
 							<DoneIcon />
 						</Button>
 					</div>

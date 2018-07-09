@@ -30,6 +30,7 @@ export type Server = {
 }
 
 export type State = {
+	color: Common.Color;
 	connectError: boolean;
 	config: Config;
 	board: Common.Table;
@@ -39,12 +40,14 @@ export type State = {
 	rivalOps: Common.Operation[];
 	ops: Common.Operation[];
 	highlight: Option<Common.Pos>;
+	freeze: boolean;
 }
 
 
 let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
+	color: Common.Color.Red,
 	connectError: false,
 	config: Config.Player,
 	hist: [],
@@ -52,7 +55,10 @@ export const initialState: State = {
 	server: {ip: '127.0.0.1', port: '8080', socket: null},
 	rivalOps: [],
 	ops: [],
-	highlight: None
+	highlight: None,
+	freeze: true
 };
 
 export const getServerInfo = (state: State) => state.server;
+export const getOps = (state: State) => state.ops;
+export const getColor = (state: State) => state.color;

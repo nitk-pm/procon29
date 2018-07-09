@@ -9,24 +9,25 @@ import * as Common from '../../common';
 export enum ActionNames {
 	CONNECT_SOCKET = 'IGOKABADDI_CONNECT_SOCKET',
 	RECEIVE_MSG = 'IGOKABADDI_RECEIVE_MESSAGE',
-	PUSH_MSG = 'IGOKABADDI_PUSH_MESSAGE',
 	CONNECTED = 'IGOKABADDI_SOCKET_CONNECTED',	//Actionを定義しなくても良い(payloadも無くsaga内でしか投げられないので)
-	FAIL = 'IGOKABADDI_SOCKET_FAIL'
+	FAIL = 'IGOKABADDI_SOCKET_FAIL',
+	PUSH_OP = 'IGOKABADDI_PUSH_OP'
+}
+
+export type PushOp = {
+	type: ActionNames.PUSH_OP;
 }
 
 export type ConnectAction = {
 	type: ActionNames.CONNECT_SOCKET;
+	payload: {
+		config: Store.Config;
+		color: Common.Color;
+	}
 }
 
 export type ReceiveMsgAction = {
 	type: ActionNames.RECEIVE_MSG;
-	payload: {
-		data: any;
-	};
-}
-
-export type PushMsgAction = {
-	type: ActionNames.PUSH_MSG;
 	payload: {
 		data: any;
 	};
@@ -56,8 +57,12 @@ function genListenChannel(socket: WebSocket) {
 			const msg = JSON.parse(event.data);
 			switch (msg.type) {
 			case 'distribute-board':
+				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload);
+				// 盤面の更新
 				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
+				// 操作の解凍
+				emit({type: GameModule.ActionNames.THAWING});
 				break;
 			default:
 			}
@@ -76,34 +81,68 @@ function* listenMsg(socket: WebSocket) {
 	}
 }
 
-// Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
-// TODO もっとたくさんのActionをうけとる!
-function* sendMsg(socket: WebSocket) {
-	while(true) {
-		const { payload } = yield Effects.take(ActionNames.PUSH_MSG);
-		socket.send(JSON.stringify(payload));
+// PUSH_OPを待機して、PUSH_OPが来たらメッセージ投げる処理をforkする
+function* pushOp(socket: WebSocket) {
+	while (true) {
+		yield Effects.take(ActionNames.PUSH_OP);
+		const color = yield Effects.select(Store.getColor);
+		// メッセージを投げる処理
+		yield Effects.fork(function* (socket: WebSocket) {
+			const ops = yield Effects.select(Store.getOps);
+			// メッセージ作成
+			const msg = JSON.stringify({
+				type: 'push',
+				color,
+				payload: ops
+			});
+			socket.send(msg);
+		}, socket);
+		// メッセージを投げるのとは独立にGUIの操作を無効化する。
+		yield Effects.put({type: GameModule.ActionNames.FREEZE});
 	}
 }
 
-// 一連の流れ
+// Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
+function* sendMsg(socket: WebSocket) {
+	yield Effects.fork(pushOp, socket);
+}
+
+/*
+ * socketが正常に接続できるまで接続画面を出し続ける。
+ * PUSH_OPが来たらサーバにメッセージを投げる
+ * distribute-boardが来たらmodule/gameに盤面の更新を依頼し、盤面を解凍
+ */
 function* flow() {
 	const server = yield Effects.select(Store.getServerInfo);
 	// Socketを作成
 	let socket;
-	let tryConnecting = true;
-	while(tryConnecting) {
-		yield Effects.take(ActionNames.CONNECT_SOCKET);
+	// 正常に接続できるまで再接続を試みる
+	while(true) {
+		// Viewからサーバ接続要求を受けるまで待機
+		const { payload } = yield Effects.take(ActionNames.CONNECT_SOCKET);
 		socket = new WebSocket('ws://'+server.ip+':'+server.port);
 		// socketのopenを待ち受けるチャンネルを作成
 		const channel = yield Effects.call(genOpenChannel, socket);
+		// socketがopenした時のメッセージを受け取る
 		const action = yield Effects.take(channel);
+		// 通信回線が開くと、configとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
+			console.log(payload);
+			yield Effects.put({
+				type: GameModule.ActionNames.CONFIG,
+				payload:{
+					color: payload.color,
+					config: payload.config
+				}
+			});
 			break;
 		}
+		// configとcolorは変えずに失敗を通知
 		else if (action.type == ActionNames.FAIL) {
 			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
 		}
 	}
+	// 接続したsocketをstoreに保存
 	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に

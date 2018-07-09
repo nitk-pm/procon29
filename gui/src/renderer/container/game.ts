@@ -3,6 +3,7 @@ import * as ReactRedux from 'react-redux';
 import * as Store from '../store';
 import * as GameComponent from '../components/game';
 import * as Actions from '../actions';
+import * as Common from '../../common';
 
 import * as GameModule from '../module/game';
 import * as ServerModule from '../module/server';
@@ -12,7 +13,7 @@ export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	done () {
-		return this.dispatch({type: GameModule.ActionNames.DONE});
+		return this.dispatch({type: ServerSaga.ActionNames.PUSH_OP});
 	}
 
 	applyConfig(config: Store.Config) {
@@ -27,13 +28,25 @@ export class ActionDispatcher {
 		this.dispatch({type: ServerModule.ActionNames.CHANGE_PORT, payload: {port}});
 	}
 
-	connectAsPlayer() {
-		this.dispatch({type: ServerSaga.ActionNames.CONNECT_SOCKET});
+	connectAsPlayer(color: Common.Color) {
+		this.dispatch({
+			type: ServerSaga.ActionNames.CONNECT_SOCKET,
+			payload: {
+				config: Store.Config.Player,
+				color
+			}
+		});
 	}
 
 
-	connectAsUser() {
-		this.dispatch({type: ServerSaga.ActionNames.CONNECT_SOCKET});
+	connectAsUser(color: Common.Color) {
+		this.dispatch({
+			type: ServerSaga.ActionNames.CONNECT_SOCKET,
+			payload: {
+				config: Store.Config.Player,
+				color
+			}
+		});
 	}
 }
 
@@ -42,7 +55,8 @@ export default ReactRedux.connect(
 		ip: state.server.ip,
 		port: state.server.port,
 		inDialog: state.server.socket == null,
-		connectError: state.connectError
+		connectError: state.connectError,
+		freeze: state.freeze
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

@@ -20,10 +20,6 @@ struct Square {
 
 alias Board = Square[][];
 
-Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
-	// TODO 実装しろ
-	return [];
-}
 
 Board boardOfJson(JSONValue json) {
 	Square[][] tbl;
@@ -70,6 +66,9 @@ JSONValue jsonOfBoard(Board board) {
 struct Pos {
 	int x, y;
 }
+unittest {
+	assert(Pos(1, 2) == Pos(1, 2));
+}
 
 enum OpType {
 	Move,
@@ -77,15 +76,112 @@ enum OpType {
 }
 
 struct Operation {
-	Color color;
 	OpType type;
 	// fromはtype == OpType.Moveのときのみ有効
+	// 無効な場合は-1, -1を代入しておく
 	Pos from, to;
 }
 
+struct OpContainer {
+	Color color;
+	OpType type;
+	Pos from;
+	Pos to;
+}
+
+Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
+	OpContainer[] ops;
+	foreach(op; blueOp) {
+		ops ~= OpContainer(Color.Blue, op.type, op.from, op.to);
+	}
+	foreach(op; redOp) {
+		ops ~= OpContainer(Color.Red, op.type, op.from, op.to);
+	}
+	OpContainer[] candidate;
+	writeln("origin: ", ops);
+
+	// 行き先が衝突して無ければ候補に加える	
+	foreach (op1; ops) {
+		bool enable = true;
+		foreach (op2; ops) {
+			if (op1 == op2) continue;
+			if (!(op1.type == OpType.Move || op2.type == OpType.Move)) continue;
+			if (op1.to == op2.to) {
+				enable = false;
+			}
+		}
+		if (enable) candidate ~= op1;
+	}
+	writeln("cut1: ", candidate);
+
+	// 0..fixedPart: 無効
+	// fixedPart..$: 有効
+	size_t fixedPart = 0;
+	bool changed = true;
+	while(changed) {
+		changed = false;
+		for (size_t i=fixedPart; i < ops.length; ++i) {
+			if (ops[i].type != OpType.Move || !board[ops[i].to.y][ops[i].to.x].agent) continue;
+			bool evacuated;
+			for (size_t j=fixedPart; j < ops.length; ++j) {
+				if (i == j) continue;
+				if (ops[j].type == OpType.Clear) continue;
+				evacuated |= ops[j].from == ops[i].to;
+			}
+			if (!evacuated) {
+				auto tmp = ops[fixedPart];
+				ops[fixedPart] = ops[i];
+				ops[i] = tmp;
+				++fixedPart;
+				changed = true;
+			}
+		}
+	}
+	writeln("cut2: ", candidate[fixedPart..$]);
+	// 無効な操作を全て削除
+	candidate = candidate[fixedPart..$];
+
+	for (int y; y < board.length; ++y) {
+		for (int x; x < board[y].length; ++x) {
+			foreach (op; candidate) {
+				if (op.from == Pos(x, y))
+					board[y][x].agent = false;
+			}
+		}
+	}
+
+	foreach (op; candidate) {
+		if (op.type == OpType.Move) {
+			board[op.to.y][op.to.x].agent = true;
+			board[op.to.y][op.to.x].color = op.color;
+		}
+		else {
+			board[op.to.y][op.to.x].color = Color.Neut;
+		}
+	}
+	return board;
+}
+
+
 Operation[] operationsOfJson(JSONValue json) {
-	//TODO 実装しろ
-	return [];
+	Operation[] ops;
+	foreach (op; json.array) {
+		OpType type;
+		Pos from = Pos(-1, -1);
+		Pos to;
+		if (op["type"].str == "Move")
+			type = OpType.Move;
+		else
+			type = OpType.Clear;
+		to.x = op["to"]["x"].integer.to!int;
+		to.y = op["to"]["y"].integer.to!int;
+		if (type == OpType.Move) {
+			from.x = op["from"]["x"].integer.to!int;
+			from.y = op["from"]["y"].integer.to!int;
+		}
+		ops ~= Operation(type, from, to);
+	}
+	return ops;
 }
 
 JSONValue jsonOfOperations(Operation[] operations) {
@@ -143,7 +239,10 @@ void handlePush(JSONValue msg) {
 		foreach(sock; sockets) {
 			sock.send(reply);
 		}
+		redOpPushed = false;
+		blueOpPushed = false;
 	}
+	// まだoperationが揃ってない場合は来たoperationを配信
 	else {
 		JSONValue res;
 		auto reply = genReplyMsg("distribute-op", msg["payload"]);

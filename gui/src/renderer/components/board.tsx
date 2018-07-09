@@ -44,7 +44,7 @@ export class Square extends React.Component<SquareProps> {
 				imgPath = './icons/material-design-icons/baseline-forward-24px.svg';
 				break;
 			}
-			img = <img style={imgStyle} src={imgPath} />;
+			img = <img style={imgStyle} src={imgPath} className='square-icon'/>;
 		}
 		let containerOpacity = this.props.highlight ? 0.6 : 1.0;
 		return (
