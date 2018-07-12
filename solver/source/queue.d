@@ -1,4 +1,13 @@
+module procon.container;
+       
 import std.stdio;
+
+struct Square {//マスの情報
+int score;
+bool agent;
+string color;
+}
+
 struct Queue(T){
 	T[] arr;
 	bool empty(){
@@ -14,7 +23,7 @@ struct Queue(T){
 		arr ~= a;
 	}
 }
-void main(){
+unittest {
 	auto q = Queue!int();
 	q.push(1);
 	assert(q.top()==1);
