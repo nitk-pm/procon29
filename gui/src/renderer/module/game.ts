@@ -67,17 +67,19 @@ function removeOp(ops: Common.Operation[], pos: Common.Pos) {
 }
 
 // クリック箇所がvalidならoperationを積む
-function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickType, ops: Common.Operation[]) {
+function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickType, state: Store.State) {
+	let ops = state.ops;
+	let board = state.board;
 	// クリック箇所がハイライト箇所の八方1マスにあるか
 	if ((to.x <= from.x+1 && to.x >= from.x-1) && (to.y <= from.y+1 && to.y >= from.y-1) && !(from.x == to.x && from.y == to.y)) {
+		let destColor = board.arr[to.y][to.x].color;
+		if (destColor != Common.Color.Neut && destColor != state.color && clickType == ClickType.Left) return ops;
 		let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
 		let newOps = removeOp(ops, from);
 		newOps.push({from, to, type});
 		return newOps;
 	}
-	else {
-		return ops;
-	}
+	return ops;
 }
 
 // クリック箇所がhighlight位置と同じなら
@@ -104,7 +106,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			});
 			let ops = state.highlight.match({
 				Some: p => {
-						let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state.ops);
+						let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state);
 						return tryReset(p, action.payload.pos, ops);
 					},
 				None: () => state.ops

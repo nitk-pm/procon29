@@ -198,6 +198,9 @@ WebSocket[] sockets;
 Operation[] blueOp, redOp;
 bool blueOpPushed, redOpPushed;
 
+enum LocalHost = ["::1", "127.0.0.1"];
+enum LabAddress = ["192.168.42.151"];
+
 shared static this () {
 	auto boardJson = "./board.json".readText.parseJSON;
 	board = boardOfJson(boardJson);
@@ -207,7 +210,7 @@ shared static this () {
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
-	settings.bindAddresses = ["::1", "127.0.0.1"];
+	settings.bindAddresses = LocalHost ~ LabAddress;
 	listenHTTP(settings, router);
 }
 
