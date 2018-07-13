@@ -97,36 +97,43 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 	foreach(op; redOp) {
 		ops ~= OpContainer(Color.Red, op.type, op.from, op.to);
 	}
-	OpContainer[] candidate;
-
+	// 0..fixedPart: 無効
+	// fixedPart..$: 有効
+	size_t fixedPart = 0;
 	// 行き先が衝突して無ければ候補に加える	
-	foreach (op1; ops) {
+	foreach (i, op1; ops) {
 		bool enable = true;
 		foreach (op2; ops) {
 			if (op1 == op2) continue;
 			if (!(op1.type == OpType.Move || op2.type == OpType.Move)) continue;
 			if (op1.to == op2.to) {
 				enable = false;
+				break;
 			}
 		}
-		if (enable) candidate ~= op1;
+		if (!enable) {
+			auto tmp = ops[fixedPart];
+			ops[fixedPart] = ops[i];
+			ops[i] = tmp;
+			++fixedPart;
+		}
 	}
-
-	// 0..fixedPart: 無効
-	// fixedPart..$: 有効
-	size_t fixedPart = 0;
 	bool changed = true;
 	while(changed) {
 		changed = false;
 		for (size_t i=fixedPart; i < ops.length; ++i) {
-			if (ops[i].type != OpType.Move || !board[ops[i].to.y][ops[i].to.x].agent) continue;
-			bool evacuated;
-			for (size_t j=fixedPart; j < ops.length; ++j) {
-				if (i == j) continue;
-				if (ops[j].type == OpType.Clear) continue;
-				evacuated |= ops[j].from == ops[i].to;
+			immutable to = ops[i].to;
+			immutable dest = board[to.y][to.x];
+			auto disable = false;
+			if (dest.agent) {
+				bool willEvacuate = false;
+				// エージェントが退去予定ならフラグを立てる
+				for (size_t j=fixedPart; j < ops.length; ++j) {
+					willEvacuate |= ops[j].type == OpType.Move && ops[j].from == to;
+				}
+				disable = !willEvacuate;
 			}
-			if (!evacuated) {
+			if (disable) {
 				auto tmp = ops[fixedPart];
 				ops[fixedPart] = ops[i];
 				ops[i] = tmp;
@@ -136,18 +143,18 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 		}
 	}
 	// 無効な操作を全て削除
-	candidate = candidate[fixedPart..$];
+	ops = ops[fixedPart..$];
 
 	for (int y; y < board.length; ++y) {
 		for (int x; x < board[y].length; ++x) {
-			foreach (op; candidate) {
+			foreach (op; ops) {
 				if (op.from == Pos(x, y))
 					board[y][x].agent = false;
 			}
 		}
 	}
 
-	foreach (op; candidate) {
+	foreach (op; ops) {
 		if (op.type == OpType.Move) {
 			board[op.to.y][op.to.x].agent = true;
 			board[op.to.y][op.to.x].color = op.color;
