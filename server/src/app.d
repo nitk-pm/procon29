@@ -98,7 +98,6 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 		ops ~= OpContainer(Color.Red, op.type, op.from, op.to);
 	}
 	OpContainer[] candidate;
-	writeln("origin: ", ops);
 
 	// 行き先が衝突して無ければ候補に加える	
 	foreach (op1; ops) {
@@ -112,7 +111,6 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 		}
 		if (enable) candidate ~= op1;
 	}
-	writeln("cut1: ", candidate);
 
 	// 0..fixedPart: 無効
 	// fixedPart..$: 有効
@@ -137,7 +135,6 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 			}
 		}
 	}
-	writeln("cut2: ", candidate[fixedPart..$]);
 	// 無効な操作を全て削除
 	candidate = candidate[fixedPart..$];
 
