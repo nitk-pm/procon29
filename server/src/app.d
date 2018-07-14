@@ -249,12 +249,15 @@ void handlePush(JSONValue msg) {
 	if (redOpPushed && blueOpPushed) {
 		board = updateBoard(board, blueOp, redOp);
 		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
+		timekeeper.stop;
+		timekeeper.reset;
 		foreach(sock; sockets) {
 			sock.send(reply);
+			sock.send(format!"{type: \"distribute-time\", time: %f"(0.0f));
 		}
 		redOpPushed = false;
 		blueOpPushed = false;
-		timekeeper.reset;
+		timekeeper.start;
 	}
 	// まだoperationが揃ってない場合は来たoperationを配信
 	else {
@@ -298,7 +301,7 @@ void handleConn(scope WebSocket sock) {
 			}
 			break;
 		case "req-time":
-			sock.send(format!"{time: %f}"(timekeeper.peek.total!"msecs".to!float / 1000.0f));
+			sock.send(format!"{type: \"distribute-board\", time: %f}"(timekeeper.peek.total!"msecs".to!float / 1000.0f));
 			break;
 		default:
 			assert(false);
