@@ -4,13 +4,23 @@ import std.json;
 import std.conv;
 import std.stdio;
 import procon.container;
+int width(JSONValue json){ //一次元配列だと横幅がわからないと行がわからないため（縦はいらなさそう）
+	return to!int(json[0].array.length)+2; //番兵を含めた大きさを返すので注意
+}
 auto decode(JSONValue json){
 	Square[] board;
 	int h = to!int(json.array.length);
 	int w = to!int(json[0].array.length);
-	foreach(y;json.array){
-		foreach(x;y.array){
-			board ~= Square(to!int(x["score"].integer),x["agent"].type==JSON_TYPE.TRUE,x["color"].str);
+	for(int i=0;i<h+2;i++){
+		for(int j=0;j<w+2;j++){
+			if (i==0 || j==0 ||i==h+1 ||j == w+1){
+				board~=Square(0,false,"out");
+				continue;
+			}
+			else {
+				auto tmp=json.array[i-1].array[j-1];
+				board~= Square(to!int(tmp["score"].integer),tmp["agent"].type==JSON_TYPE.TRUE,tmp["color"].str);
+			}
 		}
 	}
 	return board;
@@ -126,5 +136,11 @@ enum ExampleJson = q{
 };
 unittest{
 	auto json = parseJSON(ExampleJson); 
-	decode(json);
+	auto tmp = decode(json);
+	int width = width(json);
+	writeln(width);
+	for(int i;i<tmp.length;i++){
+		write(tmp[i].score);
+		if ((i+1)%width==0)writeln("");
+	}
 }
