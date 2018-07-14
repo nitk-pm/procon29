@@ -135,8 +135,10 @@ auto surroundCalc(Square[] b,int width){
 				visited[i]=true;//最初から番兵を探索済みにすると点数計算がおかしくなる
 			}
 			while (!q.empty){
+				writeln(q.top());
 				auto idx = q.top(); //現在のインデックス
 				q.pop();
+				surroundPoint += abs(b[idx].score);
 				auto isSurrounded = true;//囲まれ判定
 				int expandIdx; //展開先のインデックス
 				for(int j=0;j<4;++j){
@@ -150,7 +152,7 @@ auto surroundCalc(Square[] b,int width){
 					if (!visited[expandIdx]){//探索済みなら展開しちゃダメ
 						visited[expandIdx]=true;
 						auto expandColor = b[expandIdx].color; //展開先のcolor
-						if(expandColor=="out"){
+						if(expandColor=="Out"){
 							isSurrounded = false;//outと接触したNeut群は領域ポイントにならない
 							continue;
 						}
@@ -158,7 +160,6 @@ auto surroundCalc(Square[] b,int width){
 							continue;
 						else if (expandColor!=color){//現在見てるチームと違うcolorのときだけ展開する
 							q.push(expandIdx);
-							surroundPoint += abs(b[expandIdx].score);
 						}
 					}
 				}
