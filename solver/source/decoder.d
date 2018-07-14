@@ -14,7 +14,7 @@ auto decode(JSONValue json){
 	for(int i=0;i<h+2;i++){
 		for(int j=0;j<w+2;j++){
 			if (i==0 || j==0 ||i==h+1 ||j == w+1){
-				board~=Square(0,false,"out");
+				board~=Square(0,false,"Out");
 				continue;
 			}
 			else {
