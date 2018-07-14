@@ -2,6 +2,9 @@ import std.stdio;
 import std.file;
 import std.json;
 import std.conv;
+import std.format;
+import std.conv;
+import std.datetime.stopwatch: StopWatch;
 import vibe.http.router;
 import vibe.http.websockets;
 import vibe.d;
@@ -205,6 +208,8 @@ bool blueOpPushed, redOpPushed;
 enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
 
+StopWatch timekeeper;
+
 shared static this () {
 	auto boardJson = "./board.json".readText.parseJSON;
 	board = boardOfJson(boardJson);
@@ -215,6 +220,7 @@ shared static this () {
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
 	settings.bindAddresses = LocalHost ~ LabAddress;
+	timekeeper.start;
 	listenHTTP(settings, router);
 }
 
@@ -248,6 +254,7 @@ void handlePush(JSONValue msg) {
 		}
 		redOpPushed = false;
 		blueOpPushed = false;
+		timekeeper.reset;
 	}
 	// まだoperationが揃ってない場合は来たoperationを配信
 	else {
@@ -289,6 +296,9 @@ void handleConn(scope WebSocket sock) {
 			default:
 				assert (false);
 			}
+			break;
+		case "req-time":
+			sock.send(format!"{time: %f}"(timekeeper.peek.total!"msecs".to!float / 1000.0f));
 			break;
 		default:
 			assert(false);
