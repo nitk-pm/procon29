@@ -231,6 +231,12 @@ string genReplyMsg(string type, JSONValue json) {
 	return res.toString;
 }
 
+string genTimeReplyMsg() {
+	JSONValue json;
+	json["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+	return genReplyMsg("distribute-time", json);
+}
+
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
 void handlePush(JSONValue msg) {
@@ -253,7 +259,7 @@ void handlePush(JSONValue msg) {
 		timekeeper.reset;
 		foreach(sock; sockets) {
 			sock.send(reply);
-			sock.send(format!"{type: \"distribute-time\", time: %f"(0.0f));
+			sock.send(genTimeReplyMsg);
 		}
 		redOpPushed = false;
 		blueOpPushed = false;
@@ -301,7 +307,7 @@ void handleConn(scope WebSocket sock) {
 			}
 			break;
 		case "req-time":
-			sock.send(format!"{type: \"distribute-board\", time: %f}"(timekeeper.peek.total!"msecs".to!float / 1000.0f));
+			sock.send(genTimeReplyMsg);
 			break;
 		default:
 			assert(false);

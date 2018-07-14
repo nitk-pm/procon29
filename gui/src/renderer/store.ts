@@ -41,6 +41,7 @@ export type State = {
 	ops: Common.Operation[];
 	highlight: Option<Common.Pos>;
 	freeze: boolean;
+	time: number;
 }
 
 
@@ -56,9 +57,11 @@ export const initialState: State = {
 	rivalOps: [],
 	ops: [],
 	highlight: None,
-	freeze: true
+	freeze: true,
+	time: 0.0
 };
 
 export const getServerInfo = (state: State) => state.server;
 export const getOps = (state: State) => state.ops;
 export const getColor = (state: State) => state.color;
+export const getTime = (state: State) => state.time;

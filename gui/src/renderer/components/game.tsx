@@ -20,6 +20,7 @@ export interface GameProps {
 	port: string;
 	connectError: boolean;
 	freeze: boolean;
+	time: number;
 }
 
 const styles={};
@@ -83,6 +84,9 @@ export const Game = withStyles(styles)<GameProps>(
 							<DoneIcon />
 						</Button>
 					</div>
+					<Typography>
+						{props.time}
+					</Typography>
 				</div>);
 		}
 		return (
