@@ -98,6 +98,7 @@ export const Game = withStyles(styles)<GameProps>(
 		}
 		else {
 			let msg = props.freeze ? (<span>waiting for server response</span>) : null;
+			let time = props.time.toFixed(1);
 			page = (
 				<div>
 					<div className='board-container'>
@@ -117,13 +118,13 @@ export const Game = withStyles(styles)<GameProps>(
 							<DoneIcon />
 						</Button>
 					</div>
-					<Typography>
-						{props.time}
+					<Typography variant='display1'>
+						{time}
 					</Typography>
 				</div>);
 		}
 		return (
-			<div>
+			<div className='game-root'>
 				<AppBar />
 				{page}
 			</div>

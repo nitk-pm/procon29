@@ -20,6 +20,11 @@ body {
 	float: left;
 }
 
+.game-root {
+	display: flex;
+	flex-direction: column;
+}
+
 .info-container {
 	margin: 1vh;
 	float: left;
