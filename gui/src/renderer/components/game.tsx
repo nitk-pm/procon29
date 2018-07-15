@@ -29,6 +29,9 @@ const styles={
 	},
 	button: {
 		margin: '1vh'
+	},
+	fileInput: {
+		display: 'none'
 	}
 };
 
@@ -93,6 +96,16 @@ export const Game = withStyles(styles)<GameProps>(
 							</Button>
 						</div>
 					</div>
+					<input
+						accept='application/json,.json'
+						className={classes.fileInput}
+							id='contained-button-file'
+							type='file'/>
+					<label htmlFor='contained-button-file'>
+						<Button variant='contained' component='span' className={classes.button}>
+							File
+						</Button>
+					</label>
 					{errorMsg}
 				</div>);
 		}
