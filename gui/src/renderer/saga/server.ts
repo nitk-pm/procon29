@@ -162,7 +162,6 @@ function* flow() {
 		const action = yield Effects.take(channel);
 		// 通信回線が開くと、configとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
-			console.log(payload);
 			yield Effects.put({
 				type: GameModule.ActionNames.CONFIG,
 				payload:{
