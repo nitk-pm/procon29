@@ -4,6 +4,7 @@ import * as Actions from '../actions';
 import * as Store from '../store';
 import * as ServerModule from '../module/server';
 import * as GameModule from '../module/game';
+import * as TimeModule from '../module/time';
 import * as Common from '../../common';
 
 export enum ActionNames {
@@ -11,7 +12,8 @@ export enum ActionNames {
 	RECEIVE_MSG = 'IGOKABADDI_RECEIVE_MESSAGE',
 	CONNECTED = 'IGOKABADDI_SOCKET_CONNECTED',	//Actionを定義しなくても良い(payloadも無くsaga内でしか投げられないので)
 	FAIL = 'IGOKABADDI_SOCKET_FAIL',
-	PUSH_OP = 'IGOKABADDI_PUSH_OP'
+	PUSH_OP = 'IGOKABADDI_PUSH_OP',
+	RESET_TIME = 'IGOKABADDI_RESET_TIME'
 }
 
 export type PushOp = {
@@ -30,6 +32,13 @@ export type ReceiveMsgAction = {
 	type: ActionNames.RECEIVE_MSG;
 	payload: {
 		data: any;
+	};
+}
+
+export type ResetTimeAction = {
+	type: ActionNames.RESET_TIME;
+	payload: {
+		time: number;
 	};
 }
 
@@ -64,6 +73,9 @@ function genListenChannel(socket: WebSocket) {
 				// 操作の解凍
 				emit({type: GameModule.ActionNames.THAWING});
 				break;
+			case 'distribute-time':
+				const time = msg.payload.time;
+				emit({type: ActionNames.RESET_TIME, payload: {time}});
 			default:
 			}
 			emit({type: ActionNames.RECEIVE_MSG, payload:{msg: event.data}});
@@ -107,6 +119,29 @@ function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
 }
 
+function wait(ms: number) {
+	return new Promise(resolve => {
+		setTimeout(() => resolve(), ms)
+	});
+}
+
+function* runTimer() {
+	let interval = 100.0;
+	while(true) {
+		const winner = yield Effects.race({
+			reset: Effects.take(ActionNames.RESET_TIME),
+			tick: Effects.call(wait, 100)
+		});
+		if (winner.reset) {
+			yield Effects.put({type: TimeModule.ActionNames.UPDATE_TIME, payload: {time: winner.reset.payload.time}});
+		}
+		else {
+			let currentTime = yield Effects.select(Store.getTime);
+			yield Effects.put({type: TimeModule.ActionNames.UPDATE_TIME, payload: {time: currentTime + interval/1000.0}});
+		}
+	}
+}
+
 /*
  * socketが正常に接続できるまで接続画面を出し続ける。
  * PUSH_OPが来たらサーバにメッセージを投げる
@@ -147,8 +182,10 @@ function* flow() {
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
 	socket.send(JSON.stringify({type: 'req-board', color: 'Red', payload: {}}));
+	socket.send(JSON.stringify({type: 'req-time'}));
 	yield Effects.fork(listenMsg, socket);
 	yield Effects.fork(sendMsg, socket);
+	yield Effects.fork(runTimer);
 }
 
 export function* rootSaga() {

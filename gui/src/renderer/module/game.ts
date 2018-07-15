@@ -66,28 +66,9 @@ function removeOp(ops: Common.Operation[], pos: Common.Pos) {
 	return newOps;
 }
 
-// クリック箇所がvalidならoperationを積む
-function tryStackOperation(from: Common.Pos, to: Common.Pos, clickType: ClickType, state: Store.State) {
-	let ops = state.ops;
-	let board = state.board;
-	// クリック箇所がハイライト箇所の八方1マスにあるか
-	if ((to.x <= from.x+1 && to.x >= from.x-1) && (to.y <= from.y+1 && to.y >= from.y-1) && !(from.x == to.x && from.y == to.y)) {
-		let destColor = board.arr[to.y][to.x].color;
-		if (destColor != Common.Color.Neut && destColor != state.color && clickType == ClickType.Left) return ops;
-		let type = clickType == ClickType.Left ? Common.OperationType.Move : Common.OperationType.Clear;
-		let newOps = removeOp(ops, from);
-		newOps.push({from, to, type});
-		return newOps;
-	}
-	return ops;
-}
-
-// クリック箇所がhighlight位置と同じなら
-function tryReset(from: Common.Pos, to: Common.Pos, ops: Common.Operation[]) {
-	if (from.x == to.x && from.y == to.y)
-		return removeOp(ops, from);
-	else
-		return ops;
+function isContiguoused(p1: Common.Pos, p2: Common.Pos) {
+	if (p1.x <= p2.x+1 && p1.x >= p2.x-1 && p1.y <= p2.y+1 && p1.y >= p2.y-1) return true; 
+	return false;
 }
 
 /*
@@ -100,14 +81,36 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	case ActionNames.CLICK_SQUARE:
 		if (!state.freeze) {
 			let {x, y} = action.payload.pos;
+			let to = action.payload.pos;
+			// ハイライトされた箇所がなければクリック箇所にエージェントが居るか確認してハイライト
+			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
 				Some: p => None,
 				None: () => state.board.arr[y][x].agent && state.board.arr[y][x].color == state.color ? Option({x, y}) : None
 			});
 			let ops = state.highlight.match({
-				Some: p => {
-						let ops = tryStackOperation(p, action.payload.pos, action.payload.type, state);
-						return tryReset(p, action.payload.pos, ops);
+				Some: from => {
+						let contigused = isContiguoused(from, to);
+						let isClear = action.payload.type == ClickType.Right;
+						let destColorIsEnemys =
+							state.board.arr[y][x].color != Common.Color.Neut &&
+							state.board.arr[y][x].color != state.color;
+						if (contigused && (isClear || !destColorIsEnemys)) {
+							let ops = removeOp(state.ops, from);
+							if (to.x == from.x && to.y == from.y) {
+								return ops;
+							}
+							if (isClear) {
+								ops.push({from, to, type: Common.OperationType.Clear});
+							}
+							else {
+								ops.push({from, to, type: Common.OperationType.Move});
+							}
+							return ops;
+						}
+						else {
+							return state.ops;
+						}
 					},
 				None: () => state.ops
 			});

@@ -20,9 +20,17 @@ export interface GameProps {
 	port: string;
 	connectError: boolean;
 	freeze: boolean;
+	time: number;
 }
 
-const styles={};
+const styles={
+	input: {
+		margin: '1vh'
+	},
+	button: {
+		margin: '1vh'
+	}
+};
 
 type ClassNames = keyof typeof styles;
 
@@ -36,34 +44,61 @@ export const Game = withStyles(styles)<GameProps>(
 		}
 		if (props.inDialog) {
 			 page = (
-				<div>
-					<TextField
-						id='ip'
-						label='ip'
-						value={props.ip}
-				 		onChange={(e) => props.actions.changeIp(e.target.value)}/>
-					<TextField
-						id='port'
-						label='port'
-						value={props.port}
-				 		onChange={(e) => props.actions.changePort(e.target.value)}/>
-					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
-						Player
-					</Button>
-					<Button variant='contained' color='primary' onClick={() => props.actions.connectAsUser(Common.Color.Blue)}>
-						User
-					</Button>
-					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsPlayer(Common.Color.Red)}>
-						Player
-					</Button>
-					<Button variant='contained' color='secondary' onClick={() => props.actions.connectAsUser(Common.Color.Red)}>
-						User
-					</Button>
+				<div className='game-settings'>
+					<div className='input-container'>
+						<TextField
+							className={classes.input}
+							id='ip'
+							label='ip'
+							value={props.ip}
+							onChange={(e) => props.actions.changeIp(e.target.value)}/>
+						<TextField
+							className={classes.input}
+							id='port'
+							label='port'
+							value={props.port}
+							onChange={(e) => props.actions.changePort(e.target.value)}/>
+					</div>
+					<div className='button-container'>
+						<div className='player-or-user'>
+							<Button
+								className={classes.button}
+								variant='contained'
+								color='primary'
+								onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
+								Player
+							</Button>
+							<Button
+								className={classes.button}
+								variant='contained'
+								color='primary'
+								onClick={() => props.actions.connectAsUser(Common.Color.Blue)}>
+								User
+							</Button>
+						</div>
+						<div>
+							<Button
+								className={classes.button}
+								variant='contained'
+								color='secondary'
+								onClick={() => props.actions.connectAsPlayer(Common.Color.Red)}>
+								Player
+							</Button>
+							<Button
+								className={classes.button}
+								variant='contained'
+								color='secondary'
+								onClick={() => props.actions.connectAsUser(Common.Color.Red)}>
+								User
+							</Button>
+						</div>
+					</div>
 					{errorMsg}
 				</div>);
 		}
 		else {
 			let msg = props.freeze ? (<span>waiting for server response</span>) : null;
+			let time = props.time.toFixed(1);
 			page = (
 				<div>
 					<div className='board-container'>
@@ -83,10 +118,13 @@ export const Game = withStyles(styles)<GameProps>(
 							<DoneIcon />
 						</Button>
 					</div>
+					<Typography variant='display1'>
+						{time}
+					</Typography>
 				</div>);
 		}
 		return (
-			<div>
+			<div className='game-root'>
 				<AppBar />
 				{page}
 			</div>
