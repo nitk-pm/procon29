@@ -208,6 +208,8 @@ bool blueOpPushed, redOpPushed;
 enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
 
+size_t cnt = 0;
+
 StopWatch timekeeper;
 
 shared static this () {
@@ -222,6 +224,9 @@ shared static this () {
 	settings.bindAddresses = LocalHost ~ LabAddress;
 	timekeeper.start;
 	listenHTTP(settings, router);
+	if (!exists("./log")) {
+		mkdir("./log");
+	}
 }
 
 string genReplyMsg(string type, JSONValue json) {
@@ -255,6 +260,8 @@ void handlePush(JSONValue msg) {
 	if (redOpPushed && blueOpPushed) {
 		board = updateBoard(board, blueOp, redOp);
 		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
+		auto f = File(format!"./log/%d.json"(++cnt), "w");
+		f.write(board.jsonOfBoard.toPrettyString);
 		timekeeper.stop;
 		timekeeper.reset;
 		foreach(sock; sockets) {
