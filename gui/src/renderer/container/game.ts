@@ -48,6 +48,21 @@ export class ActionDispatcher {
 			}
 		});
 	}
+
+	loadBoard(e: any) {
+		const reader = new FileReader();
+		const path = e.target.files[0];
+		console.log(e.target.files);
+		reader.onload = (e) => {
+			this.dispatch({
+				type: GameModule.ActionNames.LOAD_BOARD,
+				payload: {
+					board: Common.loadBoard(JSON.parse(e.target.result))
+				}
+			});
+		};
+		reader.readAsText(path);
+	}
 }
 
 export default ReactRedux.connect(
@@ -57,7 +72,9 @@ export default ReactRedux.connect(
 		inDialog: state.server.socket == null,
 		connectError: state.connectError,
 		freeze: state.freeze,
-		time: state.time
+		time: state.time,
+		viewBoard: state.viewBoard,
+		board: state.board
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

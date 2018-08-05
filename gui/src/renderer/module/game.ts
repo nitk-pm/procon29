@@ -11,7 +11,8 @@ export enum ActionNames {
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
 	FREEZE = 'IGOKABADDI_FREEZE',
-	THAWING = 'IGOKABADDI_THAWING'
+	THAWING = 'IGOKABADDI_THAWING',
+	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD'
 }
 
 export type ConfigAction = {
@@ -19,6 +20,13 @@ export type ConfigAction = {
 	payload: {
 		config: Store.Config;
 		color: Common.Color;
+	}
+}
+
+export type LoadBoardAction = {
+	type: ActionNames.LOAD_BOARD;
+	payload: {
+		board: Common.Table;
 	}
 }
 
@@ -124,7 +132,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			return state;
 		}
 	case ActionNames.CONFIG:
-		console.log(action);
 		return {
 			...state,
 			color: action.payload.color,
@@ -150,6 +157,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			connectError: true
+		};
+	case ActionNames.LOAD_BOARD:
+		return {
+			...state,
+			viewBoard: Option(action.payload.board),
 		};
 	default:
 		return state;

@@ -92,13 +92,11 @@ export class Board extends React.Component<BoardProps> {
 					else if (ops[i].type == Common.OperationType.Clear){
 						state = SquareState.Clear;
 					}
-					//console.log({dir, state});
 					return {dir, state};
 				}
 			}
 			return {dir: 0, state: SquareState.Wait};
 		};
-		console.log(this.props.operation);
 		return (
 			<div style={boardStyle}>{
 				this.props.table.arr.map((line, y)  =>

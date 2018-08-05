@@ -15,7 +15,6 @@ export type UpdateTimeAction = {
 }
 
 export function reducer(state: number, action: Action.T) {
-	console.log(action);
 	switch (action.type) {
 	case ActionNames.UPDATE_TIME:
 		return action.payload.time;
