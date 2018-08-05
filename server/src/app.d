@@ -60,13 +60,7 @@ string genTimeReplyMsg() {
 }
 
 Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
-	OpContainer[] ops;
-	foreach(op; blueOp) {
-		ops ~= OpContainer(Color.Blue, op.type, op.from, op.to);
-	}
-	foreach(op; redOp) {
-		ops ~= OpContainer(Color.Red, op.type, op.from, op.to);
-	}
+	auto ops = blueOp ~ redOp;
 	// 0..fixedPart: 無効
 	// fixedPart..$: 有効
 	size_t fixedPart = 0;
@@ -142,11 +136,11 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 void handlePush(JSONValue msg) {
 	switch (msg["color"].str) {
 		case "Red":
-			redOp = msg["payload"].operationsOfJson;
+			redOp = msg["payload"].operationsOfJson(Color.Red);
 			redOpPushed = true;
 			break;
 		case "Blue":
-			blueOp = msg["payload"].operationsOfJson;
+			blueOp = msg["payload"].operationsOfJson(Color.Blue);
 			blueOpPushed = true;
 			break;
 		default:

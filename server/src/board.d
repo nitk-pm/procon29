@@ -23,21 +23,13 @@ unittest {
 
 enum OpType { Move, Clear }
 
-struct OpContainer {
-	Color color;
-	OpType type;
-	Pos from;
-	Pos to;
-}
-
 struct Operation {
 	OpType type;
+	Color color;
 	// fromはtype == OpType.Moveのときのみ有効
 	// 無効な場合は-1, -1を代入しておく
 	Pos from, to;
 }
-
-
 
 Board boardOfJson(JSONValue json) {
 	Square[][] tbl;
@@ -81,7 +73,7 @@ JSONValue jsonOfBoard(Board board) {
 	return JSONValue(boardJson);
 }
 
-Operation[] operationsOfJson(JSONValue json) {
+Operation[] operationsOfJson(JSONValue json, in Color color) {
 	Operation[] ops;
 	foreach (op; json.array) {
 		OpType type;
@@ -97,7 +89,7 @@ Operation[] operationsOfJson(JSONValue json) {
 			from.x = op["from"]["x"].integer.to!int;
 			from.y = op["from"]["y"].integer.to!int;
 		}
-		ops ~= Operation(type, from, to);
+		ops ~= Operation(type, color, from, to);
 	}
 	return ops;
 }
