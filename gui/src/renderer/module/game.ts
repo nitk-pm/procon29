@@ -7,7 +7,7 @@ import { None, Option } from 'monapt';
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
-	CONFIG = 'IGOKABADDI_CONFIG',
+	TRANSITION = 'IGOKABADDI_TRANSITION',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
 	FREEZE = 'IGOKABADDI_FREEZE',
@@ -16,9 +16,9 @@ export enum ActionNames {
 }
 
 export type ConfigAction = {
-	type: ActionNames.CONFIG;
+	type: ActionNames.TRANSITION;
 	payload: {
-		config: Store.Config;
+		state: Store.UIState;
 		color: Common.Color;
 	}
 }
@@ -131,11 +131,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
-	case ActionNames.CONFIG:
+	case ActionNames.TRANSITION:
 		return {
 			...state,
 			color: action.payload.color,
-			config: action.payload.config
+			state: action.payload.state
 		};
 	case ActionNames.FREEZE:
 		return {

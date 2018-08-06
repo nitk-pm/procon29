@@ -23,7 +23,7 @@ export type PushOp = {
 export type ConnectAction = {
 	type: ActionNames.CONNECT_SOCKET;
 	payload: {
-		config: Store.Config;
+		state: Store.UIState;
 		color: Common.Color;
 	}
 }
@@ -160,18 +160,18 @@ function* flow() {
 		const channel = yield Effects.call(genOpenChannel, socket);
 		// socketがopenした時のメッセージを受け取る
 		const action = yield Effects.take(channel);
-		// 通信回線が開くと、configとcolorをmodule/gameに投げる
+		// 通信回線が開くと、stateとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
 			yield Effects.put({
-				type: GameModule.ActionNames.CONFIG,
+				type: GameModule.ActionNames.TRANSITION,
 				payload:{
 					color: payload.color,
-					config: payload.config
+					state: payload.state
 				}
 			});
 			break;
 		}
-		// configとcolorは変えずに失敗を通知
+		// stateとcolorは変えずに失敗を通知
 		else if (action.type == ActionNames.FAIL) {
 			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
 		}

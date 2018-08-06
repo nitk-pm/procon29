@@ -16,10 +16,6 @@ export class ActionDispatcher {
 		return this.dispatch({type: ServerSaga.ActionNames.PUSH_OP});
 	}
 
-	applyConfig(config: Store.Config) {
-		
-	}
-
 	changeIp(ip: string) {
 		this.dispatch({type: ServerModule.ActionNames.CHANGE_IP_ADDRESS, payload: {ip}});
 	}
@@ -32,7 +28,7 @@ export class ActionDispatcher {
 		this.dispatch({
 			type: ServerSaga.ActionNames.CONNECT_SOCKET,
 			payload: {
-				config: Store.Config.Player,
+				state: Store.UIState.Player,
 				color
 			}
 		});
@@ -43,7 +39,7 @@ export class ActionDispatcher {
 		this.dispatch({
 			type: ServerSaga.ActionNames.CONNECT_SOCKET,
 			payload: {
-				config: Store.Config.Player,
+				state: Store.UIState.Player,
 				color
 			}
 		});
