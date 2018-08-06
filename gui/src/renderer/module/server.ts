@@ -5,7 +5,8 @@ import * as Store from '../store';
 export enum ActionNames {
 	CHANGE_IP_ADDRESS = 'IGOKABADDI_CHANGE_IP_ADDRESS',
 	CHANGE_PORT = 'IGOKABADDI_CHANGE_PORT',
-	UPDATE_SOCKET = 'IGOKABADDI_UPDATE_SOCKET'
+	CONNECT = 'IGOKABADDI_UPDATE_SOCKET',
+	CONNECT_FAIL = 'IGOKABADDI_CONNECT_FAIL'
 }
 
 export type ChangeIpAddressAction = {
@@ -22,11 +23,15 @@ export type ChangePortAction = {
 	}
 }
 
-export type UpdateSocketAction = {
-	type: ActionNames.UPDATE_SOCKET;
+export type ConnectAction = {
+	type: ActionNames.CONNECT;
 	payload: {
 		socket: WebSocket;
-	}
+	};
+}
+
+export type ConnectFailAction = {
+	type: ActionNames.CONNECT_FAIL;
 }
 
 export function reducer(state: {ip: string; port: string} = Store.initialState.server, action: Action.T) {
@@ -41,10 +46,17 @@ export function reducer(state: {ip: string; port: string} = Store.initialState.s
 			...state,
 			port: action.payload.port
 		};
-	case ActionNames.UPDATE_SOCKET:
+	case ActionNames.CONNECT:
 		return {
 			...state,
-			socket: action.payload.socket
+			socket: action.payload.socket,
+			connected: true
+		};
+   	case ActionNames.CONNECT_FAIL:
+		return {
+			...state,
+			connected: false,
+			msg: 'CONNECT FAIL'
 		};
 	default:
 		return state;

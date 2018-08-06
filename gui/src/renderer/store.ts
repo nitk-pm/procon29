@@ -21,7 +21,9 @@ export type ViewState = {
 export type Server = {
 	ip: string,
 	port: string,
-	socket: WebSocket
+	socket: WebSocket,
+	connected: boolean,
+	msg: string
 }
 
 export enum UIState {
@@ -30,11 +32,10 @@ export enum UIState {
 	User,
 	Viewer
 }
-;
+
 export type State = {
 	state: UIState;
 	color: Common.Color;
-	connectError: boolean;
 	board: Common.Table;
 	//Undo用
 	hist: Array<Array<Common.Operation>>;
@@ -52,11 +53,10 @@ let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
 	color: Common.Color.Red,
-	connectError: false,
 	state: UIState.Setting,
 	hist: [],
 	board: initialBoard,
-	server: {ip: '127.0.0.1', port: '8080', socket: null},
+	server: {ip: '127.0.0.1', port: '8080', socket: null, connected: false, msg: ''},
 	rivalOps: [],
 	ops: [],
 	highlight: None,

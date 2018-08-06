@@ -18,9 +18,9 @@ export interface GameProps {
 	actions: ActionDispatcher;
 	inDialog: boolean;
 	board: Common.Table;
+	server: Store.Server;
 	ip: string;
 	port: string;
-	connectError: boolean;
 	freeze: boolean;
 	time: number;
 	viewBoard: Option<Common.Table>;
@@ -53,8 +53,8 @@ export const Game = withStyles(styles)<GameProps>(
 			None: () => {
 				if (props.inDialog) {
 					let errorMsg;
-					if (props.connectError) {
-						errorMsg = <span>CONNECT FAILED</span>;
+					if (!props.server.connected && props.server.msg.length != 0) {
+						errorMsg = <span>props.connectionStatus.msg</span>;
 					}
 					return (
 						<div className='game-settings'>

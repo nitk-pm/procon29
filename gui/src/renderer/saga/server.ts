@@ -173,11 +173,11 @@ function* flow() {
 		}
 		// stateとcolorは変えずに失敗を通知
 		else if (action.type == ActionNames.FAIL) {
-			yield Effects.put({type: GameModule.ActionNames.CONNECT_ERROR});
+			yield Effects.put({type: ServerModule.ActionNames.CONNECT_FAIL});
 		}
 	}
 	// 接続したsocketをstoreに保存
-	yield Effects.put({type: ServerModule.ActionNames.UPDATE_SOCKET, payload:{socket}});
+	yield Effects.put({type: ServerModule.ActionNames.CONNECT, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
 	socket.send(JSON.stringify({type: 'req-board', color: 'Red', payload: {}}));

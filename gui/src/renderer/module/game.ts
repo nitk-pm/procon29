@@ -9,7 +9,6 @@ export enum ActionNames {
 	DONE = 'IGOKABADDI_DONE',
 	TRANSITION = 'IGOKABADDI_TRANSITION',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
-	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
 	FREEZE = 'IGOKABADDI_FREEZE',
 	THAWING = 'IGOKABADDI_THAWING',
 	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD'
@@ -28,10 +27,6 @@ export type LoadBoardAction = {
 	payload: {
 		board: Common.Table;
 	}
-}
-
-export type ConnectErrorAction = {
-	type: ActionNames.CONNECT_ERROR;
 }
 
 export type FreezeAction = {
@@ -84,7 +79,7 @@ function isContiguoused(p1: Common.Pos, p2: Common.Pos) {
  * ターン終了時には盤面をlogに追加し、histをクリア
  * 操作を一度行う度にlogに盤面を保存
  */
-export function reducer(state: Store.State = Store.initialState, action: Action.T) {
+export function reducer(state: Store.State = Store.initialState, action: Action.T): Store.State {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		if (!state.freeze) {
@@ -152,11 +147,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			...state,
 			board: action.payload.board,
 			ops: []
-		};
-	case ActionNames.CONNECT_ERROR:
-		return {
-			...state,
-			connectError: true
 		};
 	case ActionNames.LOAD_BOARD:
 		return {
