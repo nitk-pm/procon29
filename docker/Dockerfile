@@ -12,8 +12,6 @@ RUN apt-get -y install build-essential
 RUN apt-get -y install git
 RUN apt-get -y install yarn
 
-RUN yarn global add elm
-
 # Dlang
 RUN apt-get install -qy libssl-dev zlib1g-dev
 RUN curl -fsS https://dlang.org/install.sh | bash -s dmd 
