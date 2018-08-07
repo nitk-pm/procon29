@@ -5,11 +5,13 @@ import std.stdio;
 struct Square {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
-	string color;
+	int color;
 }
-
+enum Color{
+	Red,Blue,Neut,Out
+}
 struct Agent { //エージェントの色と座標
-	string color;
+	int color;
 	int pos;//座標は一つの整数で表現する
 }
 

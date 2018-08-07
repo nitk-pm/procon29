@@ -3,116 +3,10 @@ module procon.calc;
 import std.json;
 import std.conv;
 import std.stdio;
+import std.typecons:tuple;
 import procon.container;
 import procon.decoder;
-enum ExampleJson = q{
-[
-	[
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false}
-	],
-	[
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Blue", "agent":true},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Red", "agent":true},
-		{"score":1,  "color":"Neut", "agent":false}
-	],
-	[
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":3,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":3,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false}
-	],
-	[
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":3, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false}
-	],
-	[
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":3, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":1, "color":"Neut", "agent":false},
-		{"score":2, "color":"Neut", "agent":false}
-	],
-	[
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":3,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":3,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false}
-	],
-	[
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Red", "agent":true},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Blue", "agent":true},
-		{"score":1,  "color":"Neut", "agent":false}
-	],
-	[
-		{"score":-2, "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":2,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":0,  "color":"Neut", "agent":false},
-		{"score":1,  "color":"Neut", "agent":false},
-		{"score":-2, "color":"Neut", "agent":false}
-	]
-]
-};
+import procon.example;
 /*
 	赤チームの領域ポイントを考えるときは青白を一緒と考えてよい、逆もしかり
 	完結に説明するために以下では赤視点でコメントを書いている
@@ -122,15 +16,17 @@ int abs(int a){
 }
 
 auto surroundCalc(Square[] b,int width){
-	int[2] score; score[0]=0;score[1]=0;//公式ページに従ってもタプル使えなくてキレそう
-	string[2] team;team[0]="Red";team[1]="Blue"; //このへんめっちゃクソコードだけど多分これが一番速い
+	auto score = tuple(0,0);
+	auto team = tuple(Color.Red,Color.Blue);
 	foreach(color;team){//赤と青を分けて考える
+//FIXME~
 		bool[] visited;
 		foreach(x;b)
 			visited~=false;
+//~FIXME
 		auto q = Queue!int();
 		for (int i=0;i<b.length;i++){
-			if (b[i].color != "Out" && b[i].color != color && !visited[i]){//番兵と赤のマスと展開済みのマスは展開しちゃダメ
+			if (b[i].color != Color.Out && b[i].color != color && !visited[i]){//番兵と赤のマスと展開済みのマスは展開しちゃダメ
 				q.push(i);
 				visited[i]=true;//最初から番兵を探索済みにすると点数計算がおかしくなる
 			}
@@ -153,7 +49,7 @@ auto surroundCalc(Square[] b,int width){
 					if (!visited[expandIdx]){//探索済みなら展開しちゃダメ
 						visited[expandIdx]=true;
 						auto expandColor = b[expandIdx].color; //展開先のcolor
-						if(expandColor=="Out"){
+						if(expandColor==Color.Out){
 							isSurrounded = false;//outと接触したNeut群は領域ポイントにならない
 							continue;
 						}
@@ -167,7 +63,7 @@ auto surroundCalc(Square[] b,int width){
 			}
 			if (!isSurrounded)
 				surroundPoint = 0;
-			if (color=="Red")
+			if (color==Color.Red)
 				score[0]+=surroundPoint;
 			else 
 				score[1]+=surroundPoint;
@@ -178,8 +74,8 @@ auto surroundCalc(Square[] b,int width){
 auto tileCalc(Square[] b){
 	int[2] score;score[0]=0;score[1]=0;
 	foreach(x;b){
-	if (x.color == "Red")	score[0]+=x.score;
-	if (x.color == "Blue")	score[1]+=x.score;
+	if (x.color == Color.Red)	score[0]+=x.score;
+	if (x.color == Color.Blue)	score[1]+=x.score;
 	}
 	return score;
 }
