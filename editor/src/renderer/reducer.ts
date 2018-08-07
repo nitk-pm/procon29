@@ -4,6 +4,8 @@ import reduceReducers from 'reduce-reducers';
 import * as Store from './store';
 import * as Actions from './actions';
 
+import * as AppModule from './module/app';
+
 // TODO initialStateに含まれてないキーのreducerが来たら例外
 function combinePartialReducers(reducers: any, initialState: any) {
 	var newReducers: {[key: string]: any} = {};
@@ -26,9 +28,12 @@ function combinePartialReducers(reducers: any, initialState: any) {
 	return Redux.combineReducers(newReducers);
 }
 
-const reducer = combinePartialReducers(
-	{},
-	Store.initialState
+const reducer = reduceReducers(
+	AppModule.reducer,
+	combinePartialReducers(
+		{},
+		Store.initialState
+	)
 );
 
 export const store = Redux.createStore(reducer);
