@@ -21,7 +21,7 @@ auto surroundCalc(Square[] b,int width){
 	foreach(color;team){//赤と青を分けて考える
 //FIXME~
 		bool[] visited;
-		foreach(x;b)
+		foreach(x;0..b.length)
 			visited~=false;
 //~FIXME
 		auto q = Queue!int();
