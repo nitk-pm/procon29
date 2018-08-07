@@ -7,18 +7,18 @@ import { None, Option } from 'monapt';
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
-	CONFIG = 'IGOKABADDI_CONFIG',
+	TRANSITION = 'IGOKABADDI_TRANSITION',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
-	CONNECT_ERROR = 'IGOKABADDI_CONNECT_ERROR',
 	FREEZE = 'IGOKABADDI_FREEZE',
 	THAWING = 'IGOKABADDI_THAWING',
-	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD'
+	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD',
+	BACK = 'IGOKABADDI_BACK'
 }
 
 export type ConfigAction = {
-	type: ActionNames.CONFIG;
+	type: ActionNames.TRANSITION;
 	payload: {
-		config: Store.Config;
+		state: Store.UIState;
 		color: Common.Color;
 	}
 }
@@ -28,10 +28,6 @@ export type LoadBoardAction = {
 	payload: {
 		board: Common.Table;
 	}
-}
-
-export type ConnectErrorAction = {
-	type: ActionNames.CONNECT_ERROR;
 }
 
 export type FreezeAction = {
@@ -61,6 +57,10 @@ export type UpdateBoardAction = {
 	};
 }
 
+export type BackAction = {
+	type: ActionNames.BACK;
+}
+
 // posをキーにopsからCommon.Operationを削除する
 function removeOp(ops: Common.Operation[], pos: Common.Pos) {
 	let newOps = new Array<Common.Operation>(0);
@@ -84,7 +84,7 @@ function isContiguoused(p1: Common.Pos, p2: Common.Pos) {
  * ターン終了時には盤面をlogに追加し、histをクリア
  * 操作を一度行う度にlogに盤面を保存
  */
-export function reducer(state: Store.State = Store.initialState, action: Action.T) {
+export function reducer(state: Store.State = Store.initialState, action: Action.T): Store.State {
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		if (!state.freeze) {
@@ -131,11 +131,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
-	case ActionNames.CONFIG:
+	case ActionNames.TRANSITION:
 		return {
 			...state,
 			color: action.payload.color,
-			config: action.payload.config
+			state: action.payload.state
 		};
 	case ActionNames.FREEZE:
 		return {
@@ -153,15 +153,16 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			board: action.payload.board,
 			ops: []
 		};
-	case ActionNames.CONNECT_ERROR:
-		return {
-			...state,
-			connectError: true
-		};
 	case ActionNames.LOAD_BOARD:
 		return {
 			...state,
-			viewBoard: Option(action.payload.board),
+			state: Store.UIState.Viewer,
+			board: action.payload.board
+		};
+	case ActionNames.BACK:
+		return {
+			...state,
+			state: Store.UIState.Setting
 		};
 	default:
 		return state;

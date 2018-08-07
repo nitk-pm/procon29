@@ -9,13 +9,14 @@ export type T =
 	| GameModule.ClickSquareAction
 	| GameModule.ConfigAction
 	| GameModule.UpdateBoardAction
-	| GameModule.ConnectErrorAction
 	| GameModule.FreezeAction
 	| GameModule.ThawingAction
 	| GameModule.LoadBoardAction
+	| GameModule.BackAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
-	| ServerModule.UpdateSocketAction
+	| ServerModule.ConnectAction
+	| ServerModule.ConnectFailAction
 	| ServerSaga.ConnectAction
 	| ServerSaga.PushOp
 	| ServerSaga.ReceiveMsgAction

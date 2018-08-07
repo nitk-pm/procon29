@@ -18,21 +18,24 @@ export type ViewState = {
 	icon: Icon
 }
 
-export enum Config {
-	Player,
-	User
-}
-
 export type Server = {
 	ip: string,
 	port: string,
-	socket: WebSocket
+	socket: WebSocket,
+	connected: boolean,
+	msg: string
+}
+
+export enum UIState {
+	Setting,
+	Player,
+	User,
+	Viewer
 }
 
 export type State = {
+	state: UIState;
 	color: Common.Color;
-	connectError: boolean;
-	config: Config;
 	board: Common.Table;
 	//Undo用
 	hist: Array<Array<Common.Operation>>;
@@ -42,7 +45,6 @@ export type State = {
 	highlight: Option<Common.Pos>;
 	freeze: boolean;
 	time: number;
-	viewBoard: Option<Common.Table>;
 }
 
 
@@ -50,17 +52,15 @@ let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
 	color: Common.Color.Red,
-	connectError: false,
-	config: Config.Player,
+	state: UIState.Setting,
 	hist: [],
 	board: initialBoard,
-	server: {ip: '127.0.0.1', port: '8080', socket: null},
+	server: {ip: '127.0.0.1', port: '8080', socket: null, connected: false, msg: ''},
 	rivalOps: [],
 	ops: [],
 	highlight: None,
 	freeze: true,
 	time: 0.0,
-	viewBoard: None
 };
 
 export const getServerInfo = (state: State) => state.server;
