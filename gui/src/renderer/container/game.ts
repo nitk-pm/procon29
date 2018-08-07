@@ -6,6 +6,7 @@ import * as Actions from '../actions';
 import * as Common from '../../common';
 
 import * as GameModule from '../module/game';
+import * as AppModule from '../module/app';
 import * as ServerModule from '../module/server';
 import * as ServerSaga from '../saga/server';
 
@@ -51,7 +52,7 @@ export class ActionDispatcher {
 		console.log(e.target.files);
 		reader.onload = (e) => {
 			this.dispatch({
-				type: GameModule.ActionNames.LOAD_BOARD,
+				type: AppModule.ActionNames.LOAD_BOARD,
 				payload: {
 					board: Common.loadBoard(JSON.parse(e.target.result))
 				}

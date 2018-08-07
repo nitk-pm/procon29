@@ -4,6 +4,7 @@ import * as Actions from '../actions';
 import * as Store from '../store';
 import * as ServerModule from '../module/server';
 import * as GameModule from '../module/game';
+import * as AppModule from '../module/app';
 import * as TimeModule from '../module/time';
 import * as Common from '../../common';
 
@@ -71,7 +72,7 @@ function genListenChannel(socket: WebSocket) {
 				// 盤面の更新
 				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				// 操作の解凍
-				emit({type: GameModule.ActionNames.THAWING});
+				emit({type: AppModule.ActionNames.THAWING});
 				break;
 			case 'distribute-time':
 				const time = msg.payload.time;
@@ -110,7 +111,7 @@ function* pushOp(socket: WebSocket) {
 			socket.send(msg);
 		}, socket);
 		// メッセージを投げるのとは独立にGUIの操作を無効化する。
-		yield Effects.put({type: GameModule.ActionNames.FREEZE});
+		yield Effects.put({type: AppModule.ActionNames.FREEZE});
 	}
 }
 
@@ -163,7 +164,7 @@ function* flow() {
 		// 通信回線が開くと、stateとcolorをmodule/gameに投げる
 		if (action.type == ActionNames.CONNECTED) {
 			yield Effects.put({
-				type: GameModule.ActionNames.TRANSITION,
+				type: AppModule.ActionNames.TRANSITION,
 				payload:{
 					color: payload.color,
 					state: payload.state

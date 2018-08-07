@@ -5,6 +5,7 @@ import * as AppBarComponent from '../components/appbar';
 import * as Actions from '../actions';
 
 import * as AppBarModule from '../module/appbar';
+import * as AppModule from '../module/app';
 import * as GameModule from '../module/game';
 
 export class ActionDispatcher {
@@ -15,7 +16,7 @@ export class ActionDispatcher {
 	}
 
 	back() {
-		return this.dispatch({type: GameModule.ActionNames.BACK});
+		return this.dispatch({type: AppModule.ActionNames.BACK});
 	}
 }
 
