@@ -14,6 +14,13 @@ RUN apt-get -y install yarn
 
 RUN yarn global add elm
 
+# Dlang
+RUN apt-get install -qy libssl-dev zlib1g-dev
+RUN curl -fsS https://dlang.org/install.sh | bash -s dmd 
+RUN sh ~/dlang/dmd-2.080.1/activate
+RUN apt-get install -qy dub
+RUN echo 'source ~/dlang/dmd-2.080.1/activate' >> ~/.bashrc
+
 RUN mkdir /ci
 WORKDIR /ci
 ENTRYPOINT /bin/bash

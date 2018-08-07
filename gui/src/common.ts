@@ -4,9 +4,9 @@ export type Pos = {
 }
 
 export enum Color {
-	Red,
-	Blue,
-	Neut
+	Red = 'Red',
+	Blue = 'Blue',
+	Neut = 'Neut'
 }
 
 export type Square = {
@@ -22,13 +22,14 @@ export type Table = {
 }
 
 export enum OperationType {
-	Move,
-	Clear
+	Move = 'Move',
+	Clear = 'Clear'
 }
 
 export type Operation = {
-	pos: Pos,
-	type: OperationType
+	from: Pos,
+	type: OperationType,
+	to: Pos
 }
 
 /*
@@ -39,13 +40,30 @@ export function loadBoard(json: Array<Array<any>>): Table {
 	let w = json[0].length;
 	let arr = json.map(line =>
 		line.map(square => {
-			let color = square.color ==
-				'Red' ? Color.Red :
-				'Blue' ? Color.Blue : Color.Neut;
+			let color;
+			switch(square.color) {
+			case 'Red': color = Color.Red;break;
+			case 'Blue': color = Color.Blue;break;
+			case 'Neut': color = Color.Neut;break;
+			default: throw 'unexpected color'
+			}
 			let score = parseInt(square.score);
-			let agent = square.agent == 'true';
+			let agent = square.agent as boolean;
 			return {color, score, agent};
 		}));
 	return {w, h, arr};
 }
 
+export function loadOperations(json: Array<any> ): Operation[] {
+	return json.map(op => {
+		let from = {x: parseInt(op.pos.x), y: parseInt(op.pos.y)};
+		let to  = {x: parseInt(op.to.x), y: parseInt(op.to.y)};
+		let type;
+		switch (op.type) {
+		case 'Move': type = OperationType.Move; break;
+		case 'Clear': type = OperationType.Clear; break;
+		default: throw 'unexpected Operation type';
+		}
+		return { from, to, type };
+	});
+}

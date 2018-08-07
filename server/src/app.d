@@ -1,97 +1,17 @@
+module procon29.server.app;
+
 import std.stdio;
 import std.file;
 import std.json;
 import std.conv;
+import std.format;
+import std.conv;
+import std.datetime.stopwatch: StopWatch;
 import vibe.http.router;
 import vibe.http.websockets;
 import vibe.d;
 
-enum Color {
-	Red,
-	Blue,
-	Neut
-}
-
-struct Square {
-	Color color;
-	int score;
-	bool agent;
-}
-
-alias Board = Square[][];
-
-Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
-	// TODO 実装しろ
-	return [];
-}
-
-Board boardOfJson(JSONValue json) {
-	Square[][] tbl;
-	foreach(colJson; json.array) {
-		Square[] col;
-		foreach(squareJson; colJson.array) {
-			Color color;
-			switch (squareJson["color"].str) {
-			case "Red": color = Color.Red; break;
-			case "Blue": color = Color.Blue; break;
-			case "Neut": color = Color.Neut; break;
-			default:
-				throw new Exception("Illegal board.json");
-			}
-			bool agent = squareJson["agent"].type == JSON_TYPE.TRUE;
-			int score = squareJson["score"].integer.to!int;
-			col ~= Square(color, score, agent);
-		}
-		tbl ~= col;
-	}
-	return tbl;
-}
-
-JSONValue jsonOfBoard(Board board) {
-	JSONValue[] boardJson;
-	foreach (col; board) {
-		JSONValue[] colJson;
-		foreach (square; col) {
-			JSONValue squareJson;
-			final switch (square.color) {
-			case Color.Red: squareJson["color"] = JSONValue("Red"); break;
-			case Color.Blue: squareJson["color"] = JSONValue("Blue"); break;
-			case Color.Neut: squareJson["color"] = JSONValue("Neut"); break;
-			}
-			squareJson["score"] = JSONValue(square.score);
-			squareJson["agent"] = JSONValue(square.agent);
-			colJson ~= squareJson;
-		}
-		boardJson ~= JSONValue(colJson);
-	}
-	return JSONValue(boardJson);
-}
-
-struct Pos {
-	int x, y;
-}
-
-enum OpType {
-	Move,
-	Clear
-}
-
-struct Operation {
-	Color color;
-	OpType type;
-	// fromはtype == OpType.Moveのときのみ有効
-	Pos from, to;
-}
-
-Operation[] operationsOfJson(JSONValue json) {
-	//TODO 実装しろ
-	return [];
-}
-
-JSONValue jsonOfOperations(Operation[] operations) {
-	//TODO 実装しろ
-	return JSONValue(0);
-}
+import procon29.server.board;
 
 Board board;
 // operation購読者のsocketのリスト
@@ -102,6 +22,13 @@ WebSocket[] sockets;
 Operation[] blueOp, redOp;
 bool blueOpPushed, redOpPushed;
 
+enum LocalHost = ["::1", "127.0.0.1"];
+enum LabAddress = ["192.168.42.151"];
+
+size_t cnt = 0;
+
+StopWatch timekeeper;
+
 shared static this () {
 	auto boardJson = "./board.json".readText.parseJSON;
 	board = boardOfJson(boardJson);
@@ -111,20 +38,109 @@ shared static this () {
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
-	settings.bindAddresses = ["::1", "127.0.0.1"];
+	settings.bindAddresses = LocalHost ~ LabAddress;
+	timekeeper.start;
 	listenHTTP(settings, router);
+	if (!exists("./log")) {
+		mkdir("./log");
+	}
 }
+
+string genReplyMsg(string type, JSONValue json) {
+	JSONValue res;
+	res["type"] = JSONValue(type);
+	res["payload"] = json;
+	return res.toString;
+}
+
+string genTimeReplyMsg() {
+	JSONValue json;
+	json["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+	return genReplyMsg("distribute-time", json);
+}
+
+Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
+	auto ops = blueOp ~ redOp;
+	// 0..fixedPart: 無効
+	// fixedPart..$: 有効
+	size_t fixedPart = 0;
+	// 行き先が衝突して無ければ候補に加える	
+	foreach (i, op1; ops) {
+		bool enable = true;
+		foreach (op2; ops) {
+			if (op1 == op2) continue;
+			if (!(op1.type == OpType.Move || op2.type == OpType.Move)) continue;
+			if (op1.to == op2.to) {
+				enable = false;
+				break;
+			}
+		}
+		if (!enable) {
+			auto tmp = ops[fixedPart];
+			ops[fixedPart] = ops[i];
+			ops[i] = tmp;
+			++fixedPart;
+		}
+	}
+	bool changed = true;
+	while(changed) {
+		changed = false;
+		for (size_t i=fixedPart; i < ops.length; ++i) {
+			immutable to = ops[i].to;
+			immutable dest = board[to.y][to.x];
+			auto disable = false;
+			if (dest.agent) {
+				bool willEvacuate = false;
+				// エージェントが退去予定ならフラグを立てる
+				for (size_t j=fixedPart; j < ops.length; ++j) {
+					willEvacuate |= ops[j].type == OpType.Move && ops[j].from == to;
+				}
+				disable = !willEvacuate;
+			}
+			if (disable) {
+				auto tmp = ops[fixedPart];
+				ops[fixedPart] = ops[i];
+				ops[i] = tmp;
+				++fixedPart;
+				changed = true;
+			}
+		}
+	}
+	// 無効な操作を全て削除
+	ops = ops[fixedPart..$];
+
+	for (int y; y < board.length; ++y) {
+		for (int x; x < board[y].length; ++x) {
+			foreach (op; ops) {
+				if (op.from == Pos(x, y))
+					board[y][x].agent = false;
+			}
+		}
+	}
+
+	foreach (op; ops) {
+		if (op.type == OpType.Move) {
+			board[op.to.y][op.to.x].agent = true;
+			board[op.to.y][op.to.x].color = op.color;
+		}
+		else {
+			board[op.to.y][op.to.x].color = Color.Neut;
+		}
+	}
+	return board;
+}
+
 
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
 void handlePush(JSONValue msg) {
 	switch (msg["color"].str) {
 		case "Red":
-			redOp = msg["payload"].operationsOfJson;
+			redOp = msg["payload"].operationsOfJson(Color.Red);
 			redOpPushed = true;
 			break;
 		case "Blue":
-			blueOp = msg["payload"].operationsOfJson;
+			blueOp = msg["payload"].operationsOfJson(Color.Blue);
 			blueOpPushed = true;
 			break;
 		default:
@@ -132,19 +148,25 @@ void handlePush(JSONValue msg) {
 	}
 	if (redOpPushed && blueOpPushed) {
 		board = updateBoard(board, blueOp, redOp);
-		JSONValue res;
-		res["type"] = JSONValue("distribute-board");
-		res["payload"] = board.jsonOfBoard;
+		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
+		auto f = File(format!"./log/%d.json"(++cnt), "w");
+		f.write(board.jsonOfBoard.toPrettyString);
+		timekeeper.stop;
+		timekeeper.reset;
 		foreach(sock; sockets) {
-			sock.send(res.toString);
+			sock.send(reply);
+			sock.send(genTimeReplyMsg);
 		}
+		redOpPushed = false;
+		blueOpPushed = false;
+		timekeeper.start;
 	}
+	// まだoperationが揃ってない場合は来たoperationを配信
 	else {
 		JSONValue res;
-		res["type"] = JSONValue("distribute-op");
-		res["payload"] = msg["payload"];
+		auto reply = genReplyMsg("distribute-op", msg["payload"]);
 		foreach (sock; opSubscribers) {
-			sock.send(res.toString);
+			sock.send(reply);
 		}
 	}
 }
@@ -156,7 +178,8 @@ void handleConn(scope WebSocket sock) {
 		auto msg = sock.receiveText.parseJSON;
 		switch (msg["type"].str) {
 		case "req-board":
-			sock.send(board.jsonOfBoard.toString);
+			auto reply= genReplyMsg("distribute-board", board.jsonOfBoard);
+			sock.send(reply);
 			break;
 		case "subscribe-op":
 			//TODO 重複排除処理
@@ -168,14 +191,19 @@ void handleConn(scope WebSocket sock) {
 		case "req-op":
 			switch (msg["color"].str) {
 			case "Red":
-				sock.send(blueOp.jsonOfOperations.toString);
+				auto reply= genReplyMsg("distribute-op", blueOp.jsonOfOperations);
+				sock.send(reply);
 				break;
 			case "Blue":
-				sock.send(redOp.jsonOfOperations.toString);
+				auto reply= genReplyMsg("distribute-op", redOp.jsonOfOperations);
+				sock.send(reply);
 				break;
 			default:
 				assert (false);
 			}
+			break;
+		case "req-time":
+			sock.send(genTimeReplyMsg);
 			break;
 		default:
 			assert(false);

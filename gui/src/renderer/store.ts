@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from 'redux';
 import * as Common from '../common';
+import { Option, None } from 'monapt';
 
 export type Pos = {
 	x: number,
@@ -17,40 +18,52 @@ export type ViewState = {
 	icon: Icon
 }
 
-export enum InputState {
-	Ready,
-	Suggested
-}
-
-export enum Config {
-	Player,
-	User
-}
-
 export type Server = {
 	ip: string,
 	port: string,
-	socket: WebSocket
+	socket: WebSocket,
+	connected: boolean,
+	msg: string
+}
+
+export enum UIState {
+	Setting,
+	Player,
+	User,
+	Viewer
 }
 
 export type State = {
-	config: Config;
+	state: UIState;
+	color: Common.Color;
 	board: Common.Table;
 	//Undo用
 	hist: Array<Array<Common.Operation>>;
-	inputState: InputState;
 	server: Server;
+	rivalOps: Common.Operation[];
+	ops: Common.Operation[];
+	highlight: Option<Common.Pos>;
+	freeze: boolean;
+	time: number;
 }
 
 
 let initialBoard = Common.loadBoard(require('./initial_board.json'));
 
 export const initialState: State = {
-	config: Config.Player,
+	color: Common.Color.Red,
+	state: UIState.Setting,
 	hist: [],
 	board: initialBoard,
-	inputState: InputState.Ready,
-	server: {ip: '', port: '', socket: null},
+	server: {ip: '127.0.0.1', port: '8080', socket: null, connected: false, msg: ''},
+	rivalOps: [],
+	ops: [],
+	highlight: None,
+	freeze: true,
+	time: 0.0,
 };
 
 export const getServerInfo = (state: State) => state.server;
+export const getOps = (state: State) => state.ops;
+export const getColor = (state: State) => state.color;
+export const getTime = (state: State) => state.time;
