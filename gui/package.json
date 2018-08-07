@@ -55,6 +55,7 @@
     "webpack-stream": "^4.0.0"
   },
   "scripts": {
-    "build": "gulp"
+    "build": "yarn install && gulp",
+	"run": "electron ."
   }
 }
