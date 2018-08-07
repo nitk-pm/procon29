@@ -31,52 +31,6 @@ function combinePartialReducers(reducers: any, initialState: any) {
 		});
 	return Redux.combineReducers(newReducers);
 }
-
-/*function configDummyReducer(
-	state = Store.initialState.config,
-	action: Actions.T) {
-	return state;
-}
-
-function connectErrorDummyReducer(
-	state = Store.initialState.connectError,
-	action: Actions.T) {
-	return state;
-}
-
-function inputStateDummyReducer(
-	state = Store.initialState.inputState,
-	action: Actions.T) {
-	return state;
-}
-
-function histDummyReducer(
-	state = Store.initialState.hist,
-	action: Actions.T) {
-	return state;
-}
-
-function serverDummyReducer(
-	state = Store.initialState.server,
-	action: Actions.T) {
-	return state;
-}
-
-function boardDummyReducer(
-	state = Store.initialState.board,
-	action: Actions.T) {
-	return state;
-}
-
-let combinedReducer = combineReducers({
-	config: configDummyReducer,
-	board: boardDummyReducer,
-	hist: histDummyReducer,
-	inputState: inputStateDummyReducer,
-	server: ServerModule.reducer,
-	connectError: connectErrorDummyReducer
-});*/
-
 let combinedReducer = combinePartialReducers({
 	server: ServerModule.reducer,
 	time: TimeModule.reducer
