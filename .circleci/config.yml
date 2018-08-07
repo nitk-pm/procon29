@@ -18,6 +18,6 @@ jobs:
           command: bash ./server/test.sh
       - save_cache:
           paths:
-            - node_modules
-            - ~/.dub
+            - "node_modules"
+            - "~/.dub"
           keys: v1-dep-{{ checksum "package.json"}}-{{ checksum "dub.json" }}
