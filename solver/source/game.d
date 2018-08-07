@@ -42,11 +42,11 @@ auto proceedGame(Square[] board,int width,Agent[] agentList){//1ターン進め�
 			case 8:tmp=0;break;
 			default:assert(false);
 		}
-		int proPos=agentList[i].pos+tmp;
+		int proPos=agentList[i].pos+tmp;//進んだ先の座標
 		if (board[proPos].color==Color.Out)
-			continue;
+			continue;//番外ならその動きは無効
 		if (!(board[proPos].color == board[agentList[i].pos].color || board[proPos].color == Color.Neut)){
-			board[proPos].color=agentList[i].color;
+			board[proPos].color=agentList[i].color;//自陣でもNeutでもない領域に進もうとしているのでタイル除去とする
 			continue;
 		}
 		else 
@@ -57,11 +57,11 @@ auto proceedGame(Square[] board,int width,Agent[] agentList){//1ターン進め�
 		foreach(j;0..4){
 			if (i==j)
 				continue;
-				isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;
+				isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
 		}
 		if (isInvalidMove)
 			continue;
-		board[agentList[i].pos].agent=false;
+		board[agentList[i].pos].agent=false;//エージェントの移動処理
 		agentList[i].pos=heldAgents[i].pos;
 
 		board[agentList[i].pos].color=agentList[i].color;
