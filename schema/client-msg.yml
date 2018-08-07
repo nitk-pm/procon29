@@ -6,7 +6,6 @@ required:
   - "type"
   - "color"
   - "payload"
-  - "from"
 properties:
   type:
     type: "string"
@@ -16,5 +15,3 @@ properties:
     pattern: "Red|Blue"
   payload:
     description: "subscribe-opだけOperation、それ以外は空"
-  from:
-    type: "string"

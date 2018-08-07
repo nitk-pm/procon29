@@ -9,7 +9,6 @@ $neut-highlight:#E0E0E0;
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
 	margin: 0;
-	-webkit-user-select: none;
 }
 
 .root {
@@ -19,6 +18,11 @@ body {
 .board-container {
 	margin: 1vh;
 	float: left;
+}
+
+.game-root {
+	display: flex;
+	flex-direction: column;
 }
 
 .info-container {
@@ -49,6 +53,7 @@ body {
 }
 
 .square-icon {
+	-webkit-user-drag: none;
 }
 
 .square-score {
