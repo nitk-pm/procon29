@@ -3,11 +3,21 @@ jobs:
   build:
     docker:
       - image: namachan10777/procon29:latest
+    working_directory: /ci
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dep-{{ checksum "package.json" }}-{{ checksum "dub.json" }}
+            - v1-dep-
       - run:
           name: GUI build
           command: bash ./gui/test.sh
       - run:
           name: Server test
           command: bash ./server/test.sh
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.dub
+          keys: v1-dep-{{ checksum "package.json"}}-{{ checksum "dub.json" }}
