@@ -65,10 +65,9 @@ export default ReactRedux.connect(
 	(state: Store.State) => ({
 		ip: state.server.ip,
 		port: state.server.port,
-		inDialog: state.server.socket == null,
+		state: state.state,
 		freeze: state.freeze,
 		time: state.time,
-		viewBoard: state.viewBoard,
 		board: state.board,
 		server: state.server
 	}),

@@ -45,7 +45,6 @@ export type State = {
 	highlight: Option<Common.Pos>;
 	freeze: boolean;
 	time: number;
-	viewBoard: Option<Common.Table>;
 }
 
 
@@ -62,7 +61,6 @@ export const initialState: State = {
 	highlight: None,
 	freeze: true,
 	time: 0.0,
-	viewBoard: None
 };
 
 export const getServerInfo = (state: State) => state.server;

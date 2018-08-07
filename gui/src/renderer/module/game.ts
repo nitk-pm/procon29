@@ -11,7 +11,8 @@ export enum ActionNames {
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	FREEZE = 'IGOKABADDI_FREEZE',
 	THAWING = 'IGOKABADDI_THAWING',
-	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD'
+	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD',
+	BACK = 'IGOKABADDI_BACK'
 }
 
 export type ConfigAction = {
@@ -54,6 +55,10 @@ export type UpdateBoardAction = {
 	payload: {
 		board: Common.Table;
 	};
+}
+
+export type BackAction = {
+	type: ActionNames.BACK;
 }
 
 // posをキーにopsからCommon.Operationを削除する
@@ -151,7 +156,13 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	case ActionNames.LOAD_BOARD:
 		return {
 			...state,
-			viewBoard: Option(action.payload.board),
+			state: Store.UIState.Viewer,
+			board: action.payload.board
+		};
+	case ActionNames.BACK:
+		return {
+			...state,
+			state: Store.UIState.Setting
 		};
 	default:
 		return state;
