@@ -20,4 +20,4 @@ jobs:
           paths:
             - "./gui/node_modules"
             - "~/.dub"
-          key: v1-dep-{{ checksum "package.json"}}-{{ checksum "dub.json" }}
+          key: v1-dep-{{ checksum "./gui/package.json"}}-{{ checksum "./server/dub.json" }}
