@@ -4,8 +4,6 @@ title: "Container"
 type: "object"
 required:
   - "type"
-  - "color"
-  - "payload"
 properties:
   type:
     type: "string"
