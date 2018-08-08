@@ -60,7 +60,7 @@ function genOpenChannel(socket: WebSocket) {
 }
 
 // WebSocketからのメッセージを聞いてactionを投げるチャンネルを作る。
-// TODO もっとたくさんのActionをなげる!
+// TODO もっとたくさんのActionをなげる! <- ?
 function genListenChannel(socket: WebSocket) {
 	return eventChannel(emit => {
 		socket.addEventListener('message', (event: any) => {
@@ -70,13 +70,18 @@ function genListenChannel(socket: WebSocket) {
 				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload);
 				// 盤面の更新
-				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
+				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				// 操作の解凍
 				emit({type: AppModule.ActionNames.THAWING});
 				break;
 			case 'distribute-time':
 				const time = msg.payload.time;
 				emit({type: ActionNames.RESET_TIME, payload: {time}});
+				break;
+			case 'distribute-op':
+				const ops = msg.payload;
+				emit({type: AppModule.ActionNames.RECEIVE_OP, payload: {ops}});
+				break;
 			default:
 			}
 			emit({type: ActionNames.RECEIVE_MSG, payload:{msg: event.data}});
@@ -170,6 +175,12 @@ function* flow() {
 					state: payload.state
 				}
 			});
+			// UserならOperationの配信リストに自身を加えるよう要請
+			socket.send(JSON.stringify({
+				type: 'subscribe-op',
+				color: payload.color,
+				payload: {}
+			}));
 			break;
 		}
 		// stateとcolorは変えずに失敗を通知
@@ -181,7 +192,7 @@ function* flow() {
 	yield Effects.put({type: ServerModule.ActionNames.CONNECT, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
-	socket.send(JSON.stringify({type: 'req-board', color: 'Red', payload: {}}));
+	socket.send(JSON.stringify({type: 'req-board'}));
 	socket.send(JSON.stringify({type: 'req-time'}));
 	yield Effects.fork(listenMsg, socket);
 	yield Effects.fork(sendMsg, socket);
