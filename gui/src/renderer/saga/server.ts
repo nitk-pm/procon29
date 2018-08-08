@@ -170,6 +170,12 @@ function* flow() {
 					state: payload.state
 				}
 			});
+			// UserならOperationの配信リストに自身を加えるよう要請
+			socket.send(JSON.stringify({
+				type: 'subscribe-op',
+				color: payload.color,
+				payload: {}
+			}));
 			break;
 		}
 		// stateとcolorは変えずに失敗を通知
