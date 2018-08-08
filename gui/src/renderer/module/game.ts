@@ -7,35 +7,7 @@ import { None, Option } from 'monapt';
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	DONE = 'IGOKABADDI_DONE',
-	TRANSITION = 'IGOKABADDI_TRANSITION',
-	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
-	FREEZE = 'IGOKABADDI_FREEZE',
-	THAWING = 'IGOKABADDI_THAWING',
-	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD',
-	BACK = 'IGOKABADDI_BACK'
-}
-
-export type ConfigAction = {
-	type: ActionNames.TRANSITION;
-	payload: {
-		state: Store.UIState;
-		color: Common.Color;
-	}
-}
-
-export type LoadBoardAction = {
-	type: ActionNames.LOAD_BOARD;
-	payload: {
-		board: Common.Table;
-	}
-}
-
-export type FreezeAction = {
-	type: ActionNames.FREEZE;
-}
-
-export type ThawingAction = {
-	type: ActionNames.THAWING;
+	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD'
 }
 
 export enum ClickType {
@@ -55,10 +27,6 @@ export type UpdateBoardAction = {
 	payload: {
 		board: Common.Table;
 	};
-}
-
-export type BackAction = {
-	type: ActionNames.BACK;
 }
 
 // posをキーにopsからCommon.Operationを削除する
@@ -131,39 +99,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
-	case ActionNames.TRANSITION:
-		return {
-			...state,
-			color: action.payload.color,
-			state: action.payload.state
-		};
-	case ActionNames.FREEZE:
-		return {
-			...state,
-			freeze: true
-		};
-	case ActionNames.THAWING:
-		return {
-			...state,
-			freeze: false
-		};
-	case ActionNames.UPDATE_BOARD:
-		return {
-			...state,
-			board: action.payload.board,
-			ops: []
-		};
-	case ActionNames.LOAD_BOARD:
-		return {
-			...state,
-			state: Store.UIState.Viewer,
-			board: action.payload.board
-		};
-	case ActionNames.BACK:
-		return {
-			...state,
-			state: Store.UIState.Setting
-		};
 	default:
 		return state;
 	}
