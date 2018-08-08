@@ -187,7 +187,7 @@ function* flow() {
 	yield Effects.put({type: ServerModule.ActionNames.CONNECT, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
-	socket.send(JSON.stringify({type: 'req-board', color: 'Red', payload: {}}));
+	socket.send(JSON.stringify({type: 'req-board'}));
 	socket.send(JSON.stringify({type: 'req-time'}));
 	yield Effects.fork(listenMsg, socket);
 	yield Effects.fork(sendMsg, socket);
