@@ -40,7 +40,7 @@ export class ActionDispatcher {
 		this.dispatch({
 			type: ServerSaga.ActionNames.CONNECT_SOCKET,
 			payload: {
-				state: Store.UIState.Player,
+				state: Store.UIState.User,
 				color
 			}
 		});
