@@ -1,0 +1,14 @@
+.dub
+docs.json
+__dummy.html
+docs/
+solver.so
+solver.dylib
+solver.dll
+solver.a
+solver.lib
+solver-test-*
+*.exe
+*.o
+*.obj
+*.lst
