@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import reduceReducers from 'reduce-reducers';
 import * as Store from './store';
 import * as Actions from './actions';
+import * as AppModule from './module/app';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
@@ -38,7 +39,7 @@ let combinedReducer = combinePartialReducers({
 	Store.initialState
 );
 
-let rootReducers = [combinedReducer, AppbarModule.reducer, GameModule.reducer];
+let rootReducers = [combinedReducer, AppModule.reducer, AppbarModule.reducer, GameModule.reducer];
 
 let reducer  = rootReducers.reduce((acc, x) => reduceReducers(x, acc));
 
