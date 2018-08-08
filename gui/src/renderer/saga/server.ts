@@ -60,7 +60,7 @@ function genOpenChannel(socket: WebSocket) {
 }
 
 // WebSocketからのメッセージを聞いてactionを投げるチャンネルを作る。
-// TODO もっとたくさんのActionをなげる!
+// TODO もっとたくさんのActionをなげる! <- ?
 function genListenChannel(socket: WebSocket) {
 	return eventChannel(emit => {
 		socket.addEventListener('message', (event: any) => {
@@ -70,7 +70,7 @@ function genListenChannel(socket: WebSocket) {
 				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload);
 				// 盤面の更新
-				emit({type: GameModule.ActionNames.UPDATE_BOARD, payload: {board}});
+				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				// 操作の解凍
 				emit({type: AppModule.ActionNames.THAWING});
 				break;

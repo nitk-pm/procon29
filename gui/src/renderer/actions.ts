@@ -10,10 +10,9 @@ export type T =
 	| AppModule.ApplySettingAction
 	| AppModule.FreezeAction
 	| AppModule.ThawingAction
-	| AppModule.LoadBoardAction
+	| AppModule.UpdateBoardAction
 	| AppModule.BackAction
 	| GameModule.ClickSquareAction
-	| GameModule.UpdateBoardAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.ConnectAction

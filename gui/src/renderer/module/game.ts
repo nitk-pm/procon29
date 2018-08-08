@@ -5,9 +5,7 @@ import * as Common from '../../common';
 import { None, Option } from 'monapt';
 
 export enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
-	DONE = 'IGOKABADDI_DONE',
-	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD'
+	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE'
 }
 
 export enum ClickType {
@@ -20,13 +18,6 @@ export type ClickSquareAction = {
 		pos: Store.Pos;
 		type: ClickType;
 	}
-}
-
-export type UpdateBoardAction = {
-	type: ActionNames.UPDATE_BOARD;
-	payload: {
-		board: Common.Table;
-	};
 }
 
 // posをキーにopsからCommon.Operationを削除する

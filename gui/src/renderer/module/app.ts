@@ -8,7 +8,7 @@ export enum ActionNames {
 	TRANSITION = 'IGOKABADDI_TRANSITION',
 	FREEZE = 'IGOKABADDI_FREEZE',
 	THAWING = 'IGOKABADDI_THAWING',
-	LOAD_BOARD = 'IGOKABADDI_LOAD_BOARD',
+	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	BACK = 'IGOKABADDI_BACK'
 }
 
@@ -20,8 +20,8 @@ export type ApplySettingAction = {
 	}
 }
 
-export type LoadBoardAction = {
-	type: ActionNames.LOAD_BOARD;
+export type UpdateBoardAction = {
+	type: ActionNames.UPDATE_BOARD;
 	payload: {
 		board: Common.Table;
 	}
@@ -57,10 +57,9 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			...state,
 			freeze: false
 		};
-	case ActionNames.LOAD_BOARD:
+	case ActionNames.UPDATE_BOARD:
 		return {
 			...state,
-			state: Store.UIState.Viewer,
 			board: action.payload.board
 		};
 	case ActionNames.BACK:

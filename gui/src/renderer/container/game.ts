@@ -52,9 +52,16 @@ export class ActionDispatcher {
 		console.log(e.target.files);
 		reader.onload = (e) => {
 			this.dispatch({
-				type: AppModule.ActionNames.LOAD_BOARD,
+				type: AppModule.ActionNames.UPDATE_BOARD,
 				payload: {
 					board: Common.loadBoard(JSON.parse(e.target.result))
+				}
+			});
+			this.dispatch({
+				type: AppModule.ActionNames.TRANSITION,
+				payload: {
+					state: Store.UIState.Viewer,
+					color: Common.Color.Neut
 				}
 			});
 		};
