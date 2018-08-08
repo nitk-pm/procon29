@@ -12,6 +12,7 @@ export type T =
 	| AppModule.ThawingAction
 	| AppModule.UpdateBoardAction
 	| AppModule.BackAction
+	| AppModule.ReceiveOpAction
 	| GameModule.ClickSquareAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction

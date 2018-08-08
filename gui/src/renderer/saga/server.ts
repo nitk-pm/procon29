@@ -77,6 +77,11 @@ function genListenChannel(socket: WebSocket) {
 			case 'distribute-time':
 				const time = msg.payload.time;
 				emit({type: ActionNames.RESET_TIME, payload: {time}});
+				break;
+			case 'distribute-op':
+				const ops = msg.payload;
+				emit({type: AppModule.ActionNames.RECEIVE_OP, payload: {ops}});
+				break;
 			default:
 			}
 			emit({type: ActionNames.RECEIVE_MSG, payload:{msg: event.data}});
