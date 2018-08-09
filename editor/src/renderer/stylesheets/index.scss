@@ -1,0 +1,94 @@
+$red: #d32f2f;
+$blue: #303F9F;
+$neut: #FFFFFF;
+
+$red-highlight:#e57373;
+$blue-highlight:#7986CB;
+$neut-highlight:#E0E0E0;
+
+body {
+	font: 14px "Century Gothic", Futura, sans-serif;
+	margin: 0;
+}
+
+.root {
+	margin: 0 0;
+}
+
+.board-container {
+	margin: 1vh;
+	float: left;
+}
+
+.game-root {
+	display: flex;
+	flex-direction: column;
+}
+
+.info-container {
+	margin: 1vh;
+	float: left;
+}
+
+.board-row::after {
+	clear: both; //改行
+	content: "";
+	display: table;
+}
+
+.square {
+	position: relative;
+	cursor: pointer;
+	float: left;
+	border: 1px solid #999; //枠
+	height: 7vh;
+	width: 7vh;
+	margin-right: -1px;
+	margin-top: -1px;
+	padding: 0;
+}
+
+.square-iconbox {
+	text-align:center;
+}
+
+.square-icon {
+	-webkit-user-drag: none;
+}
+
+.square-score {
+	position: absolute;
+	bottom: 0;
+	text-align: center;
+	width: 100%;
+}
+
+.red {
+	background: $red;
+}
+
+.blue {
+	background: $blue;
+}
+
+.neut {
+	background: $neut;
+}
+
+.red-highlight {
+	background: $red-highlight;
+}
+
+.blue-highlight {
+	background: $blue-highlight;
+}
+
+.suggested {
+	background: rgba(0,0,0,0.1);
+}
+
+.fab {
+	position: fixed;
+	right: 10%;
+	bottom: 10%;
+}
