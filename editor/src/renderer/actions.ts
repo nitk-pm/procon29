@@ -1,3 +1,9 @@
 import * as Redux from 'redux';
 
-export type T = Redux.Action;
+import * as AppModule from './module/app';
+import * as DrawerModule from './module/drawer';
+
+export type T =
+	AppModule.CloseWindowAction
+	| DrawerModule.CloseDrawerAction
+	| DrawerModule.OpenDrawerAction;

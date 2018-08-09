@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as Common from '../../common';
 import AppBar from '../container/appbar';
+import Drawer from '../container/drawer';
 import { ActionDispatcher } from '../container/app';
 
 import { withStyles, WithStyles } from '@material-ui/core/styles';
@@ -22,6 +23,7 @@ export default withStyles(styles)<AppProps>(
 		return (
 			<div className="app-root">
 				<AppBar />
+				<Drawer/>
 			</div>
 		);
 	}

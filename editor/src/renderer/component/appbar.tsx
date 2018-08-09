@@ -45,7 +45,9 @@ export default  withStyles(styles)<AppBarProps>(
 			<div className={classes.root}>
 				<AppBar position='static'>
 					<Toolbar>
-						<IconButton className={classes.menuButton}>
+						<IconButton
+							className={classes.menuButton}
+							onClick={() => props.actions.openDrawer()}>
 							<MenuIcon />
 						</IconButton>
 						<Typography variant='title' color='inherit' className={classes.flex}>

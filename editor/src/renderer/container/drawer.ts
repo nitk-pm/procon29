@@ -4,23 +4,21 @@ import * as ReactRedux from 'react-redux';
 import * as Store from '../store';
 import * as Actions from '../actions';
 
-import AppBarComponent from '../component/appbar';
-import * as AppModule from '../module/app';
+import DrawerComponent from '../component/drawer';
+
 import * as DrawerModule from '../module/drawer';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	close() {
-		return this.dispatch({type: AppModule.ActionNames.CLOSE_WINDOW});
-	}
-
-	openDrawer() {
-		return this.dispatch({type: DrawerModule.ActionNames.OPEN_DRAWER});
+		this.dispatch({
+			type: DrawerModule.ActionNames.CLOSE_DRAWER
+		});
 	}
 }
 
 export default ReactRedux.connect(
-	(state: Store.State) => ({state: state.state}),
+	(state: Store.State) => ({open: state.drawerOpen}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
-)(AppBarComponent);
+)(DrawerComponent);

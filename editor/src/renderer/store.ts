@@ -8,6 +8,7 @@ export enum UIState {
 export type State = {
 	state: UIState;
 	tbl: Common.Table;
+	drawerOpen: boolean;
 };
 
-export const initialState: State = { tbl: null, state: UIState.Load }
+export const initialState: State = { tbl: null, state: UIState.Load, drawerOpen: true }

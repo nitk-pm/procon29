@@ -5,6 +5,7 @@ import * as Store from './store';
 import * as Actions from './actions';
 
 import * as AppModule from './module/app';
+import * as DrawerModule from './module/drawer';
 
 // TODO initialStateに含まれてないキーのreducerが来たら例外
 function combinePartialReducers(reducers: any, initialState: any) {
@@ -31,7 +32,9 @@ function combinePartialReducers(reducers: any, initialState: any) {
 const reducer = reduceReducers(
 	AppModule.reducer,
 	combinePartialReducers(
-		{},
+		{
+			drawerOpen: DrawerModule.reducer
+		},
 		Store.initialState
 	)
 );
