@@ -21,17 +21,6 @@ export type Table = {
 	h: number;
 }
 
-export enum OperationType {
-	Move = 'Move',
-	Clear = 'Clear'
-}
-
-export type Operation = {
-	from: Pos,
-	type: OperationType,
-	to: Pos
-}
-
 /*
  * board.json形式
  */
