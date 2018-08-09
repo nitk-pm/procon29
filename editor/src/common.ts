@@ -1,3 +1,5 @@
+import { Option, None } from 'monapt';
+
 export type Pos = {
 	x: number,
 	y: number
@@ -5,14 +7,12 @@ export type Pos = {
 
 export enum Color {
 	Red = 'Red',
-	Blue = 'Blue',
-	Neut = 'Neut'
+	Blue = 'Blue'
 }
 
 export type Square = {
-	color: Color;
-	score: number;
-	agent: boolean;
+	agent: Option<Color>;
+	score: Option<number>;
 }
 
 export type Table = {
@@ -29,30 +29,39 @@ export function loadBoard(json: Array<Array<any>>): Table {
 	let w = json[0].length;
 	let arr = json.map(line =>
 		line.map(square => {
-			let color;
+			let agent;
 			switch(square.color) {
-			case 'Red': color = Color.Red;break;
-			case 'Blue': color = Color.Blue;break;
-			case 'Neut': color = Color.Neut;break;
-			default: throw 'unexpected color'
+			case 'Red':
+				agent = Option(Color.Red);
+				break;
+			case 'Blue':
+				agent = Option(Color.Blue);
+				break;
+			default:
+				agent = None;
+				break;
 			}
-			let score = parseInt(square.score);
-			let agent = square.agent as boolean;
-			return {color, score, agent};
+			if (square.score != 'null') {
+				return { agent, score: Option(parseInt(square.score)) };
+			}
+			else {
+				return { agent, score: None };
+			}
 		}));
 	return {w, h, arr};
 }
 
-export function loadOperations(json: Array<any> ): Operation[] {
-	return json.map(op => {
-		let from = {x: parseInt(op.pos.x), y: parseInt(op.pos.y)};
-		let to  = {x: parseInt(op.to.x), y: parseInt(op.to.y)};
-		let type;
-		switch (op.type) {
-		case 'Move': type = OperationType.Move; break;
-		case 'Clear': type = OperationType.Clear; break;
-		default: throw 'unexpected Operation type';
-		}
-		return { from, to, type };
-	});
+export function exportBoard(tbl: Table) {
+	let arr = tbl.arr.map(line =>
+		line.map(square => {
+			let score = square.score.match({
+				Some: score => score,
+				None: () => null
+			});
+			let agent = square.agent.match({
+				Some: color => color,
+				None: () => 'Neut'
+			});
+		}));
+	return arr;
 }
