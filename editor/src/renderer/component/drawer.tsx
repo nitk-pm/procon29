@@ -36,10 +36,18 @@ export default withStyles(styles)<DrawerProps>(
 					onClick={() => props.actions.close()}
 					onKeyDown={() => props.actions.close()}>
 					<List>
-						<ListItem button className={props.classes.open}>
-							<ListItemIcon><OpenIcon /></ListItemIcon>
-							<ListItemText primary='Open'/>
-						</ListItem>
+						<input
+							accept='application/json, .json'
+							id='file-input'
+							style={{display: 'none'}}
+							onChange={(e) => props.actions.openFile(e)}
+							type='file' />
+						<label htmlFor='file-input'>
+							<ListItem button className={props.classes.open}>
+								<ListItemIcon><OpenIcon /></ListItemIcon>
+								<ListItemText primary='Open'/>
+							</ListItem>
+						</label>
 						<ListItem button className={props.classes.save}>
 							<ListItemIcon><SaveIcon /></ListItemIcon>
 							<ListItemText primary='Save'/>

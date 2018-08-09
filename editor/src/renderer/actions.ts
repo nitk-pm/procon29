@@ -5,5 +5,7 @@ import * as DrawerModule from './module/drawer';
 
 export type T =
 	AppModule.CloseWindowAction
+	| AppModule.TransitionAction
+	| AppModule.LoadBoardAction
 	| DrawerModule.CloseDrawerAction
 	| DrawerModule.OpenDrawerAction;
