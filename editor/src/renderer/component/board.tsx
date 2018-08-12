@@ -3,9 +3,11 @@ import * as React from 'react';
 import { Option } from 'monapt';
 
 import * as Common from '../../common';
+import { ActionDispatcher } from '../container/board';
 
 interface SquareProps {
 	square: Common.Square;
+	pos: Common.Pos;
 }
 
 class Square extends React.Component<SquareProps> {
@@ -21,24 +23,43 @@ class Square extends React.Component<SquareProps> {
 		});
 		let style = {
 			backgroundColor: color,
-			height: '12vh',
-			width: '12vh'
+			height: '6vh',
+			width: '6vh',
 		};
 		return (
-			<td style={style}>
-			</td>
+			// float:leftの指定
+			<div className='square' style={style}>
+			</div>
 		);
 	}
 }
 
 interface BoardProps {
 	board: Common.Table;
+	actions: ActionDispatcher;
 }
 
-class Board extends React.Component<BoardProps> {
+export default class Board extends React.Component<BoardProps> {
 	render () {
-		return this.props.board.arr.map(
-			line => line.map(square =>
-				(<tr>{<Square square={square} />}</tr>)));
+		if (this.props.board != null) {
+			return (
+				// flex-direction: rowする
+				<div className='board'>
+					{this.props.board.arr.map(
+						// 疑似要素で改行するのでCSSに
+						(line, y) => (<div key={y} className='board-row'>{
+							line.map(
+								(square, x) => <Square square={square} key={y*100+x} pos={{x, y}}/>
+							)
+						}</div>)
+					)}
+				</div>
+			);
+		}
+		else {
+			return (
+				<div></div>
+			);
+		}
 	}
 }

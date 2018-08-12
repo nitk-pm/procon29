@@ -14,3 +14,18 @@ body {
 .root {
 	margin: 0 0;
 }
+
+.board-row:after {
+	clear: both;
+	content: "";
+	display: table;
+}
+
+.square {
+	float: left;
+}
+
+.tbl {
+	display: flex;
+	flex-direction: row;
+}

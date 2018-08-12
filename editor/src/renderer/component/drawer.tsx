@@ -5,6 +5,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button'
 
 import OpenIcon from '@material-ui/icons/FileUpload';
 import SaveIcon from '@material-ui/icons/Save';
@@ -36,12 +37,6 @@ export default withStyles(styles)<DrawerProps>(
 					onClick={() => props.actions.close()}
 					onKeyDown={() => props.actions.close()}>
 					<List>
-						<input
-							accept='application/json, .json'
-							id='file-input'
-							style={{display: 'none'}}
-							onChange={(e) => props.actions.openFile(e)}
-							type='file' />
 						<label htmlFor='file-input'>
 							<ListItem button className={props.classes.open}>
 								<ListItemIcon><OpenIcon /></ListItemIcon>
