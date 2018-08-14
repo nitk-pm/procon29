@@ -10,6 +10,7 @@ import Input from '@material-ui/core/Input';
 interface SquareProps {
 	square: Common.Square;
 	pos: Common.Pos;
+	actions: ActionDispatcher;
 }
 
 class Square extends React.Component<SquareProps> {
@@ -34,7 +35,13 @@ class Square extends React.Component<SquareProps> {
 		return (
 			// float:leftの指定
 			<div className='square' style={style}>
-				<Input fullWidth/>
+				<Input
+					fullWidth
+					onChange={
+						(e: any) =>
+							this.props.actions.changeScore(this.props.pos, e.target.value)
+					}
+				/>
 			</div>
 		);
 	}
@@ -55,7 +62,14 @@ export default class Board extends React.Component<BoardProps> {
 						// 疑似要素で改行するのでCSSに
 						(line, y) => (<div key={y} className='board-row'>{
 							line.map(
-								(square, x) => <Square square={square} key={y*100+x} pos={{x, y}}/>
+								(square, x) => (
+									<Square
+										square={square}
+										key={y*100+x}
+										pos={{x, y}}
+										actions={this.props.actions}
+									/>
+								)
 							)
 						}</div>)
 					)}
