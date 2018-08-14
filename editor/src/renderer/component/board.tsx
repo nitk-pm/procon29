@@ -5,6 +5,8 @@ import { Option } from 'monapt';
 import * as Common from '../../common';
 import { ActionDispatcher } from '../container/board';
 
+import Input from '@material-ui/core/Input';
+
 interface SquareProps {
 	square: Common.Square;
 	pos: Common.Pos;
@@ -23,12 +25,16 @@ class Square extends React.Component<SquareProps> {
 		});
 		let style = {
 			backgroundColor: color,
-			height: '6vh',
-			width: '6vh',
+			height: '7vh',
+			width: '7vh',
+			border: '1px solid #000',
+			marginRight:  '-1px',
+			marginTop: '-1px'
 		};
 		return (
 			// float:leftの指定
 			<div className='square' style={style}>
+				<Input fullWidth/>
 			</div>
 		);
 	}
