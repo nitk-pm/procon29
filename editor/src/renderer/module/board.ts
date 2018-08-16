@@ -20,7 +20,6 @@ export type UpdateScoreAction = {
 export function reducer(tbl: Common.Table = Store.initialState.tbl, action: Actions.T) {
 	switch (action.type) {
 	case ActionNames.UPDATE_SCORE:
-		console.log('edit');
 		let arr = tbl.arr.map(l => l.map(s => ({...s,})));
 		let p = action.payload.pos;
 		arr[p.y][p.x].score = Option(action.payload.score);

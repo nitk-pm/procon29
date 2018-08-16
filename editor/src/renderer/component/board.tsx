@@ -5,7 +5,7 @@ import { Option } from 'monapt';
 import * as Common from '../../common';
 import { ActionDispatcher } from '../container/board';
 
-import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 
 interface SquareProps {
 	square: Common.Square;
@@ -35,8 +35,15 @@ class Square extends React.Component<SquareProps> {
 		return (
 			// float:leftの指定
 			<div className='square' style={style}>
-				<Input
+				<TextField
+					value={
+						this.props.square.score.match({
+							Some: num => num,
+							None: null
+						})
+					}
 					fullWidth
+					type='number'
 					onChange={
 						(e: any) =>
 							this.props.actions.changeScore(this.props.pos, e.target.value)
