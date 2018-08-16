@@ -16,15 +16,18 @@ interface SquareProps {
 
 class Square extends React.Component<SquareProps> {
 	render () {
-		let color = this.props.square.agent.match({
-			Some: color => {
-				if (color == Common.Color.Red)
-					return '#d32f2f';
-				else
-					return '#303F9F';
-			},
-			None: () => '#FFFFFF'
-		});
+		let color;
+		switch (this.props.square.color) {
+		case Common.Color.Red:
+			color = '#d32f2f';
+			break;
+		case Common.Color.Blue:
+			color = '#303F9F';
+			break;
+		case Common.Color.Neut:
+			color = 'FFFFFFF';
+			break;
+		}
 		let style = {
 			backgroundColor: color,
 			height: '7vh',

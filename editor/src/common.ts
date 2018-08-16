@@ -7,11 +7,12 @@ export type Pos = {
 
 export enum Color {
 	Red = 'Red',
-	Blue = 'Blue'
+	Blue = 'Blue',
+	Neut = 'Neut'
 }
 
 export type Square = {
-	agent: Option<Color>;
+	color: Color;
 	score: Option<number>;
 }
 
@@ -29,23 +30,23 @@ export function loadBoard(json: Array<Array<any>>): Table {
 	let w = json[0].length;
 	let arr = json.map(line =>
 		line.map(square => {
-			let agent;
+			let color;
 			switch(square.color) {
 			case 'Red':
-				agent = Option(Color.Red);
+				color = Color.Red;
 				break;
 			case 'Blue':
-				agent = Option(Color.Blue);
+				color = Color.Blue;
 				break;
 			default:
-				agent = None;
+				color = Color.Neut;
 				break;
 			}
 			if (square.score != 'null') {
-				return { agent, score: Option(parseInt(square.score)) };
+				return { color, score: Option(parseInt(square.score)) };
 			}
 			else {
-				return { agent, score: None };
+				return { color, score: None };
 			}
 		}));
 	return {w, h, arr};
@@ -58,10 +59,7 @@ export function exportBoard(tbl: Table) {
 				Some: score => score,
 				None: () => null
 			});
-			let agent = square.agent.match({
-				Some: color => color,
-				None: () => 'Neut'
-			});
+			return { score, color: square.color, agent: square.color != Color.Neut };
 		}));
 	return arr;
 }
