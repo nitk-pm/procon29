@@ -3,6 +3,13 @@
 	"authors": [
 		"Mackyson"
 	],
+	"dependencies":{
+		"vibe-d": "~>0.8.4",
+		"vibe-d:tls": "*"
+	},
+	"Subconfigurations": {
+		"vibe-d:tls": "openssl-1.1"
+	},
 	"description": "solver",
 	"copyright": "Kuwamura Masaki",
 	"license": "MIT"
