@@ -7,7 +7,7 @@ import std.math;
 import std.random;
 import std.typecons:tuple;
 import procon.container;
-import procon.decoder;
+import procon.decoder: width, decode;
 import procon.example;
 //進む先が敵陣のパネルならパネル除去操作に変更
 int rnd(){//adhoc太郎
@@ -69,13 +69,17 @@ auto proceedGame(Square[] board,int width,Agent[] agentList){//1ターン進め�
 	}
 	return tuple(board,agentList);
 }
+
 unittest{
 	auto json = parseJSON(ExampleJson);
 	auto width = width(json);
 	auto board = decode(json);
 	auto agentList = searchAgentInitialPos(board,width);
+	assert (agentList.length == 4);
 	
+	/*
 	auto tmp = tuple(board,agentList);
+	
 	foreach(dummy;0..30){
 		board = tmp[0];
 		agentList=tmp[1];
@@ -87,5 +91,6 @@ unittest{
 		}
 		writeln("");
 	}
+	*/
 }
 
