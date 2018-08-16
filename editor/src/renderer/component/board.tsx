@@ -6,6 +6,7 @@ import * as Common from '../../common';
 import { ActionDispatcher } from '../container/board';
 
 import TextField from '@material-ui/core/TextField';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface SquareProps {
 	square: Common.Square;
@@ -18,11 +19,11 @@ class Square extends React.Component<SquareProps> {
 		let color = this.props.square.agent.match({
 			Some: color => {
 				if (color == Common.Color.Red)
-					return 'd32f2f';
+					return '#d32f2f';
 				else
-					return '303F9F';
+					return '#303F9F';
 			},
-			None: () => 'FFFFFF'
+			None: () => '#FFFFFF'
 		});
 		let style = {
 			backgroundColor: color,
@@ -30,7 +31,7 @@ class Square extends React.Component<SquareProps> {
 			width: '7vh',
 			border: '1px solid #000',
 			marginRight:  '-1px',
-			marginTop: '-1px'
+			marginTop: '-1px',
 		};
 		return (
 			// float:leftの指定
