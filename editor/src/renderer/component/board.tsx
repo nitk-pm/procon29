@@ -50,6 +50,7 @@ class Square extends React.Component<SquareProps> {
 							this.props.actions.changeScore(this.props.pos, e.target.value)
 					}
 				/>
+				<div onClick={() => this.props.actions.toggleColorPicker(this.props.pos)}></div>
 			</div>
 		);
 	}

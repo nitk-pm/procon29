@@ -4,11 +4,13 @@ import * as Store from '../store';
 import * as Common from '../../common';
 
 import { ipcRenderer } from 'electron';
+import { Option } from 'monapt';
 
 export enum ActionNames {
 	CLOSE_WINDOW = 'IGOKABADDI_CLOSE_WINDOW',
 	TRANSITION = 'IGOKABADDI_TRANSITION',
-	LOAD_BOARD = 'IGOKABADDI_LOAD'
+	LOAD_BOARD = 'IGOKABADDI_LOAD',
+	TOGGLE_COLOR_PICKER = 'IGOKABADDI_TOGGLE_COLOR_PICKER'
 }
 
 export type CloseWindowAction = {
@@ -29,6 +31,13 @@ export type LoadBoardAction = {
 	};
 }
 
+export type ToggleColorPickerAction = {
+	type: ActionNames.TOGGLE_COLOR_PICKER;
+	payload: {
+		pos: Common.Pos;
+	};
+};
+
 export function reducer(state: Store.State = Store.initialState, action: Actions.T) {
 	switch (action.type) {
 	// reducer内で副作用使ってはいけないとのことなのでsagaでやるべき?
@@ -44,6 +53,11 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 		return {
 			...state,
 			tbl: action.payload.board
+		};
+	case ActionNames.TOGGLE_COLOR_PICKER:
+		return {
+			...state,
+			editingColor: Option(action.payload.pos)
 		};
 	default:
 		return state;

@@ -7,6 +7,7 @@ import * as Common from '../../common';
 
 import BoardComponent from '../component/board';
 import * as BoardModule from '../module/board';
+import * as AppModule from '../module/app';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
@@ -15,6 +16,13 @@ export class ActionDispatcher {
 		return this.dispatch({
 			type: BoardModule.ActionNames.UPDATE_SCORE,
 			payload: { pos, score }
+		});
+	}
+
+	toggleColorPicker(pos: Common.Pos) {
+		return this.dispatch({
+			type: AppModule.ActionNames.TOGGLE_COLOR_PICKER,
+			payload: { pos }
 		});
 	}
 }
