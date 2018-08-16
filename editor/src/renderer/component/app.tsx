@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as Common from '../../common';
 import AppBar from '../container/appbar';
 import Drawer from '../container/drawer';
+import ColorPicker from '../container/colorPicker';
 import Board from '../container/board';
 import { ActionDispatcher } from '../container/app';
 
@@ -27,6 +28,7 @@ export default withStyles(styles)<AppProps>(
 			<div className="app-root">
 				<AppBar />
 				<Drawer/>
+				<ColorPicker />
 				<Board />
 				<input
 					accept='application/json, .json'

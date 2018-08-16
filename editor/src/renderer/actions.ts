@@ -9,6 +9,8 @@ export type T =
 	| AppModule.TransitionAction
 	| AppModule.LoadBoardAction
 	| AppModule.ToggleColorPickerAction
+	| AppModule.CloseColorPickerAction
+	| AppModule.ChangeColorAction
 	| DrawerModule.CloseDrawerAction
 	| DrawerModule.OpenDrawerAction
 	| BoardModule.UpdateScoreAction;

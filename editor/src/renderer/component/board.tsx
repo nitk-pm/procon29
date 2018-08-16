@@ -38,7 +38,10 @@ class Square extends React.Component<SquareProps> {
 		};
 		return (
 			// float:leftの指定
-			<div className='square' style={style}>
+			<div
+				className='square' style={style}
+				onClick={() => this.props.actions.toggleColorPicker(this.props.pos)}
+			>
 				<TextField
 					value={
 						this.props.square.score.match({
@@ -53,7 +56,6 @@ class Square extends React.Component<SquareProps> {
 							this.props.actions.changeScore(this.props.pos, e.target.value)
 					}
 				/>
-				<div onClick={() => this.props.actions.toggleColorPicker(this.props.pos)}></div>
 			</div>
 		);
 	}
@@ -77,7 +79,7 @@ export default class Board extends React.Component<BoardProps> {
 								(square, x) => (
 									<Square
 										square={square}
-										key={y*100+x}
+										key={y*100+x+'-'+square.score+'-'+square.color}
 										pos={{x, y}}
 										actions={this.props.actions}
 									/>
