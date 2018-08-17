@@ -23,10 +23,8 @@ export interface ColorPickerProps {
 }
 
 const styles = {
-	open: {
+	red: {
 		marginTop: '10vh'
-	},
-	save: {
 	}
 };
 
@@ -57,6 +55,7 @@ export default withStyles(styles)<ColorPickerProps>(
 					onKeyDown={() => props.actions.close()}>
 					<List>
 						<ListItem
+							className={props.classes.red}
 							key={0}
 							role={undefined}
 							dense
