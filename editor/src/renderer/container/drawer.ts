@@ -11,12 +11,20 @@ import DrawerComponent from '../component/drawer';
 import * as DrawerModule from '../module/drawer';
 import * as AppModule from '../module/app';
 
+import * as SaveSaga from '../saga/save';
+
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	close() {
 		this.dispatch({
 			type: DrawerModule.ActionNames.CLOSE_DRAWER
+		});
+	}
+
+	save() {
+		this.dispatch({
+			type: SaveSaga.ActionNames.SAVE
 		});
 	}
 }

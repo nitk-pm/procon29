@@ -4,6 +4,8 @@ import * as AppModule from './module/app';
 import * as DrawerModule from './module/drawer';
 import * as BoardModule from './module/board';
 
+import * as SaveSaga from './saga/save';
+
 export type T =
 	AppModule.CloseWindowAction
 	| AppModule.TransitionAction
@@ -13,4 +15,5 @@ export type T =
 	| AppModule.ChangeColorAction
 	| DrawerModule.CloseDrawerAction
 	| DrawerModule.OpenDrawerAction
-	| BoardModule.UpdateScoreAction;
+	| BoardModule.UpdateScoreAction
+	| SaveSaga.SaveAction;

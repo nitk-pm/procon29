@@ -43,7 +43,7 @@ export default withStyles(styles)<DrawerProps>(
 								<ListItemText primary='Open'/>
 							</ListItem>
 						</label>
-						<ListItem button className={props.classes.save}>
+						<ListItem button className={props.classes.save} onClick={() => props.actions.save()}>
 							<ListItemIcon><SaveIcon /></ListItemIcon>
 							<ListItemText primary='Save'/>
 						</ ListItem>

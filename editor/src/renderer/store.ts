@@ -14,3 +14,5 @@ export type State = {
 };
 
 export const initialState: State = { tbl: null, state: UIState.Load, drawerOpen: true, editingColor: None }
+
+export const getBoard = (state: State) => state.tbl;
