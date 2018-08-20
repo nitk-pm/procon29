@@ -4,8 +4,6 @@ title: "Container"
 type: "object"
 required:
   - "type"
-  - "color"
-  - "payload"
 properties:
   type:
     type: "string"
@@ -14,4 +12,4 @@ properties:
     type: "string"
     pattern: "Red|Blue"
   payload:
-    description: "subscribe-opだけOperation、それ以外は空"
+    description: "pushだけOperation、それ以外は空"

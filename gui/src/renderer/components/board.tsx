@@ -65,6 +65,7 @@ interface BoardProps {
 	actions: ActionDispatcher;
 	highlight: Option<Common.Pos>;
 	operation: Array<Common.Operation>;
+	rivalOperation: Array<Common.Operation>;
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -102,7 +103,7 @@ export class Board extends React.Component<BoardProps> {
 				this.props.table.arr.map((line, y)  =>
 					<div className="board-row" key={y}>{
 						line.map((square, x) => {
-							let {dir, state} = calcIconAndDir({x, y}, this.props.operation);
+							let {dir, state} = calcIconAndDir({x, y}, this.props.operation.concat(this.props.rivalOperation));
 							return (<Square
 								actions={this.props.actions}
 								square={square}
