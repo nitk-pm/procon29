@@ -71,7 +71,7 @@ auto proceedGame(int myColor,Square[] board,int width,Agent[] agentList){//1タ�
 		foreach(j;0..4){
 			if (i==j)
 				continue;
-				isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
+			isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
 		}
 		if (isInvalidMove){
 			nextPosList[i]=tuple(agentList[i].pos%width-1,agentList[i].pos/width-1);
