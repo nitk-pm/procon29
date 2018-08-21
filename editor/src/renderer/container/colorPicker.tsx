@@ -1,26 +1,35 @@
 import * as Redux from 'redux';
 import * as ReactRedux from 'react-redux';
 
+import * as Common from '../../common';
+
 import * as Store from '../store';
 import * as Actions from '../actions';
 
-import AppBarComponent from '../component/appbar';
+import ColorPickerComponent from '../component/colorPicker';
+
 import * as AppModule from '../module/app';
-import * as DrawerModule from '../module/drawer';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
 	close() {
-		return this.dispatch({type: AppModule.ActionNames.CLOSE_WINDOW});
+		this.dispatch({
+			type: AppModule.ActionNames.CLOSE_COLOR_PICKER
+		});
 	}
 
-	openDrawer() {
-		return this.dispatch({type: DrawerModule.ActionNames.OPEN_DRAWER});
+	changeColor(pos: Common.Pos, color: Common.Color) {
+		this.dispatch({
+			type: AppModule.ActionNames.CHANGE_COLOR,
+			payload: {
+				pos, color
+			}
+		});
 	}
 }
 
 export default ReactRedux.connect(
-	(state: Store.State) => ({state: state.state}),
+	(state: Store.State) => ({board: state.tbl, pos:state.editingColor}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
-)(AppBarComponent);
+)(ColorPickerComponent);

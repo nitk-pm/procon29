@@ -4,13 +4,52 @@ import * as Store from '../store';
 import * as Common from '../../common';
 
 import { ipcRenderer } from 'electron';
+import { Option, None } from 'monapt';
 
 export enum ActionNames {
-	CLOSE_WINDOW = 'IGOKABADDI_CLOSE_WINDOW'
+	CLOSE_WINDOW = 'IGOKABADDI_CLOSE_WINDOW',
+	TRANSITION = 'IGOKABADDI_TRANSITION',
+	LOAD_BOARD = 'IGOKABADDI_LOAD',
+	TOGGLE_COLOR_PICKER = 'IGOKABADDI_TOGGLE_COLOR_PICKER',
+	CLOSE_COLOR_PICKER = 'IGOKABADDI_CLOSE_COLOR_PICKER',
+	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR'
 }
 
 export type CloseWindowAction = {
 	type: ActionNames.CLOSE_WINDOW;
+}
+
+export type TransitionAction = {
+	type: ActionNames.TRANSITION;
+	payload: {
+		state: Store.UIState;
+	};
+}
+
+export type LoadBoardAction = {
+	type: ActionNames.LOAD_BOARD;
+	payload: {
+		board: Common.Table;
+	};
+}
+
+export type ToggleColorPickerAction = {
+	type: ActionNames.TOGGLE_COLOR_PICKER;
+	payload: {
+		pos: Common.Pos;
+	};
+};
+
+export type CloseColorPickerAction = {
+	type: ActionNames.CLOSE_COLOR_PICKER;
+}
+
+export type ChangeColorAction = {
+	type: ActionNames.CHANGE_COLOR;
+	payload: {
+		pos: Common.Pos;
+		color: Common.Color;
+	};
 }
 
 export function reducer(state: Store.State = Store.initialState, action: Actions.T) {
@@ -19,6 +58,33 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 	case ActionNames.CLOSE_WINDOW:
 		ipcRenderer.send('message', 'exit');
 		return state;
+	case ActionNames.TRANSITION:
+		return {
+			...state,
+			state: action.payload.state
+		};
+	case ActionNames.LOAD_BOARD:
+		return {
+			...state,
+			tbl: action.payload.board
+		};
+	case ActionNames.TOGGLE_COLOR_PICKER:
+		return {
+			...state,
+			editingColor: Option(action.payload.pos)
+		};
+	case ActionNames.CLOSE_COLOR_PICKER:
+		return {
+			...state,
+			editingColor: None
+		};
+	case ActionNames.CHANGE_COLOR:
+		console.log(action.payload.color);
+		let arr = state.tbl.arr.map(l => l.map(s => ({...s,})));
+		let p = action.payload.pos;
+		arr[p.y][p.x].color = action.payload.color;
+		console.log(arr);
+		return { ...state, tbl: {...state.tbl, arr }};
 	default:
 		return state;
 	}

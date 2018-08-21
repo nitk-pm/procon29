@@ -5,6 +5,10 @@ import * as Store from './store';
 import * as Actions from './actions';
 
 import * as AppModule from './module/app';
+import * as DrawerModule from './module/drawer';
+import * as BoardModule from './module/board';
+
+import saveSaga from './saga/save';
 
 // TODO initialStateに含まれてないキーのreducerが来たら例外
 function combinePartialReducers(reducers: any, initialState: any) {
@@ -28,12 +32,19 @@ function combinePartialReducers(reducers: any, initialState: any) {
 	return Redux.combineReducers(newReducers);
 }
 
+let sagaMiddleware = createSagaMiddleware();
+
 const reducer = reduceReducers(
 	AppModule.reducer,
 	combinePartialReducers(
-		{},
+		{
+			drawerOpen: DrawerModule.reducer,
+			tbl: BoardModule.reducer
+		},
 		Store.initialState
 	)
 );
 
-export const store = Redux.createStore(reducer);
+export const store = Redux.createStore(reducer, Redux.applyMiddleware(sagaMiddleware));
+
+sagaMiddleware.run(saveSaga);

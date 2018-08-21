@@ -1,0 +1,31 @@
+$red: #d32f2f;
+$blue: #303F9F;
+$neut: #FFFFFF;
+
+$red-highlight:#e57373;
+$blue-highlight:#7986CB;
+$neut-highlight:#E0E0E0;
+
+body {
+	font: 14px "Century Gothic", Futura, sans-serif;
+	margin: 0;
+}
+
+.root {
+	margin: 0 0;
+}
+
+.board-row:after {
+	clear: both;
+	content: "";
+	display: table;
+}
+
+.square {
+	float: left;
+}
+
+.tbl {
+	display: flex;
+	flex-direction: row;
+}

@@ -1,4 +1,5 @@
 import * as Common from '../common';
+import { Option, None } from 'monapt';
 
 export enum UIState {
 	Load,
@@ -8,6 +9,10 @@ export enum UIState {
 export type State = {
 	state: UIState;
 	tbl: Common.Table;
+	drawerOpen: boolean;
+	editingColor: Option<Common.Pos>;
 };
 
-export const initialState: State = { tbl: null, state: UIState.Load }
+export const initialState: State = { tbl: null, state: UIState.Load, drawerOpen: true, editingColor: None }
+
+export const getBoard = (state: State) => state.tbl;
