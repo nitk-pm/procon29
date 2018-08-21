@@ -91,5 +91,6 @@ unittest{
 	auto width = width(json);
 	auto board = decode(json);
 	auto r = calc(board,width);
-	writeln("Red:",r[0]," Blue:",r[1]);
+	assert(r[0]==0);
+	assert(r[1]==0);
 }

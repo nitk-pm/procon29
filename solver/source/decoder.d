@@ -34,7 +34,7 @@ auto decode(JSONValue json){
 	}
 	return board;
 }
-
+/*デコードのテストは厳しい
 unittest{
 	auto json = parseJSON(ExampleJson); 
 	auto tmp = decode(json);
@@ -45,3 +45,4 @@ unittest{
 		if ((i+1)%width==0)writeln("");
 	}
 }
+*/

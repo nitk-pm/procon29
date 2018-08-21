@@ -1,6 +1,7 @@
 module procon.container;
        
 import std.stdio;
+import std.typecons;
 
 struct Square {//マスの得点、エージェントの有無、色
 	int score;
@@ -13,6 +14,14 @@ enum Color{
 struct Agent { //エージェントの色と座標
 	int color;
 	int pos;//座標は一つの整数で表現する
+}
+struct Operation{
+	Tuple!(int,int) from;
+	Tuple!(int,int) to;
+	int type;
+}
+enum Type{
+	Move,Clear
 }
 
 struct Queue(T){
