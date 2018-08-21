@@ -50,7 +50,7 @@ export class ActionDispatcher {
 		const reader = new FileReader();
 		const path = e.target.files[0];
 		console.log(e.target.files);
-		reader.onload = (e) => {
+		reader.onload = (e: any) => {
 			this.dispatch({
 				type: AppModule.ActionNames.UPDATE_BOARD,
 				payload: {
