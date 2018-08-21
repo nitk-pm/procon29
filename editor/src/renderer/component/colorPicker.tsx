@@ -7,7 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button'
 
-import OpenIcon from '@material-ui/icons/FileUpload';
+import OpenIcon from '@material-ui/icons/FileCopy';
 import SaveIcon from '@material-ui/icons/Save';
 import Checkbox from '@material-ui/core/Checkbox';
 

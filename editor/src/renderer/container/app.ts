@@ -16,7 +16,7 @@ export class ActionDispatcher {
 		const reader = new FileReader();
 		const path = e.target.files[0];
 		console.log('openfile ', e);
-		reader.onload = (e) => {
+		reader.onload = (e :any) => {
 			console.log('onload ', e);
 			this.dispatch({
 				type: AppModule.ActionNames.LOAD_BOARD,
