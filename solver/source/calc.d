@@ -3,7 +3,7 @@ module procon.calc;
 import std.json;
 import std.conv;
 import std.stdio;
-import std.typecons:tuple;
+import std.typecons;
 import procon.container;
 import procon.decoder;
 import procon.example;
@@ -16,14 +16,13 @@ int abs(int a){
 }
 
 auto surroundCalc(Square[] b,int width){
-	auto score = tuple(0,0);
+	Tuple!(int,"Red",int,"Blue") score;
 	auto team = tuple(Color.Red,Color.Blue);
 	foreach(color;team){//赤と青を分けて考える
 //FIXME~
 		bool[] visited;
 		foreach(x;0..b.length)
 			visited~=false;
-//~FIXME
 		auto q = Queue!int();
 		for (int i=0;i<b.length;i++){
 			if (b[i].color != Color.Out && b[i].color != color && !visited[i]){//番兵と赤のマスと展開済みのマスは展開しちゃダメ
@@ -64,33 +63,33 @@ auto surroundCalc(Square[] b,int width){
 			if (!isSurrounded)
 				surroundPoint = 0;
 			if (color==Color.Red)
-				score[0]+=surroundPoint;
+				score.Red+=surroundPoint;
 			else 
-				score[1]+=surroundPoint;
+				score.Blue+=surroundPoint;
 		}
 	}
 	return score;
 }
 auto tileCalc(Square[] b){
-	int[2] score;score[0]=0;score[1]=0;
+	Tuple!(int,"Red",int,"Blue") score;
 	foreach(x;b){
-	if (x.color == Color.Red)	score[0]+=x.score;
-	if (x.color == Color.Blue)	score[1]+=x.score;
+	if (x.color == Color.Red)	score.Red+=x.score;
+	if (x.color == Color.Blue)	score.Blue+=x.score;
 	}
 	return score;
 }
-auto calc(Square[] b,int width){
+auto scoreCalculation(Square[] b,int width){
 	auto s = surroundCalc(b,width);
 	auto t = tileCalc(b);
-	int [2] score;
-	score[0]=s[0]+t[0];score[1]=s[1]+t[1];
+	Tuple!(int,"Red",int,"Blue") score;
+	score = tuple(s.Red+t.Red,s.Blue+t.Blue);
 	return score;
 }
 unittest{
 	auto json = parseJSON(ExampleJson);
 	auto width = width(json);
 	auto board = decode(json);
-	auto r = calc(board,width);
-	assert(r[0]==0);
-	assert(r[1]==0);
+	auto sampleScore = scoreCalculation(board,width);
+	assert(sampleScore.Red==0);
+	assert(sampleScore.Blue==0);
 }
