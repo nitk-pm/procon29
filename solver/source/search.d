@@ -9,7 +9,10 @@ import std.typecons;
 import procon.container;
 import procon.decoder: width, decode;
 import procon.example;
+import procon.calc;
 //進む先が敵陣のパネルならパネル除去操作に変更
+const int SEARCH_WIDTH=3;
+
 int rnd(){//adhoc太郎
 	auto rnd = Random(unpredictableSeed);
 	return uniform(0,9,rnd);
@@ -22,14 +25,38 @@ auto searchAgentInitialPos(Square[] board,int width){//左上から右へ走査�
 	return agentList;
 }
 
-auto searchNextHandle(int color,Square[] board,int width,Agent[] agentList){//
-	
-}
+auto searchNextHandle(int myColor,Square[] board,int width,Agent[] agentList){//Operation2つを返す
+/*	int colorIdx;
+	switch(myColor){
+		case Color.Red:colorIdx=0;break;
+		case Color.Blue:colorIdx=1;break;
+		default:assert(false);
+	}
+	*/
+	Tuple!(int,"score",Operation[2],"operations")[SEARCH_WIDTH] nextHandleCandidateList;
+	foreach(i;0..SEARCH_WIDTH){
+		auto trial = proceedGame(myColor,board,width,agentList);
+		auto score=scoreCalculation(trial.board,width);//FIXME 名前が危険
+		//nextHandleCandidateList[i].score=score[colorIdx]; /+FIXME　コンパイル時に読めないって怒られた+/
+		switch(myColor){
+			case Color.Red:nextHandleCandidateList[i].score=score[0];break;
+			case Color.Blue:nextHandleCandidateList[i].score=score[1];break;
+			default:assert(false);
+		}
+		nextHandleCandidateList[i].operations=(trial.operations);
+	}
+	auto bestHandle=nextHandleCandidateList[0];
+	foreach(currentCandidate;nextHandleCandidateList){
+		bestHandle = bestHandle.score > currentCandidate.score ? bestHandle:currentCandidate;
+	}
+	auto dbg = bestHandle.operations;
+	return dbg;
+}	
 
 auto proceedGame(int myColor,Square[] board,int width,Agent[] agentList){//1ターン進める、進めたあとの盤面とOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
-	Operation[4] operations;
+	Operation[2] operations;
 	int[4] typeList;
 	Tuple!(int,int)[4] prevPosList, nextPosList;
 	auto heldAgents=agentList;//エージェントの動きを保持して無効な動きを検知する用
@@ -93,7 +120,7 @@ auto proceedGame(int myColor,Square[] board,int width,Agent[] agentList){//1タ�
 			++opCnt;
 		}
 	}
-	return tuple(board,operations);
+	return Tuple!(Square[] ,"board", Operation[2] ,"operations")(board,operations);
 }
 
 unittest{
