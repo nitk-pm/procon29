@@ -16,8 +16,8 @@ struct Agent { //エージェントの色と座標
 	int pos;//座標は一つの整数で表現する
 }
 struct Operation{
-	Tuple!(int,int) from;
-	Tuple!(int,int) to;
+	Tuple!(int,"x",int,"y") from;
+	Tuple!(int,"x",int,"y") to;
 	int type;
 }
 enum Type{

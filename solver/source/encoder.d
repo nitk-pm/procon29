@@ -28,7 +28,26 @@ JSONValue makeBoardJson(Square[] board,int width){
 	}
 	return JSONValue(table);
 }
-//JSONValue makeOperationJson(int color,  )
+JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
+	JSONValue[2] opJson;
+	foreach(i;0..1){//origOpも触るのでカウンタ変数が必要
+		string type;
+		switch(rawOp[i].type){
+			case Type.Move :type = "Move";break;
+			case Type.Clear:type = "Clear";break;
+			default :assert(false);
+		}
+		opJson[i]["type"]=type;
+		if (rawOp[i].type==Type.Clear){
+			opJson[i]["from"]["x"]=rawOp[i].from.x;
+			opJson[i]["from"]["y"]=rawOp[i].from.y;
+		}
+		opJson[i]["to"]["x"]=rawOp[i].to.x;
+		opJson[i]["to"]["y"]=rawOp[i].to.y;
+	}
+	return opJson;
+}
+
 unittest{
 	auto json = parseJSON(ExampleJson); 
 	auto orig = decode(json);
