@@ -3,10 +3,15 @@ module procon.container;
 import std.stdio;
 import std.typecons;
 
-struct Square {//マスの得点、エージェントの有無、色
+struct Cell {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
 	int color;
+}
+struct Board{
+	Cell[] cells;
+	int width;
+
 }
 enum Color{
 	Red,Blue,Neut,Out

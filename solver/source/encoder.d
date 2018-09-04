@@ -5,23 +5,24 @@ import std.conv;
 import std.stdio;
 import procon.container;
 import procon.example;
-import procon.decoder : width, decode;
-JSONValue makeBoardJson(Square[] board,int width){
+import procon.decoder;
+JSONValue makeBoardJson(Board board){
+	Cell[] cells = board.cells;
 	JSONValue[][] table;
-	for (int y=1;y<board.length/width-1;++y) {
+	for (int y=1;y<cells.length/board.width-1;++y) {
 		JSONValue[] line;
-		for (int x=1;x<width-1;++x){
+		for (int x=1;x<board.width-1;++x){
 			string color;
-			switch(board[y*width+x].color){
+			switch(cells[y*board.width+x].color){
 				case Color.Red:color = "Red";break;
 				case Color.Blue:color = "Blue";break;
 				case Color.Neut:color = "Neut";break;
 				default:assert(false);
 			}
 			JSONValue square;
-			square["score"] = JSONValue(board[y*width+x].score);
+			square["score"] = JSONValue(cells[y*board.width+x].score);
 			square["color"] = JSONValue(color);
-			square["agent"] = JSONValue(board[y*width+x].agent);
+			square["agent"] = JSONValue(cells[y*board.width+x].agent);
 			line ~= square;
 		}
 		table ~= line;
@@ -51,7 +52,6 @@ JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 unittest{
 	auto json = parseJSON(ExampleJson); 
 	auto orig = decode(json);
-	int width = width(json);
-	auto encoded = makeBoardJson(orig, width);
+	auto encoded = makeBoardJson(orig);
 	assert(orig == decode(encoded));
 }
