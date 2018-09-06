@@ -61,9 +61,19 @@ class MCT{
 		}
 		if (result>0)
 			++nodes[visitedNodeIdx].wins;
-		++nodes[visitedNodeIdx].visited;
+		this.backPropagate(visitedNodeIdx);
 		if (nodes[visitedNodeIdx].visited>=threshold)
-			expandNode(visitedNodeIdx)
+			this.expandNode(visitedNodeIdx)
+	}
+	void backPropagate(int idx){
+		if (nodes[idx].isRoot()){
+		++totalVisitsCount;
+		return;
+		}
+		else{
+		++nodes[idx].visits;
+		this.backPropagate(nodes[idx].parentNodeIdx);
+		}
 	}
 	void expandNode(int expandNodeIdx){
 	
