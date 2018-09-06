@@ -1,5 +1,6 @@
 module procon.mct;
 
+import procon.playoutParts;
 import procon.container;
 import procon.calc;
 import std.math;
@@ -19,13 +20,14 @@ class Node{
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
-	Operation op;//深さが1のノードだけOperationを保持する
+	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") Operations;
 	bool isRoot(){return ownIdx==parentNodeIdx;}
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 class MCT{
-	int gameTurn;//ゲームのターン数
-	int threshold=10;//展開するかどうかの訪問回数のしきい値
+	int gameTurn;//ゲームの残りターン数
+	const int threshold=10;//展開するかどうかの訪問回数のしきい値
+	const int expandWidth=3;//一回の展開で開く状態の数
 	int color;//チームの色
 	float C = 1.0; // UCB1の定数、後々小さくするかも
 	private int size=0;
@@ -52,31 +54,41 @@ class MCT{
 				visitedNodeIdx=currentNode.ownIdx;
 			}
 		}
-		Board resultBoard = this.playout(nodes[visitedNodeIdx].board);
+		Board resultBoard = this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
 		auto resultPair = scoreCalculation(resultBoard);
 		int result;
 		final switch(this.color){
-			case Color.Red:result=resultPair.Red-resultPair.Blue;
-			case Color.Blue:result=resultPair.Blue-resultPair.Red;
+			case Color.Red:result=resultPair.Red-resultPair.Blue;break;
+			case Color.Blue:result=resultPair.Blue-resultPair.Red;break;
 		}
-		if (result>0)
-			++nodes[visitedNodeIdx].wins;
-		this.backPropagate(visitedNodeIdx);
-		if (nodes[visitedNodeIdx].visited>=threshold)
-			this.expandNode(visitedNodeIdx)
+		bool isWon=result>0;
+		this.backPropagate(visitedNodeIdx,isWon);
+		if (nodes[visitedNodeIdx].visits>=threshold)
+			this.expandNode(visitedNodeIdx);
 	}
-	void backPropagate(int idx){
-		if (nodes[idx].isRoot()){
-		++totalVisitsCount;
-		return;
-		}
-		else{
+	void backPropagate(int idx,bool isWon){
+		if (isWon)
+			++nodes[idx].wins;
 		++nodes[idx].visits;
-		this.backPropagate(nodes[idx].parentNodeIdx);
-		}
+		if (nodes[idx].isRoot())
+			++totalVisitsCount;
+		else
+			this.backPropagate(nodes[idx].parentNodeIdx,isWon);
 	}
 	void expandNode(int expandNodeIdx){
-	
+		Node parent=nodes[expandNodeIdx];
+		foreach(i;0..expandWidth){
+			Node child;
+			++this.size;
+			auto tmp=proceedGame(parent.board);
+			child.Operations=tuple(tmp.redOp,tmp.blueOp);
+			child.board=tmp.board;
+			child.ownIdx=size;
+			child.parentNodeIdx=parent.ownIdx;
+			child.depth=parent.depth+1;
+			nodes~=child;
+			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
+		}
 	}
 	Board playout(Board board,int turn){}
 }

@@ -2,7 +2,7 @@ module procon.container;
 
 import std.stdio;
 import std.typecons;
-const int INF = cast(int)1e9+7;
+const float INF = 1e9+7;
 
       
 struct Cell {//マスの得点、エージェントの有無、色
