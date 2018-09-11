@@ -68,7 +68,48 @@ int decideDirection(int width){//真上から時計回りに、0~7で方向を�
 	}
 	return direction;
 }
+auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあとの盤面のみを返す、プレイアウト用
+	//1.パネル除去なのか進むのか判定
+	//2.衝突などを検知
+	Agent[4] agentList=searchAgentInitialPos(board);//最終的なエージェントの動作
+	auto heldAgents=agentList;//エージェントの動きを保持して無効な動きを検知する用
+	auto prevAgents=agentList;//戻すとき用
+	auto prevBoard=board.cells;
+	foreach(i;0..4){
+		int direction=decideDirection(board.width);
+			int destination=agentList[i].pos+direction;//進んだ先の座標
+		if (board.cells[destination].color==Color.Out){
+			continue;
+		}
+		if (!(board.cells[destination].color == board.cells[agentList[i].pos].color || board.cells[destination].color == Color.Neut)){
+			board.cells[destination].color=Color.Neut;//自陣でもNeutでもない領域に進もうとしているのでタイル除去とする
+		}
+		else{
+			heldAgents[i].pos=destination;
+		}
+	}
+	//FIXME　ここの上下の処理は関数を分けるべき
+	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
+	foreach(i; 0..4){
+		bool isInvalidMove=false;
+		foreach(j;0..4){
+			if (i==j)
+				continue;
+			isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
+		}
+		if (isInvalidMove)
+			continue;
+		board.cells[agentList[i].pos].agent=false;//エージェントの移動処理
+		agentList[i].pos=heldAgents[i].pos;
 
+		board.cells[agentList[i].pos].color=agentList[i].color;
+		board.cells[agentList[i].pos].agent=true;
+	}
+	foreach(i;0..4){
+		board.cells[agentList[i].pos].color=agentList[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
+	}
+	return board;
+}
 auto proceedGame(Board board){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
@@ -106,6 +147,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 			isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
 		}
 		if (isInvalidMove){
+			typeList[i]=Type.Move;
 			nextPosList[i]=tuple(agentList[i].pos%board.width-1,agentList[i].pos/board.width-1);
 			continue;
 		}
