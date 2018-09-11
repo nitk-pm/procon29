@@ -64,7 +64,8 @@ class MCT{
 		bool isWon=result>0;
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold)
-			this.expandNode(visitedNodeIdx);
+			foreach(i;0..expandWidth)
+				this.expandNode(visitedNodeIdx);
 	}
 	void backPropagate(int idx,bool isWon){
 		if (isWon)
