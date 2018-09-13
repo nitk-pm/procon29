@@ -39,7 +39,7 @@ JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 			default :assert(false);
 		}
 		opJson[i]["type"]=type;
-		if (rawOp[i].type==Type.Clear){
+		if (rawOp[i].type==Type.Move){
 			opJson[i]["from"]["x"]=rawOp[i].from.x;
 			opJson[i]["from"]["y"]=rawOp[i].from.y;
 		}
