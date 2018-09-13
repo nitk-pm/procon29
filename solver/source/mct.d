@@ -16,7 +16,7 @@ class Node{
 	int parentNodeIdx;
 	int[] childNodesIdx;
 	int wins = 0;
-	int visits = 0; //プレーアウトをやってみた回数
+	int visits = 0; //訪問回数
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
@@ -64,7 +64,8 @@ class MCT{
 		bool isWon=result>0;
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold)
-			this.expandNode(visitedNodeIdx);
+			foreach(i;0..expandWidth)
+				this.expandNode(visitedNodeIdx);
 	}
 	void backPropagate(int idx,bool isWon){
 		if (isWon)
@@ -90,5 +91,11 @@ class MCT{
 			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 		}
 	}
-	Board playout(Board board,int turn){}
+	Board playout(Board board,int turn){
+		Board proceededBoard=board;
+		foreach(i;0..turn){
+			proceededBoard = proceedGameWithoutOp(proceededBoard);
+		}
+		return proceededBoard;
+	}
 }
