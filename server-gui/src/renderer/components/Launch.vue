@@ -8,6 +8,7 @@
 </template>
 
 <script>
+  import jsQR from 'jsqr';
   export default {
     name: 'app',
     data() {
@@ -35,6 +36,11 @@
             this.video,
             0, 0, 640, 480,
           );
+        const imageData = this.canvas.getContext('2d').getImageData(0, 0, 640, 480);
+        const qr = jsQR(imageData.data, 640, 480);
+        if (qr) {
+          console.log(qr);
+        }
       }, 100);
     },
     methods: {},
