@@ -1,13 +1,13 @@
-# Igokabaddi GUI
+# Igokabaddi Editor
 囲碁カバディの見える化
 # Usage
-## server start
+## ビルド
 ```
-node ./server/server.js <board>.json
+yarn run build
 ```
-## UI start
+## 実行
 ```
-electron .
+yarn run run
 ```
 # 3rd Party
 ## Font Awesome
