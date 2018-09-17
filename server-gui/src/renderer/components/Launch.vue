@@ -1,8 +1,10 @@
 <template> <div id="wrapper">
     <div>
       <video ref="video" id="video" width="640" height="480" autoplay></video>
-      <div><button id="snap" v-on:click="capture()">Snap Photo</button></div>
-      <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
+      <div id="container">
+        <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
+        <md-button v-bind:disabled="cannot_launch">Launch!</md-button>
+      </div>
     </div>
   </div>
 </template>
@@ -13,6 +15,7 @@
     name: 'app',
     data() {
       return {
+        cannot_launch: true,
         video: {},
         canvas: {},
         captures: {},
@@ -39,6 +42,7 @@
         const imageData = this.canvas.getContext('2d').getImageData(0, 0, 640, 480);
         const qr = jsQR(imageData.data, 640, 480);
         if (qr) {
+          this.cannot_launch = false;
           console.log(qr);
         }
       }, 100);
@@ -50,5 +54,12 @@
 <style>
 #video {
   display: none;
+}
+#container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 5%;
 }
 </style>
