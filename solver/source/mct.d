@@ -6,6 +6,11 @@ import procon.calc;
 import std.math;
 import std.typecons;
 import std.stdio;
+
+import std.json;
+import procon.decoder;
+import procon.example;
+
 /*
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
@@ -114,4 +119,21 @@ class MCT{
 		else
 			return bestOp.blueOp;
 	}
+}
+unittest{
+	auto json = parseJSON(ExampleJson);
+	auto board = decode(json);
+	auto color = Color.Red;
+	auto turn = 0;
+	auto searchLimit = 30;
+	MCT mct;
+	mct.color=color;
+	mct.gameTurn=turn;
+	Node rootNode;
+	rootNode.board = board;
+	mct.nodes~=rootNode;
+	foreach(i;0..searchLimit){
+		mct.visitNode();
+	}
+	auto bestOp=mct.bestOp();
 }

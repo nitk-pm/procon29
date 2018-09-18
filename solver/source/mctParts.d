@@ -7,6 +7,7 @@ import std.random;
 import std.typecons;
 import procon.container;
 import procon.calc;
+
 //進む先が敵陣のパネルならパネル除去操作に変更
 const int SEARCH_WIDTH=3;
 
@@ -178,7 +179,6 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 }
 
 unittest{
-	
-}
-	
+
+}	
 

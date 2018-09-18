@@ -33,15 +33,7 @@ auto decode(JSONValue json){
 	board.width=w+2;
 	return board;
 }
-/*デコードのテストは厳しい
 unittest{
 	auto json = parseJSON(ExampleJson); 
 	auto tmp = decode(json);
-	int width = width(json);
-	writeln(width);
-	for(int i;i<tmp.length;i++){
-		write(tmp[i].color);
-		if ((i+1)%width==0)writeln("");
-	}
 }
-*/
