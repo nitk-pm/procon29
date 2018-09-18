@@ -16,7 +16,7 @@ import procon.example;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 
 */
-class Node{
+struct Node{
 	int ownIdx=0;
 	int parentNodeIdx=0;
 	int[] childNodesIdx;
@@ -29,7 +29,7 @@ class Node{
 	bool isRoot(){return ownIdx==parentNodeIdx;}
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
-class MCT{
+struct MCT{
 	int gameTurn;//ゲームの残りターン数
 	const int threshold=10;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=3;//一回の展開で開く状態の数
