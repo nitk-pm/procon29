@@ -28,35 +28,6 @@ auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけ�
 	}
 	return agentList;
 }
-/+
-auto searchNextHandle(int myColor,Board board,Agent[] agentList){//Operation2つを返す
-/*	int colorIdx;
-	switch(myColor){
-		case Color.Red:colorIdx=0;break;
-		case Color.Blue:colorIdx=1;break;
-		default:assert(false);
-	}
-	*/
-	Tuple!(int,"score",Operation[2],"operations")[SEARCH_WIDTH] nextHandleCandidateList;
-	foreach(i;0..SEARCH_WIDTH){
-		auto trial = proceedGame(myColor,board,agentList);
-		auto score=scoreCalculation(trial.board);//FIXME 名前が危険
-		//nextHandleCandidateList[i].score=score[colorIdx]; /+FIXME　コンパイル時に読めないって怒られた+/
-		switch(myColor){
-			case Color.Red:nextHandleCandidateList[i].score=score[0];break;
-			case Color.Blue:nextHandleCandidateList[i].score=score[1];break;
-			default:assert(false);
-		}
-		nextHandleCandidateList[i].operations=(trial.operations);
-	}
-	auto bestHandle=nextHandleCandidateList[0];
-	foreach(currentCandidate;nextHandleCandidateList){
-		bestHandle = bestHandle.score > currentCandidate.score ? bestHandle:currentCandidate;
-	}
-	auto dbg = bestHandle.operations;
-	return dbg;
-}	
-+/
 int decideDirection(int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
 	switch(rnd){
