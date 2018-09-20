@@ -136,6 +136,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	auto prevAgents=agentList;//戻すとき用
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
+                prevPosList[i]=tuple(agentList[i].pos%board.width,agentList[i].pos/board.width);
                 assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
 		int direction=decideDirection(board.width);
@@ -181,12 +182,13 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 		agentList[i].pos=heldAgents[i].pos;
 		board.cells[agentList[i].pos].color=agentList[i].color;
 	}
+        int redOpCnt=0;//GCを回さないためにちゃんと数えないとだめ。
+	int blueOpCnt=0;
+
 	foreach(i;0..4){
 		board.cells[agentList[i].pos].agent=true;
 		board.cells[agentList[i].pos].color=agentList[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
-		int redOpCnt=0;//GCを回さないためにちゃんと数えないとだめ。
-		int blueOpCnt=0;
-			if (agentList[i].color == Color.Red){
+					if (agentList[i].color == Color.Red){
 			operations.redOp[redOpCnt].from = prevPosList[i];
 			operations.redOp[redOpCnt].to =nextPosList[i];
 			operations.redOp[redOpCnt].type =typeList[i];
@@ -199,7 +201,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 			++blueOpCnt;
 		}
 	}
-	return Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
+       	return Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
 }
 
 unittest{

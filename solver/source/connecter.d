@@ -11,11 +11,10 @@ import procon.decoder;
 const serverURL = "ws://127.0.0.1:8080";
 
 void connect (int color,int turn){
-	while (turn>0){
+	while (true){
 		auto ws = connectWebSocket(URL.parse(serverURL));
 		while(ws.waitForData()){
 			auto txt = ws.receiveText();
-			writeln(txt);
 			auto json = parseJSON(txt);
 			Board board=decode(json["payload"]);
 			auto opJson = search(color,turn,board);--turn;

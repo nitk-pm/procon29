@@ -31,7 +31,7 @@ JSONValue makeBoardJson(Board board){
 }
 JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 	JSONValue[2] opJson;
-	foreach(i;0..1){//origOpも触るのでカウンタ変数が必要
+	foreach(i;0..2){//origOpも触るのでカウンタ変数が必要
 		string type;
 		switch(rawOp[i].type){
 			case Type.Move :type = "Move";break;

@@ -10,7 +10,7 @@ import std.stdio;
 import std.json;
 import procon.decoder;
 import procon.example;
-
+import procon.encoder;
 /*
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
@@ -145,4 +145,7 @@ unittest{
 		mct.visitNode();
 	}
 	auto bestOp=mct.bestOp();
+        auto opjson=makeOperationJson(color,bestOp);
+        opjson[0].toString.writeln();
+        opjson[1].toString.writeln();
 }
