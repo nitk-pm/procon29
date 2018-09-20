@@ -9,7 +9,7 @@ JSONValue[2] search(int color,int turn,Board board){
 	mct.color=color;
 	mct.gameTurn=turn;
 	Node rootNode;
-	rootNode.board = board;
+	rootNode.board=board;
 	mct.nodes~=rootNode;
 	foreach(i;0..searchLimit){
 		mct.visitNode();

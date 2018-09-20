@@ -20,8 +20,8 @@ struct Node{
 	int ownIdx=0;
 	int parentNodeIdx=0;
 	int[] childNodesIdx;
-	int wins = 0;
-	int visits = 0; //訪問回数
+	int wins=0;
+	int visits=0; //訪問回数
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
@@ -34,7 +34,7 @@ struct MCT{
 	const int threshold=5;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=12;//一回の展開で開く状態の数
 	int color;//チームの色
-	float C = 0.5; // UCB1の定数、後々小さくするかも
+	float C=0.5; // UCB1の定数、後々小さくするかも
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	Node[] nodes;
@@ -44,14 +44,14 @@ struct MCT{
 				nodes[i].UCB1Score=INF;
 			}
 			else {
-				nodes[i].UCB1Score = nodes[i].wins/nodes[i].visits
+				nodes[i].UCB1Score=nodes[i].wins/nodes[i].visits
 							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits);
 			}
 		}
 	}
 	void visitNode(){
 		this.calculateUCB1();
-                float bestUCB1=0;
+		float bestUCB1=0;
 		int visitedNodeIdx=0;
 		foreach (currentNode;this.nodes){
 			if (currentNode.UCB1Score>=bestUCB1){
@@ -59,8 +59,8 @@ struct MCT{
 				visitedNodeIdx=currentNode.ownIdx;
 			}
 		}
-		Board resultBoard = this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
-                auto resultPair = scoreCalculation(resultBoard);
+		Board resultBoard=this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
+		auto resultPair=scoreCalculation(resultBoard);
 		int result;
 		final switch(this.color){
 			case Color.Red:result=resultPair.Red-resultPair.Blue;break;
@@ -70,8 +70,8 @@ struct MCT{
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold)
 			foreach(i;0..expandWidth){
-                                this.expandNode(visitedNodeIdx);
-                        }
+				this.expandNode(visitedNodeIdx);
+			}
 	}
 	void backPropagate(int idx,bool isWon){
 		if (isWon)
@@ -83,9 +83,9 @@ struct MCT{
 			this.backPropagate(nodes[idx].parentNodeIdx,isWon);
 	}
 	void expandNode(int expandNodeIdx){
-                Node parent=nodes[expandNodeIdx];
-               	Node child;
-                parent.board.cells=parent.board.cells.dup;
+		Node parent=nodes[expandNodeIdx];
+		Node child;
+		parent.board.cells=parent.board.cells.dup;
 		++this.size;
 		auto tmp=proceedGame(parent.board);
 		child.operations=tuple(tmp.redOp,tmp.blueOp);
@@ -98,17 +98,17 @@ struct MCT{
 	}
 	Board playout(Board origBoard,int turn){
 		Board proceededBoard;
-                proceededBoard.cells=origBoard.cells.dup;
-                proceededBoard.width=origBoard.width;
+		proceededBoard.cells=origBoard.cells.dup;
+		proceededBoard.width=origBoard.width;
 		foreach(i;0..turn){
-			proceededBoard = proceedGameWithoutOp(proceededBoard);
+			proceededBoard=proceedGameWithoutOp(proceededBoard);
 		}
 		return proceededBoard;
 	}
 	Operation[2] bestOp(){
 		int bestVisitsCount=0;
 		auto bestOp=nodes[1].operations;//型を書くのがめんどくさい
-                nodes[0].childNodesIdx.length.writeln();
+		nodes[0].childNodesIdx.length.writeln();
 		foreach(currentNode;nodes){
 			if (currentNode.depth==1){
 				if (bestVisitsCount < currentNode.visits){
@@ -124,22 +124,22 @@ struct MCT{
 	}
 }
 unittest{
-	auto json = parseJSON(ExampleJson);
-	auto board = decode(json);
-        auto color = Color.Red;
-	auto turn = 10;
-	auto searchLimit = 10000;
+	auto json=parseJSON(ExampleJson);
+	auto board=decode(json);
+	auto color=Color.Red;
+	auto turn=10;
+	auto searchLimit=10000;
 	MCT mct;
 	mct.color=color;
 	mct.gameTurn=turn;
 	Node rootNode;
-	rootNode.board = board;
+	rootNode.board=board;
 	mct.nodes~=rootNode;
 	foreach(i;0..searchLimit){
 		mct.visitNode();
 	}
 	auto bestOp=mct.bestOp();
-        auto opjson=makeOperationJson(color,bestOp);
-        opjson[0].writeln();
-        opjson[1].writeln();
+	auto opjson=makeOperationJson(color,bestOp);
+	opjson[0].writeln();
+	opjson[1].writeln();
 }

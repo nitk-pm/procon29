@@ -2,9 +2,8 @@ module procon.container;
 
 import std.stdio;
 import std.typecons;
-const float INF = 1e9+7;
+const float INF=1e9+7;
 
-      
 struct Cell {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
@@ -40,15 +39,15 @@ struct Queue(T){
 		return arr[0];
 	}
 	void pop(){
-		arr = arr[1..$];
+		arr=arr[1..$];
 	}
 	void push(T a){
-		arr ~= a;
+		arr~=a;
 	}
 }
 
 unittest {
-	auto q = Queue!int();
+	auto q=Queue!int();
 	q.push(1);
 	assert(q.top()==1);
 	q.push(2);
