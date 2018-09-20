@@ -40,11 +40,15 @@ JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 		}
 		opJson[i]["type"]=type;
 		if (rawOp[i].type==Type.Move){
-			opJson[i]["from"]["x"]=rawOp[i].from.x;
-			opJson[i]["from"]["y"]=rawOp[i].from.y;
-		}
-		opJson[i]["to"]["x"]=rawOp[i].to.x;
-		opJson[i]["to"]["y"]=rawOp[i].to.y;
+                        JSONValue tmp;
+                        tmp["x"]=rawOp[i].from.x;
+                        tmp["y"]=rawOp[i].from.y;
+			opJson[i]["from"]=tmp;
+                }
+                JSONValue tmp;
+                tmp["x"]=rawOp[i].to.x;
+                tmp["y"]=rawOp[i].to.y;
+		opJson[i].object["to"]=tmp;
 	}
 	return opJson;
 }
