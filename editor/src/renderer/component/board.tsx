@@ -40,7 +40,6 @@ class Square extends React.Component<SquareProps> {
 			// float:leftの指定
 			<div
 				className='square' style={style}
-				onClick={() => this.props.actions.toggleColorPicker(this.props.pos)}
 			>
 				<TextField
 					value={
@@ -56,6 +55,9 @@ class Square extends React.Component<SquareProps> {
 							this.props.actions.changeScore(this.props.pos, e.target.value)
 					}
 				/>
+				<div className='color' style={{ height: '100%' }}
+					onClick={() => this.props.actions.toggleColorPicker(this.props.pos)}
+				></div>
 			</div>
 		);
 	}
