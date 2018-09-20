@@ -37,6 +37,24 @@ export function newBoard (w: number, h: number) {
 	return { arr, w, h };
 }
 
+export function resizeBoard(tbl: Table, w: number, h: number) {
+	let arr = tbl.arr.map(line => line.map(square => ({...square})));
+	for (let y = 0; y < h; ++y) {
+		if (y >= arr.length) {
+			arr.push(new Array<Square>());
+		}
+		for (let x = 0; x < w; ++x) {
+			if (x >= arr[y].length) {
+				arr[y].push({
+					color: Color.Neut,
+					score: None
+				});
+			}
+		}
+	}
+	return { w, h, arr };
+}
+
 /*
  * board.json形式
  */

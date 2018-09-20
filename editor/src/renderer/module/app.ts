@@ -95,12 +95,16 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 			tbl: Common.newBoard(10, 8)
 		};
    	case ActionNames.CHANGE_HEIGHT:
+		if (action.payload.h > 12) return state;
 	   	return {
 			...state,
+			tbl: Common.resizeBoard(state.tbl, state.tbl.w, action.payload.h)
 	   	};
-   	case ActionNames.CHANGE_WIDTH: 
+   	case ActionNames.CHANGE_WIDTH:
+		if (action.payload.w > 12) return state;
 		return {
 			...state,
+			tbl: Common.resizeBoard(state.tbl, action.payload.w, state.tbl.h)
 		};
 	case ActionNames.TOGGLE_COLOR_PICKER:
 		return {

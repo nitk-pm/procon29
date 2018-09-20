@@ -45,7 +45,7 @@ export default withStyles(styles)<AppProps>(
 					placeholder='width'
 					onChange={
 						(e: any) =>
-							this.props.actions.changeWidth(e.target.value)
+							props.actions.changeWidth(e.target.value)
 					}
 				/>
 				<TextField
@@ -54,7 +54,7 @@ export default withStyles(styles)<AppProps>(
 					placeholder='height'
 					onChange={
 						(e: any) =>
-							this.props.actions.changeHeight(e.target.value)
+							props.actions.changeHeight(e.target.value)
 					}
 				/>
 			</div>
