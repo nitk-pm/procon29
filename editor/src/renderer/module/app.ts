@@ -12,7 +12,8 @@ export enum ActionNames {
 	LOAD_BOARD = 'IGOKABADDI_LOAD',
 	TOGGLE_COLOR_PICKER = 'IGOKABADDI_TOGGLE_COLOR_PICKER',
 	CLOSE_COLOR_PICKER = 'IGOKABADDI_CLOSE_COLOR_PICKER',
-	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR'
+	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR',
+	NEW_BOARD = 'IGOKABADDI_NEW_BOARD'
 }
 
 export type CloseWindowAction = {
@@ -52,6 +53,10 @@ export type ChangeColorAction = {
 	};
 }
 
+export type NewBoardAction = {
+	type: ActionNames.NEW_BOARD;
+}
+
 export function reducer(state: Store.State = Store.initialState, action: Actions.T) {
 	switch (action.type) {
 	// reducer内で副作用使ってはいけないとのことなのでsagaでやるべき?
@@ -67,6 +72,11 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 		return {
 			...state,
 			tbl: action.payload.board
+		};
+	case ActionNames.NEW_BOARD:
+		return {
+			...state,
+			tbl: Common.newBoard(10, 8)
 		};
 	case ActionNames.TOGGLE_COLOR_PICKER:
 		return {

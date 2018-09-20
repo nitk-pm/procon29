@@ -22,6 +22,21 @@ export type Table = {
 	h: number;
 }
 
+export function newBoard (w: number, h: number) {
+	let arr = new Array<Array<Square>>();
+	for (let i = 0; i < h; ++i) {
+		let line = new Array<Square>();
+		for (let j = 0; j < w; ++j) {
+			line.push({
+				color: Color.Neut,
+				score: None
+			});
+		}
+		arr.push(line);
+	}
+	return { arr, w, h };
+}
+
 /*
  * board.json形式
  */
