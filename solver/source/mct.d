@@ -53,20 +53,14 @@ struct MCT{
 		this.calculateUCB1();
                 float bestUCB1=0;
 		int visitedNodeIdx=0;
-                int dbgcnt=0;
 		foreach (currentNode;this.nodes){
 			if (currentNode.UCB1Score>=bestUCB1){
 				bestUCB1=currentNode.UCB1Score;
 				visitedNodeIdx=currentNode.ownIdx;
-                    //            visitedNodeIdx.writeln();
-                  //              dbgcnt.writeln();
 			}
-                //        dbgcnt++;
 		}
-                bestUCB1.writeln();
-                visitedNodeIdx.writeln();
 		Board resultBoard = this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
-		auto resultPair = scoreCalculation(resultBoard);
+                auto resultPair = scoreCalculation(resultBoard);
 		int result;
 		final switch(this.color){
 			case Color.Red:result=resultPair.Red-resultPair.Blue;break;
@@ -76,7 +70,6 @@ struct MCT{
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold)
 			foreach(i;0..expandWidth){
-			        writeln("expand");
                                 this.expandNode(visitedNodeIdx);
                         }
 	}
@@ -90,23 +83,23 @@ struct MCT{
 			this.backPropagate(nodes[idx].parentNodeIdx,isWon);
 	}
 	void expandNode(int expandNodeIdx){
-		Node parent=nodes[expandNodeIdx];
-		foreach(i;0..expandWidth){
-			Node child;
-			++this.size;
-			auto tmp=proceedGame(parent.board);
-			child.operations=tuple(tmp.redOp,tmp.blueOp);
-			child.board=tmp.board;
-			child.ownIdx=size;
-			child.parentNodeIdx=parent.ownIdx;
-			child.depth=parent.depth+1;
-			nodes~=child;
-			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
-		}
+                Node parent=nodes[expandNodeIdx];
+               	Node child;
+                parent.board.cells=parent.board.cells.dup;
+		++this.size;
+		auto tmp=proceedGame(parent.board);
+		child.operations=tuple(tmp.redOp,tmp.blueOp);
+		child.board=tmp.board;
+		child.ownIdx=size;
+		child.parentNodeIdx=parent.ownIdx;
+		child.depth=parent.depth+1;
+		nodes~=child;
+		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
-	Board playout(Board board,int turn){
-                writeln("playout");
-		Board proceededBoard=board;
+	Board playout(Board origBoard,int turn){
+		Board proceededBoard;
+                proceededBoard.cells=origBoard.cells.dup;
+                proceededBoard.width=origBoard.width;
 		foreach(i;0..turn){
 			proceededBoard = proceedGameWithoutOp(proceededBoard);
 		}
@@ -115,6 +108,7 @@ struct MCT{
 	Operation[2] bestOp(){
 		int bestVisitsCount=0;
 		auto bestOp=nodes[1].operations;//型を書くのがめんどくさい
+                nodes[0].childNodesIdx.length.writeln();
 		foreach(currentNode;nodes){
 			if (currentNode.depth==1){
 				if (bestVisitsCount < currentNode.visits){
