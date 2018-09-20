@@ -13,7 +13,23 @@ export enum ActionNames {
 	TOGGLE_COLOR_PICKER = 'IGOKABADDI_TOGGLE_COLOR_PICKER',
 	CLOSE_COLOR_PICKER = 'IGOKABADDI_CLOSE_COLOR_PICKER',
 	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR',
-	NEW_BOARD = 'IGOKABADDI_NEW_BOARD'
+	NEW_BOARD = 'IGOKABADDI_NEW_BOARD',
+	CHANGE_HEIGHT = 'IGOKABADDI_CHANGE_HEIGHT',
+	CHANGE_WIDTH = 'IGOKABADDI_CHANGE_WIDTH',
+}
+
+export type ChangeWidthAction = {
+	type: ActionNames.CHANGE_WIDTH,
+	payload: {
+		w: number
+	}
+}
+
+export type ChangeHeightAction = {
+	type: ActionNames.CHANGE_HEIGHT,
+	payload: {
+		h: number
+	}
 }
 
 export type CloseWindowAction = {
@@ -77,6 +93,14 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 		return {
 			...state,
 			tbl: Common.newBoard(10, 8)
+		};
+   	case ActionNames.CHANGE_HEIGHT:
+	   	return {
+			...state,
+	   	};
+   	case ActionNames.CHANGE_WIDTH: 
+		return {
+			...state,
 		};
 	case ActionNames.TOGGLE_COLOR_PICKER:
 		return {
