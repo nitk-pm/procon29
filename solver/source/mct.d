@@ -31,34 +31,40 @@ struct Node{
 }
 struct MCT{
 	int gameTurn;//ゲームの残りターン数
-	const int threshold=10;//展開するかどうかの訪問回数のしきい値
+	const int threshold=5;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=3;//一回の展開で開く状態の数
 	int color;//チームの色
 	float C = 1.0; // UCB1の定数、後々小さくするかも
-	private int size=1;//最初にrootNodeをぶちこむので
+	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	Node[] nodes;
 	private void calculateUCB1(){
-		foreach(currentNode;this.nodes){
-			if (currentNode.visits==0){
-				currentNode.UCB1Score=INF;
+		foreach(i;0..nodes.length){
+			if (nodes[i].visits==0){
+				nodes[i].UCB1Score=INF;
 			}
 			else {
-				currentNode.UCB1Score = currentNode.wins/currentNode.visits
-							+C*sqrt(2*log(totalVisitsCount)/currentNode.visits);
+				nodes[i].UCB1Score = nodes[i].wins/nodes[i].visits
+							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits);
 			}
 		}
 	}
 	void visitNode(){
 		this.calculateUCB1();
-		float bestUCB1=0;
+                float bestUCB1=0;
 		int visitedNodeIdx=0;
+                int dbgcnt=0;
 		foreach (currentNode;this.nodes){
-			if (currentNode.UCB1Score>bestUCB1){
+			if (currentNode.UCB1Score>=bestUCB1){
 				bestUCB1=currentNode.UCB1Score;
 				visitedNodeIdx=currentNode.ownIdx;
+                    //            visitedNodeIdx.writeln();
+                  //              dbgcnt.writeln();
 			}
+                //        dbgcnt++;
 		}
+                bestUCB1.writeln();
+                visitedNodeIdx.writeln();
 		Board resultBoard = this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
 		auto resultPair = scoreCalculation(resultBoard);
 		int result;
@@ -69,8 +75,10 @@ struct MCT{
 		bool isWon=result>0;
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold)
-			foreach(i;0..expandWidth)
-				this.expandNode(visitedNodeIdx);
+			foreach(i;0..expandWidth){
+			        writeln("expand");
+                                this.expandNode(visitedNodeIdx);
+                        }
 	}
 	void backPropagate(int idx,bool isWon){
 		if (isWon)
@@ -97,6 +105,7 @@ struct MCT{
 		}
 	}
 	Board playout(Board board,int turn){
+                writeln("playout");
 		Board proceededBoard=board;
 		foreach(i;0..turn){
 			proceededBoard = proceedGameWithoutOp(proceededBoard);
@@ -124,8 +133,8 @@ unittest{
 	auto json = parseJSON(ExampleJson);
 	auto board = decode(json);
 	auto color = Color.Red;
-	auto turn = 0;
-	auto searchLimit = 30;
+	auto turn = 10;
+	auto searchLimit = 100;
 	MCT mct;
 	mct.color=color;
 	mct.gameTurn=turn;
