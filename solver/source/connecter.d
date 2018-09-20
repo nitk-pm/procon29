@@ -12,17 +12,20 @@ const serverURL = "ws://127.0.0.1:8080";
 
 void connect (int color,int turn){
 	while (true){
-		auto ws = connectWebSocket(URL.parse(serverURL));
+		auto ws=connectWebSocket(URL.parse(serverURL));
 		while(ws.waitForData()){
-			auto txt = ws.receiveText();
-                        //txt.writeln();
-			auto json = parseJSON(txt);
-                        if (json["type"].toString=="distribute-board"){
-                                Board board=decode(json["payload"]);
-		        	auto opJson = search(color,turn,board);--turn;
-		        	ws.send(opJson[0].toString);
-			        ws.send(opJson[1].toString);
-                        }
+			auto txt=ws.receiveText();
+			//txt.writeln();
+			auto json=parseJSON(txt);
+			json["type"].writeln();
+			if (json["type"].toString=="\"distribute-board\""){
+				Board board=decode(json["payload"]);
+				auto opJson = search(color,turn,board);--turn;
+				//opJson[0].toString.writeln();
+				//opJson[1].toString.writeln();
+				ws.send(opJson[0].toString);
+				ws.send(opJson[1].toString);
+			}
 		}
 	}
 }

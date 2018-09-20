@@ -31,8 +31,14 @@ JSONValue makeBoardJson(Board board){
 }
 JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 	JSONValue[2] opJson;
+	JSONValue[2] msgJson;
+	string msgColor;
+	switch(color){
+		case Color.Red:msgColor="Red";break;
+		case Color.Blue:msgColor="Blue";break;
+		default:assert(false);
+	}
 	foreach(i;0..2){//origOpも触るのでカウンタ変数が必要
-		opJson[""]
 		string type;
 		switch(rawOp[i].type){
 			case Type.Move :type="Move";break;
@@ -50,9 +56,11 @@ JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 		tmp["x"]=rawOp[i].to.x;
 		tmp["y"]=rawOp[i].to.y;
 		opJson[i]["to"]=tmp;
-		opJson[i]["payload"]=JSONValue(opJson);
+		msgJson[i]["payload"]=JSONValue(opJson[i]);
+		msgJson[i]["type"]="push";
+		msgJson[i]["color"]=msgColor;
 	}
-	return opJson;
+	return msgJson;
 }
 
 unittest{
