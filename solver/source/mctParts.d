@@ -22,7 +22,10 @@ auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけ�
 		if (board.cells[i].agent){
 			agentList[agentCnt++] = Agent(board.cells[i].color,i);
 		}
-        assert(agentCnt==4);
+if (agentCnt!=4){
+        writeln(agentCnt);
+        assert(false);
+}
 	return agentList;
 }
 /+
@@ -92,21 +95,31 @@ auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあと�
 	}
 	//FIXME　ここの上下の処理は関数を分けるべき
 	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
+	bool[4] isInvalidMove=false;
 	foreach(i; 0..4){
-		bool isInvalidMove=false;
 		foreach(j;0..4){
 			if (i==j)
 				continue;
-			isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
+			isInvalidMove[i]|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
 		}
-		if (isInvalidMove)
-			continue;
+        }
+        foreach(i;0..4){
+                foreach(j;0..4){
+                        if(i==j||!isInvalidMove[j])
+                                continue;
+                        isInvalidMove[i]|=heldAgents[i].pos==agentList[j].pos;
+                }
+        }
+        foreach(i;0..4){
+                if (isInvalidMove[i])
+                        continue;
 		board.cells[agentList[i].pos].agent=false;//エージェントの移動処理
 		agentList[i].pos=heldAgents[i].pos;
 
 		board.cells[agentList[i].pos].color=agentList[i].color;
 	}
 	foreach(i;0..4){
+		//assert(board.cells[agentList[i].pos].agent==false);
 		board.cells[agentList[i].pos].agent=true;
 		board.cells[agentList[i].pos].color=agentList[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
 	}
@@ -143,14 +156,23 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	}
 	//FIXME　ここの上下の処理は関数を分けるべき
 	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
+        bool[4] isInvalidMove=false;
 	foreach(i; 0..4){
-		bool isInvalidMove=false;
 		foreach(j;0..4){
 			if (i==j)
 				continue;
-			isInvalidMove|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
+			isInvalidMove[i]|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
 		}
-		if (isInvalidMove){
+        }
+        foreach(i;0..4){
+                foreach(j;0..4){
+                        if(i==j||!isInvalidMove[j])
+                                continue;
+                        isInvalidMove[i]|=heldAgents[i].pos==agentList[j].pos;
+                }
+        }
+        foreach(i;0..4){
+		if (isInvalidMove[i]){
                         typeList[i]=Type.Move;
 			nextPosList[i]=tuple(agentList[i].pos%board.width,agentList[i].pos/board.width);
 			continue;
