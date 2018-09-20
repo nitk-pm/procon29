@@ -32,9 +32,9 @@ struct Node{
 struct MCT{
 	int gameTurn;//ゲームの残りターン数
 	const int threshold=5;//展開するかどうかの訪問回数のしきい値
-	const int expandWidth=3;//一回の展開で開く状態の数
+	const int expandWidth=12;//一回の展開で開く状態の数
 	int color;//チームの色
-	float C = 1.0; // UCB1の定数、後々小さくするかも
+	float C = 0.5; // UCB1の定数、後々小さくするかも
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	Node[] nodes;
@@ -126,9 +126,9 @@ struct MCT{
 unittest{
 	auto json = parseJSON(ExampleJson);
 	auto board = decode(json);
-	auto color = Color.Red;
+        auto color = Color.Red;
 	auto turn = 10;
-	auto searchLimit = 100;
+	auto searchLimit = 10000;
 	MCT mct;
 	mct.color=color;
 	mct.gameTurn=turn;
@@ -140,6 +140,6 @@ unittest{
 	}
 	auto bestOp=mct.bestOp();
         auto opjson=makeOperationJson(color,bestOp);
-        opjson[0].toString.writeln();
-        opjson[1].toString.writeln();
+        opjson[0].writeln();
+        opjson[1].writeln();
 }

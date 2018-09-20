@@ -15,11 +15,14 @@ void connect (int color,int turn){
 		auto ws = connectWebSocket(URL.parse(serverURL));
 		while(ws.waitForData()){
 			auto txt = ws.receiveText();
+                        //txt.writeln();
 			auto json = parseJSON(txt);
-			Board board=decode(json["payload"]);
-			auto opJson = search(color,turn,board);--turn;
-			ws.send(opJson[0].toString);
-			ws.send(opJson[1].toString);
+                        if (json["type"].toString=="distribute-board"){
+                                Board board=decode(json["payload"]);
+		        	auto opJson = search(color,turn,board);--turn;
+		        	ws.send(opJson[0].toString);
+			        ws.send(opJson[1].toString);
+                        }
 		}
 	}
 }
