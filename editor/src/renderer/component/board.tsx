@@ -46,7 +46,7 @@ class Square extends React.Component<SquareProps> {
 					value={
 						this.props.square.score.match({
 							Some: num => num,
-							None: null
+							None: () => 0
 						})
 					}
 					fullWidth
