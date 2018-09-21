@@ -29,9 +29,10 @@ JSONValue makeBoardJson(Board board){
 	}
 	return JSONValue(table);
 }
-JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
-	JSONValue[2] opJson;
-	JSONValue[2] msgJson;
+JSONValue makeOperationJson(Color color,Operation[2] rawOp){
+	JSONValue opJsonParts;
+	JSONValue[] opJson;
+	JSONValue msgJson;
 	string msgColor;
 	switch(color){
 		case Color.Red:msgColor="Red";break;
@@ -45,24 +46,24 @@ JSONValue[2] makeOperationJson(int color,Operation[2] rawOp){
 			case Type.Clear:type="Clear";break;
 			default :assert(false);
 		}
-		opJson[i]["type"]=type;
+		opJsonParts["type"]=type;
 		if (rawOp[i].type==Type.Move){
 			JSONValue tmp;
-			tmp["x"]=rawOp[i].from.x;
-			tmp["y"]=rawOp[i].from.y;
-			opJson[i]["from"]=tmp;
+			tmp["x"]=JSONValue(rawOp[i].from.x);
+			tmp["y"]=JSONValue(rawOp[i].from.y);
+			opJsonParts["from"]=tmp;
 		}
 		JSONValue tmp;
-		tmp["x"]=rawOp[i].to.x;
-		tmp["y"]=rawOp[i].to.y;
-		opJson[i]["to"]=tmp;
-		msgJson[i]["payload"]=JSONValue(opJson[i]);
-		msgJson[i]["type"]="push";
-		msgJson[i]["color"]=msgColor;
+		tmp["x"]=JSONValue(rawOp[i].to.x);
+		tmp["y"]=JSONValue(rawOp[i].to.y);
+		opJsonParts["to"]=tmp;
+		opJson~=opJsonParts;
 	}
+	msgJson["type"]="push";
+	msgJson["color"]=msgColor;
+	msgJson["payload"]=JSONValue(opJson);
 	return msgJson;
 }
-
 unittest{
 	auto json=parseJSON(ExampleJson); 
 	auto orig=decode(json);

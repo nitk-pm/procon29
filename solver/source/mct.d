@@ -140,6 +140,5 @@ unittest{
 	}
 	auto bestOp=mct.bestOp();
 	auto opjson=makeOperationJson(color,bestOp);
-	writeln(opjson[0]["payload"]);
-	writeln(opjson[1]["payload"]);
+	writeln(opjson);
 }
