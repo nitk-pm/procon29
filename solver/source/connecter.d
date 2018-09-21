@@ -17,10 +17,10 @@ void connect (Color color,int turn){
 			auto txt=ws.receiveText();
 			//txt.writeln();
 			auto json=parseJSON(txt);
-			json["type"].writeln();
 			if (json["type"].toString=="\"distribute-board\""){
 				Board board=decode(json["payload"]);
 				auto opJson = search(color,turn,board);--turn;
+				opJson.writeln();
 				ws.send(opJson.toString);
 			}
 		}
