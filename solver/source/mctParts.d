@@ -16,17 +16,17 @@ int rnd(){//adhoc太郎
 	return uniform(0,9,rnd);
 }
 auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけた順にぶち込む
-	Agent[4] agentList;
+	Agent[4] agents;
 	int agentCnt=0;
-	for(int i=board.width+1;i<board.cells.length-board.width-1;i++)//番兵を除いた左上から右下へのループ
+	for (int i=board.width+1;i<board.cells.length-board.width-1;i++)//番兵を除いた左上から右下へのループ
 		if (board.cells[i].agent){
-			agentList[agentCnt++]=Agent(board.cells[i].color,i);
+			agents[agentCnt++]=Agent(board.cells[i].color,i);
 		}
 	if (agentCnt!=4){
 		writeln(agentCnt);
 		assert(false);
 	}
-	return agentList;
+	return agents;
 }
 int decideDirection(int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
@@ -47,17 +47,17 @@ int decideDirection(int width){//真上から時計回りに、0~7で方向を�
 auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあとの盤面のみを返す、プレイアウト用
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
-	Agent[4] agentList=searchAgentInitialPos(board);//最終的なエージェントの動作
-	auto heldAgents=agentList;//エージェントの動きを保持して無効な動きを検知する用
-	auto prevAgents=agentList;//戻すとき用
+	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
+	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
+	auto prevAgents=agents;//戻すとき用
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
 		int direction=decideDirection(board.width);
-		int destination=agentList[i].pos+direction;//進んだ先の座標
+		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			continue;
 		}
-		if (!(board.cells[destination].color==board.cells[agentList[i].pos].color||board.cells[destination].color==Color.Neut)){
+		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
 			board.cells[destination].color=Color.Neut;//自陣でもNeutでもない領域に進もうとしているのでタイル除去とする
 		}
 		else{
@@ -78,21 +78,21 @@ auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあと�
 		foreach(j;0..4){
 			if(i==j||!isInvalidMove[j])
 				continue;
-			isInvalidMove[i]|=heldAgents[i].pos==agentList[j].pos;
+			isInvalidMove[i]|=heldAgents[i].pos==agents[j].pos;
 		}
 	}
 	foreach(i;0..4){
 		if (isInvalidMove[i])
 			continue;
-		board.cells[agentList[i].pos].agent=false;//エージェントの移動処理
-		agentList[i].pos=heldAgents[i].pos;
+		board.cells[agents[i].pos].agent=false;//エージェントの移動処理
+		agents[i].pos=heldAgents[i].pos;
 
-		board.cells[agentList[i].pos].color=agentList[i].color;
+		board.cells[agents[i].pos].color=agents[i].color;
 	}
 	foreach(i;0..4){
-		//assert(board.cells[agentList[i].pos].agent==false);
-		board.cells[agentList[i].pos].agent=true;
-		board.cells[agentList[i].pos].color=agentList[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
+		//assert(board.cells[agents[i].pos].agent==false);
+		board.cells[agents[i].pos].agent=true;
+		board.cells[agents[i].pos].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
 	}
 	return board;
 }
@@ -102,21 +102,21 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
 	Type[4] typeList;
 	Tuple!(int,int)[4] prevPosList, nextPosList;
-	Agent[4] agentList=searchAgentInitialPos(board);//最終的なエージェントの動作
-	auto heldAgents=agentList;//エージェントの動きを保持して無効な動きを検知する用
-	auto prevAgents=agentList;//戻すとき用
+	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
+	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
+	auto prevAgents=agents;//戻すとき用
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
-		prevPosList[i]=tuple(agentList[i].pos%board.width,agentList[i].pos/board.width);
+		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
 		int direction=decideDirection(board.width);
-		int destination=agentList[i].pos+direction;//進んだ先の座標
+		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
-			nextPosList[i]=tuple(agentList[i].pos%board.width,agentList[i].pos/board.width);
+			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 			continue;
 		}
-		if (!(board.cells[destination].color==board.cells[agentList[i].pos].color||board.cells[destination].color==Color.Neut)){
+		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
 			board.cells[destination].color=Color.Neut;//自陣でもNeutでもない領域に進もうとしているのでタイル除去とする
 			typeList[i]=Type.Clear;
 		}
@@ -140,32 +140,32 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 		foreach(j;0..4){
 			if(i==j||!isInvalidMove[j])
 				continue;
-			isInvalidMove[i]|=heldAgents[i].pos==agentList[j].pos;
+			isInvalidMove[i]|=heldAgents[i].pos==agents[j].pos;
 		}
 	}
 	foreach(i;0..4){
 		if (isInvalidMove[i]){
 			typeList[i]=Type.Move;
-			nextPosList[i]=tuple(agentList[i].pos%board.width,agentList[i].pos/board.width);
+			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 			continue;
 		}
-		board.cells[agentList[i].pos].agent=false;//エージェントの移動処理
-		agentList[i].pos=heldAgents[i].pos;
-		board.cells[agentList[i].pos].color=agentList[i].color;
+		board.cells[agents[i].pos].agent=false;//エージェントの移動処理
+		agents[i].pos=heldAgents[i].pos;
+		board.cells[agents[i].pos].color=agents[i].color;
 	}
 	int redOpCnt=0;//GCを回さないためにちゃんと数えないとだめ。
 	int blueOpCnt=0;
 
 	foreach(i;0..4){
-		board.cells[agentList[i].pos].agent=true;
-		board.cells[agentList[i].pos].color=agentList[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
-					if (agentList[i].color==Color.Red){
+		board.cells[agents[i].pos].agent=true;
+		board.cells[agents[i].pos].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
+					if (agents[i].color==Color.Red){
 			operations.redOp[redOpCnt].from=prevPosList[i];
 			operations.redOp[redOpCnt].to =nextPosList[i];
 			operations.redOp[redOpCnt].type =typeList[i];
 			++redOpCnt;
 		}
-			if (agentList[i].color==Color.Blue){
+			if (agents[i].color==Color.Blue){
 			operations.blueOp[blueOpCnt].from=prevPosList[i];
 			operations.blueOp[blueOpCnt].to =nextPosList[i];
 			operations.blueOp[blueOpCnt].type =typeList[i];
