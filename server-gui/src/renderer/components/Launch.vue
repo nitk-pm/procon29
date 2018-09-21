@@ -3,7 +3,7 @@
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
-        <md-button v-bind:disabled="cannot_launch">Launch!</md-button>
+        <md-button class='md-raised md-primary' v-bind:disabled="cannot_launch">Launch!</md-button>
       </div>
     </div>
   </div>
