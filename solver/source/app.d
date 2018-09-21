@@ -7,7 +7,7 @@ void main(){
 startInput:
 	string[] input = split(readln());
 	string colorStr = input[0];
-	int color;
+	Color color;
 	switch(colorStr){
 		case "Red":color=Color.Red;break;
 		case "Blue":color=Color.Blue;break;

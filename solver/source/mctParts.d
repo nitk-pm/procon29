@@ -100,7 +100,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
-	int[4] typeList;
+	Type[4] typeList;
 	Tuple!(int,int)[4] prevPosList, nextPosList;
 	Agent[4] agentList=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agentList;//エージェントの動きを保持して無効な動きを検知する用

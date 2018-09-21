@@ -10,7 +10,7 @@ import procon.encoder;
 import procon.decoder;
 const serverURL = "ws://127.0.0.1:8080";
 
-void connect (int color,int turn){
+void connect (Color color,int turn){
 	while (true){
 		auto ws=connectWebSocket(URL.parse(serverURL));
 		while(ws.waitForData()){
@@ -21,10 +21,7 @@ void connect (int color,int turn){
 			if (json["type"].toString=="\"distribute-board\""){
 				Board board=decode(json["payload"]);
 				auto opJson = search(color,turn,board);--turn;
-				//opJson[0].toString.writeln();
-				//opJson[1].toString.writeln();
-				ws.send(opJson[0].toString);
-				ws.send(opJson[1].toString);
+				ws.send(opJson.toString);
 			}
 		}
 	}

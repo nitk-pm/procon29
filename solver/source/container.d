@@ -7,7 +7,7 @@ const float INF=1e9+7;
 struct Cell {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
-	int color;
+	Color color;
 }
 struct Board{
 	Cell[] cells;
@@ -18,13 +18,13 @@ enum Color{
 	Red,Blue,Neut,Out
 }
 struct Agent { //エージェントの色と座標
-	int color;
+	Color color;
 	int pos;//座標は一つの整数で表現する
 }
 struct Operation{
 	Tuple!(int,"x",int,"y") from;
 	Tuple!(int,"x",int,"y") to;
-	int type;
+	Type type;
 }
 enum Type{
 	Move,Clear
