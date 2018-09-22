@@ -43,7 +43,7 @@ pure auto searchAgentInitialPos(in Board board){//左上から右へ走査、見
 			agents[agentCnt++] = Agent(board.cells[i].color, i);
 		}
 	}
-	if (agentCnt < 4){
+	if (agentCnt != 4){
 		//writeln(agentCnt);
 		assert(false);
 	}
