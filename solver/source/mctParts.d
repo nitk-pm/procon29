@@ -5,8 +5,11 @@ import std.stdio;
 import std.math;
 import std.random;
 import std.typecons;
+import std.json: parseJSON;
 import procon.container;
 import procon.calc;
+import procon.example;
+import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
 const int SEARCH_WIDTH=3;
@@ -22,22 +25,42 @@ unittest {
 	assert(rnd() >= 0);
 }
 
-auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけた順にぶち込む
+// テスト用の補助関数
+@safe @nogc
+pure nothrow int idx(int x, int y, int w) {
+	return (y + 1) * (w + 2) + x + 1;
+}
+unittest {
+	assert (idx(2, 0, 5) == 10);
+}
+
+@safe @nogc
+pure auto searchAgentInitialPos(in Board board){//左上から右へ走査、見つけた順にぶち込む
 	Agent[4] agents;
 	int agentCnt=0;
-	for (int i=board.width+1;i<board.cells.length-board.width-1;i++)//番兵を除いた左上から右下へのループ
+	for (int i=board.width+1;i<board.cells.length-board.width-1;i++) {//番兵を除いた左上から右下へのループ
 		if (board.cells[i].agent){
-			agents[agentCnt++]=Agent(board.cells[i].color,i);
+			agents[agentCnt++] = Agent(board.cells[i].color, i);
 		}
-	if (agentCnt!=4){
-		writeln(agentCnt);
+	}
+	if (agentCnt < 4){
+		//writeln(agentCnt);
 		assert(false);
 	}
 	return agents;
 }
+unittest {
+	immutable board = ExampleJson.parseJSON.decode;
+	assert(searchAgentInitialPos(board) == [
+		Agent(Color.Blue, idx(1, 1, 11)),
+		Agent(Color.Red, idx(9, 1, 11)),
+		Agent(Color.Red, idx(1, 6, 11)),
+		Agent(Color.Blue, idx(9, 6, 11)),
+	]);
+}
 
 @nogc @safe
-pure nothrow int decideDirection(int seed, int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
+pure nothrow int decideDirection(in int seed, in int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
 	switch(seed){
 		case 0:direction=-width;break;
