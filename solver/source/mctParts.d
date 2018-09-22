@@ -11,6 +11,7 @@ import procon.calc;
 //進む先が敵陣のパネルならパネル除去操作に変更
 const int SEARCH_WIDTH=3;
 
+@safe
 int rnd(){//adhoc太郎
 	auto rnd=Random(unpredictableSeed);
 	return uniform(0,9,rnd);
@@ -35,7 +36,8 @@ auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけ�
 	return agents;
 }
 
-int decideDirection(int seed, int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
+@nogc @safe
+pure nothrow int decideDirection(int seed, int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
 	switch(seed){
 		case 0:direction=-width;break;
