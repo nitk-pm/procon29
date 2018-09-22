@@ -13,6 +13,6 @@ export type State = {
 	editingColor: Option<Common.Pos>;
 };
 
-export const initialState: State = { tbl: null, state: UIState.Load, drawerOpen: true, editingColor: None }
+export const initialState: State = { tbl: Common.newBoard(12, 12), state: UIState.Load, drawerOpen: true, editingColor: None }
 
 export const getBoard = (state: State) => state.tbl;
