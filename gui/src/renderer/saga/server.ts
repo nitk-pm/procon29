@@ -176,11 +176,13 @@ function* flow() {
 				}
 			});
 			// UserならOperationの配信リストに自身を加えるよう要請
-			socket.send(JSON.stringify({
-				type: 'subscribe-op',
-				color: payload.color,
-				payload: {}
-			}));
+			if (payload.state == Store.UIState.User) {
+				socket.send(JSON.stringify({
+					type: 'subscribe-op',
+					color: payload.color,
+					payload: {}
+				}));
+			}
 			break;
 		}
 		// stateとcolorは変えずに失敗を通知
