@@ -12,7 +12,24 @@ export enum ActionNames {
 	LOAD_BOARD = 'IGOKABADDI_LOAD',
 	TOGGLE_COLOR_PICKER = 'IGOKABADDI_TOGGLE_COLOR_PICKER',
 	CLOSE_COLOR_PICKER = 'IGOKABADDI_CLOSE_COLOR_PICKER',
-	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR'
+	CHANGE_COLOR = 'IGOKABADDI_CHANGE_COLOR',
+	NEW_BOARD = 'IGOKABADDI_NEW_BOARD',
+	CHANGE_HEIGHT = 'IGOKABADDI_CHANGE_HEIGHT',
+	CHANGE_WIDTH = 'IGOKABADDI_CHANGE_WIDTH',
+}
+
+export type ChangeWidthAction = {
+	type: ActionNames.CHANGE_WIDTH,
+	payload: {
+		w: number
+	}
+}
+
+export type ChangeHeightAction = {
+	type: ActionNames.CHANGE_HEIGHT,
+	payload: {
+		h: number
+	}
 }
 
 export type CloseWindowAction = {
@@ -52,6 +69,10 @@ export type ChangeColorAction = {
 	};
 }
 
+export type NewBoardAction = {
+	type: ActionNames.NEW_BOARD;
+}
+
 export function reducer(state: Store.State = Store.initialState, action: Actions.T) {
 	switch (action.type) {
 	// reducer内で副作用使ってはいけないとのことなのでsagaでやるべき?
@@ -67,6 +88,23 @@ export function reducer(state: Store.State = Store.initialState, action: Actions
 		return {
 			...state,
 			tbl: action.payload.board
+		};
+	case ActionNames.NEW_BOARD:
+		return {
+			...state,
+			tbl: Common.newBoard(10, 8)
+		};
+   	case ActionNames.CHANGE_HEIGHT:
+		if (action.payload.h > 12) return state;
+	   	return {
+			...state,
+			tbl: Common.resizeBoard(state.tbl, state.tbl.w, action.payload.h)
+	   	};
+   	case ActionNames.CHANGE_WIDTH:
+		if (action.payload.w > 12) return state;
+		return {
+			...state,
+			tbl: Common.resizeBoard(state.tbl, action.payload.w, state.tbl.h)
 		};
 	case ActionNames.TOGGLE_COLOR_PICKER:
 		return {

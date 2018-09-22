@@ -27,6 +27,12 @@ export class ActionDispatcher {
 			type: SaveSaga.ActionNames.SAVE
 		});
 	}
+	
+	new() {
+		this.dispatch({
+			type: AppModule.ActionNames.NEW_BOARD
+		});
+	}
 }
 
 export default ReactRedux.connect(
