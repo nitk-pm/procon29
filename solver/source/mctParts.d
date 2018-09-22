@@ -15,6 +15,12 @@ int rnd(){//adhoc太郎
 	auto rnd=Random(unpredictableSeed);
 	return uniform(0,9,rnd);
 }
+unittest {
+	// これはあまり意味ない気がする
+	assert(rnd() < 9);
+	assert(rnd() >= 0);
+}
+
 auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけた順にぶち込む
 	Agent[4] agents;
 	int agentCnt=0;
@@ -28,9 +34,10 @@ auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけ�
 	}
 	return agents;
 }
-int decideDirection(int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
+
+int decideDirection(int seed, int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
-	switch(rnd){
+	switch(seed){
 		case 0:direction=-width;break;
 		case 1:direction=-width+1;break;
 		case 2:direction=1;break;
@@ -44,6 +51,18 @@ int decideDirection(int width){//真上から時計回りに、0~7で方向を�
 	}
 	return direction;
 }
+unittest {
+	assert (decideDirection(0, 1) == -1);
+	assert (decideDirection(1, 2) == -1);
+	assert (decideDirection(2, 3) == 1);
+	assert (decideDirection(3, 4) == 5);
+	assert (decideDirection(4, 5) == 5);
+	assert (decideDirection(5, 6) == 5);
+	assert (decideDirection(6, 7) == -1);
+	assert (decideDirection(7, 8) == -9);
+	assert (decideDirection(8, 9) == 0);
+}
+
 auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあとの盤面のみを返す、プレイアウト用
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
@@ -52,7 +71,7 @@ auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあと�
 	auto prevAgents=agents;//戻すとき用
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
-		int direction=decideDirection(board.width);
+		int direction=decideDirection(rnd, board.width);
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			continue;
@@ -110,7 +129,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
-		int direction=decideDirection(board.width);
+		int direction=decideDirection(rnd, board.width);
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
