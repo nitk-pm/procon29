@@ -5,32 +5,64 @@ import std.stdio;
 import std.math;
 import std.random;
 import std.typecons;
+import std.json: parseJSON;
 import procon.container;
 import procon.calc;
+import procon.example;
+import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
 const int SEARCH_WIDTH=3;
 
+@safe
 int rnd(){//adhoc太郎
 	auto rnd=Random(unpredictableSeed);
 	return uniform(0,9,rnd);
 }
-auto searchAgentInitialPos(Board board){//左上から右へ走査、見つけた順にぶち込む
+unittest {
+	// これはあまり意味ない気がする
+	assert(rnd() < 9);
+	assert(rnd() >= 0);
+}
+
+// テスト用の補助関数
+@safe @nogc
+pure nothrow int idx(int x, int y, int w) {
+	return (y + 1) * (w + 2) + x + 1;
+}
+unittest {
+	assert (idx(2, 0, 5) == 10);
+}
+
+@safe @nogc
+pure auto searchAgentInitialPos(in Board board){//左上から右へ走査、見つけた順にぶち込む
 	Agent[4] agents;
 	int agentCnt=0;
-	for (int i=board.width+1;i<board.cells.length-board.width-1;i++)//番兵を除いた左上から右下へのループ
+	for (int i=board.width+1;i<board.cells.length-board.width-1;i++) {//番兵を除いた左上から右下へのループ
 		if (board.cells[i].agent){
-			agents[agentCnt++]=Agent(board.cells[i].color,i);
+			agents[agentCnt++] = Agent(board.cells[i].color, i);
 		}
-	if (agentCnt!=4){
-		writeln(agentCnt);
+	}
+	if (agentCnt != 4){
+		//writeln(agentCnt);
 		assert(false);
 	}
 	return agents;
 }
-int decideDirection(int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
+unittest {
+	immutable board = ExampleJson.parseJSON.decode;
+	assert(searchAgentInitialPos(board) == [
+		Agent(Color.Blue, idx(1, 1, 11)),
+		Agent(Color.Red, idx(9, 1, 11)),
+		Agent(Color.Red, idx(1, 6, 11)),
+		Agent(Color.Blue, idx(9, 6, 11)),
+	]);
+}
+
+@nogc @safe
+pure nothrow int decideDirection(in int seed, in int width){//真上から時計回りに、0~7で方向を表現、8ならその場で動かない
 	int direction;
-	switch(rnd){
+	switch(seed){
 		case 0:direction=-width;break;
 		case 1:direction=-width+1;break;
 		case 2:direction=1;break;
@@ -44,6 +76,18 @@ int decideDirection(int width){//真上から時計回りに、0~7で方向を�
 	}
 	return direction;
 }
+unittest {
+	assert (decideDirection(0, 1) == -1);
+	assert (decideDirection(1, 2) == -1);
+	assert (decideDirection(2, 3) == 1);
+	assert (decideDirection(3, 4) == 5);
+	assert (decideDirection(4, 5) == 5);
+	assert (decideDirection(5, 6) == 5);
+	assert (decideDirection(6, 7) == -1);
+	assert (decideDirection(7, 8) == -9);
+	assert (decideDirection(8, 9) == 0);
+}
+
 auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあとの盤面のみを返す、プレイアウト用
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
@@ -52,7 +96,7 @@ auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあと�
 	auto prevAgents=agents;//戻すとき用
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
-		int direction=decideDirection(board.width);
+		int direction=decideDirection(rnd, board.width);
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			continue;
@@ -110,7 +154,7 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
-		int direction=decideDirection(board.width);
+		int direction=decideDirection(rnd, board.width);
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
