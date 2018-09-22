@@ -13,6 +13,9 @@ const serverURL = "ws://127.0.0.1:8080";
 void connect (Color color,int turn){
 	while (true){
 		auto ws=connectWebSocket(URL.parse(serverURL));
+		JSONValue req;
+		req["type"]="req-board";
+		ws.send(req.toString);
 		while(ws.waitForData()){
 			auto txt=ws.receiveText();
 			//txt.writeln();
