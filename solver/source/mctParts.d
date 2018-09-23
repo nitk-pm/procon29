@@ -12,7 +12,6 @@ import procon.example;
 import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
-const int SEARCH_WIDTH=3;
 
 @safe
 int rnd(){//adhoc太郎
@@ -203,18 +202,18 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	foreach(i;0..4){
 		board.cells[agents[i].pos].agent=true;
 		board.cells[agents[i].pos].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
-					if (agents[i].color==Color.Red){
-			operations.redOp[redOpCnt].from=prevPosList[i];
-			operations.redOp[redOpCnt].to =nextPosList[i];
-			operations.redOp[redOpCnt].type =typeList[i];
-			++redOpCnt;
-		}
+			if (agents[i].color==Color.Red){
+				operations.redOp[redOpCnt].from=prevPosList[i];
+				operations.redOp[redOpCnt].to=nextPosList[i];
+				operations.redOp[redOpCnt].type=typeList[i];
+				++redOpCnt;
+			}
 			if (agents[i].color==Color.Blue){
-			operations.blueOp[blueOpCnt].from=prevPosList[i];
-			operations.blueOp[blueOpCnt].to =nextPosList[i];
-			operations.blueOp[blueOpCnt].type =typeList[i];
-			++blueOpCnt;
-		}
+				operations.blueOp[blueOpCnt].from=prevPosList[i];
+				operations.blueOp[blueOpCnt].to=nextPosList[i];
+				operations.blueOp[blueOpCnt].type=typeList[i];
+				++blueOpCnt;
+			}
 	}
 	return Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
 }
