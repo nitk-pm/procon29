@@ -47,12 +47,11 @@ JSONValue makeOperationJson(Color color,Operation[2] rawOp){
 			default :assert(false);
 		}
 		opJsonParts["type"]=type;
-		if (rawOp[i].type==Type.Move){
-			JSONValue tmp;
-			tmp["x"]=JSONValue(rawOp[i].from.x-1);
-			tmp["y"]=JSONValue(rawOp[i].from.y-1);
-			opJsonParts["from"]=tmp;
-		}
+		JSONValue tmp;
+		tmp["x"]=JSONValue(rawOp[i].from.x-1);
+		tmp["y"]=JSONValue(rawOp[i].from.y-1);
+		opJsonParts["from"]=tmp;
+
 		JSONValue tmp;
 		tmp["x"]=JSONValue(rawOp[i].to.x-1);
 		tmp["y"]=JSONValue(rawOp[i].to.y-1);
