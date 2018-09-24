@@ -30,7 +30,6 @@ JSONValue makeBoardJson(Board board){
 	return JSONValue(table);
 }
 JSONValue makeOperationJson(Color color,Operation[2] rawOp){
-	JSONValue opJsonParts;
 	JSONValue[] opJson;
 	JSONValue msgJson;
 	string msgColor;
@@ -40,6 +39,7 @@ JSONValue makeOperationJson(Color color,Operation[2] rawOp){
 		default:assert(false);
 	}
 	foreach(i;0..2){//origOpも触るのでカウンタ変数が必要
+		JSONValue opJsonParts;
 		string type;
 		switch(rawOp[i].type){
 			case Type.Move :type="Move";break;
