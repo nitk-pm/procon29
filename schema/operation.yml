@@ -19,6 +19,7 @@ items:
     required:
       - "type"
       - "to"
+      - "from"
     properties:
       type:
         type: "string"
