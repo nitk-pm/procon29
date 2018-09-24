@@ -29,21 +29,28 @@ size_t cnt = 0;
 
 StopWatch timekeeper;
 
-shared static this () {
+void main () {
 	auto boardJson = "./board.json".readText.parseJSON;
 	board = boardOfJson(boardJson);
 
-	auto router = new URLRouter;
-	router.get("/", handleWebSockets(&handleConn));
+	timekeeper.start;
+	if (!exists("./log")) {
+		mkdir("./log");
+	}
+
+	finalizeCommandLineOptions();
+	lowerPrivileges();
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
 	settings.bindAddresses = LocalHost ~ LabAddress;
-	timekeeper.start;
+
+	auto router = new URLRouter;
+	router.get("/", handleWebSockets(&handleConn));
+
+	settings.writeln;
 	listenHTTP(settings, router);
-	if (!exists("./log")) {
-		mkdir("./log");
-	}
+	runEventLoop();
 }
 
 string genReplyMsg(string type, JSONValue json) {
