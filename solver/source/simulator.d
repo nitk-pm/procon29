@@ -1,4 +1,4 @@
-module procon.playoutParts;
+module procon.simulator;
 
 import std.conv;
 import std.stdio;
@@ -16,7 +16,8 @@ import procon.decoder;
 @safe
 int rnd(){//adhoc太郎
 	auto rnd=Random(unpredictableSeed);
-	return uniform(0,9,rnd);
+//	return uniform(0,9,rnd);
+	return uniform(0,8,rnd);//停留をしない行動パターン
 }
 unittest {
 	// これはあまり意味ない気がする

@@ -1,6 +1,6 @@
 module procon.mct;
 
-import procon.playoutParts;
+import procon.simulator;
 import procon.container;
 import procon.calc;
 import std.math;
