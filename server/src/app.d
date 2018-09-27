@@ -7,6 +7,7 @@ import std.conv;
 import std.format;
 import std.conv;
 import std.datetime.stopwatch: StopWatch;
+import std.getopt;
 import vibe.http.router;
 import vibe.http.websockets;
 import vibe.d;
@@ -26,24 +27,42 @@ enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
 
 size_t cnt = 0;
+size_t turn_count;
+size_t turn_max;
 
 StopWatch timekeeper;
 
-shared static this () {
-	auto boardJson = "./board.json".readText.parseJSON;
+void main (string[] args) {
+
+	int turn;
+	string boardFileName;
+
+	auto helpInformation = getopt(
+		args,
+		std.getopt.config.required,
+		"turn|t", &turn,
+		std.getopt.config.required,
+		"board|b", &boardFileName
+	);
+	auto boardJson = boardFileName.readText.parseJSON;
 	board = boardOfJson(boardJson);
 
-	auto router = new URLRouter;
-	router.get("/", handleWebSockets(&handleConn));
+	turn_max = turn;
+
+	timekeeper.start;
+	if (!exists("./log")) {
+		mkdir("./log");
+	}
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
 	settings.bindAddresses = LocalHost ~ LabAddress;
-	timekeeper.start;
+
+	auto router = new URLRouter;
+	router.get("/", handleWebSockets(&handleConn));
+
 	listenHTTP(settings, router);
-	if (!exists("./log")) {
-		mkdir("./log");
-	}
+	runEventLoop();
 }
 
 string genReplyMsg(string type, JSONValue json) {
@@ -51,12 +70,6 @@ string genReplyMsg(string type, JSONValue json) {
 	res["type"] = JSONValue(type);
 	res["payload"] = json;
 	return res.toString;
-}
-
-string genTimeReplyMsg() {
-	JSONValue json;
-	json["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-	return genReplyMsg("distribute-time", json);
 }
 
 Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
@@ -147,16 +160,21 @@ void handlePush(JSONValue msg) {
 			assert (false);
 	}
 	if (redOpPushed && blueOpPushed) {
+		++turn_count;
 		board = updateBoard(board, blueOp, redOp);
-		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
-		auto f = File(format!"./log/%d.json"(++cnt), "w");
-		f.write(board.jsonOfBoard.toPrettyString);
+		JSONValue payload;
 		timekeeper.stop;
 		timekeeper.reset;
+
+		payload["board"] = board.jsonOfBoard;
+		payload["turn"] = JSONValue(turn_max);
+		payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+		auto reply = genReplyMsg("distribute-board", payload);
+
 		foreach(sock; sockets) {
 			sock.send(reply);
-			sock.send(genTimeReplyMsg);
 		}
+
 		redOpPushed = false;
 		blueOpPushed = false;
 		timekeeper.start;
@@ -174,11 +192,16 @@ void handlePush(JSONValue msg) {
 void handleConn(scope WebSocket sock) {
 	// 接続中のソケットに登録
 	sockets ~= sock;
-	while (sock.connected) {
+	while (sock.connected && turn_count < turn_max) {
 		auto msg = sock.receiveText.parseJSON;
+		writeln("received message:", msg.toPrettyString);
 		switch (msg["type"].str) {
 		case "req-board":
-			auto reply= genReplyMsg("distribute-board", board.jsonOfBoard);
+			JSONValue payload;
+			payload["board"] = board.jsonOfBoard;
+			payload["turn"] = JSONValue(turn_max);
+			payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+			auto reply = genReplyMsg("distribute-board", payload);
 			sock.send(reply);
 			break;
 		case "subscribe-op":
@@ -201,9 +224,6 @@ void handleConn(scope WebSocket sock) {
 			default:
 				assert (false);
 			}
-			break;
-		case "req-time":
-			sock.send(genTimeReplyMsg);
 			break;
 		default:
 			assert(false);
