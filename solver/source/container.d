@@ -29,6 +29,9 @@ struct Operation{
 enum Type{
 	Move,Clear
 }
+struct Node{
+	int parentNodeIdx;
+}
 
 struct Queue(T){
 	T[] arr;

@@ -9,7 +9,21 @@ import procon.search;
 import procon.encoder;
 import procon.decoder;
 const serverURL = "ws://127.0.0.1:8080";
-
+/*
+JSONValue search(Color color,int turn,Board board){
+	MCT mct;
+	mct.color=color;
+	mct.gameTurn=turn;
+	Node rootNode;
+	rootNode.board=board;
+	mct.nodes~=rootNode;
+	foreach(i;0..searchLimit){
+		mct.visitNode();
+	}
+	auto bestOp=mct.bestOp();
+	return makeOperationJson(color,bestOp);	
+}
+*/
 void connect (Color color,int turn){
 	while (true){
 		auto ws=connectWebSocket(URL.parse(serverURL));
