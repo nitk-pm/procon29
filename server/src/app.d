@@ -72,12 +72,6 @@ string genReplyMsg(string type, JSONValue json) {
 	return res.toString;
 }
 
-string genTimeReplyMsg() {
-	JSONValue json;
-	json["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-	return genReplyMsg("distribute-time", json);
-}
-
 Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 	auto ops = blueOp ~ redOp;
 	// 0..fixedPart: 無効
@@ -168,14 +162,19 @@ void handlePush(JSONValue msg) {
 	if (redOpPushed && blueOpPushed) {
 		++turn_count;
 		board = updateBoard(board, blueOp, redOp);
-		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
-		auto f = File(format!"./log/%d.json"(++cnt), "w");
+		JSONValue payload;
 		timekeeper.stop;
 		timekeeper.reset;
+
+		payload["board"] = board.jsonOfBoard;
+		payload["turn"] = JSONValue(turn_max);
+		payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+		auto reply = genReplyMsg("distribute-board", payload);
+
 		foreach(sock; sockets) {
 			sock.send(reply);
-			sock.send(genTimeReplyMsg);
 		}
+
 		redOpPushed = false;
 		blueOpPushed = false;
 		timekeeper.start;
@@ -195,9 +194,14 @@ void handleConn(scope WebSocket sock) {
 	sockets ~= sock;
 	while (sock.connected && turn_count < turn_max) {
 		auto msg = sock.receiveText.parseJSON;
+		writeln("received message:", msg.toPrettyString);
 		switch (msg["type"].str) {
 		case "req-board":
-			auto reply= genReplyMsg("distribute-board", board.jsonOfBoard);
+			JSONValue payload;
+			payload["board"] = board.jsonOfBoard;
+			payload["turn"] = JSONValue(turn_max);
+			payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+			auto reply = genReplyMsg("distribute-board", payload);
 			sock.send(reply);
 			break;
 		case "subscribe-op":
@@ -220,9 +224,6 @@ void handleConn(scope WebSocket sock) {
 			default:
 				assert (false);
 			}
-			break;
-		case "req-time":
-			sock.send(genTimeReplyMsg);
 			break;
 		default:
 			assert(false);
