@@ -7,6 +7,7 @@ import std.conv;
 import std.format;
 import std.conv;
 import std.datetime.stopwatch: StopWatch;
+import std.getopt;
 import vibe.http.router;
 import vibe.http.websockets;
 import vibe.d;
@@ -26,20 +27,32 @@ enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
 
 size_t cnt = 0;
+size_t turn_count;
+size_t turn_max;
 
 StopWatch timekeeper;
 
-void main () {
-	auto boardJson = "./board.json".readText.parseJSON;
+void main (string[] args) {
+
+	int turn;
+	string boardFileName;
+
+	auto helpInformation = getopt(
+		args,
+		std.getopt.config.required,
+		"turn|t", &turn,
+		std.getopt.config.required,
+		"board|b", &boardFileName
+	);
+	auto boardJson = boardFileName.readText.parseJSON;
 	board = boardOfJson(boardJson);
+
+	turn_max = turn;
 
 	timekeeper.start;
 	if (!exists("./log")) {
 		mkdir("./log");
 	}
-
-	finalizeCommandLineOptions();
-	lowerPrivileges();
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
@@ -48,7 +61,6 @@ void main () {
 	auto router = new URLRouter;
 	router.get("/", handleWebSockets(&handleConn));
 
-	settings.writeln;
 	listenHTTP(settings, router);
 	runEventLoop();
 }
@@ -154,10 +166,10 @@ void handlePush(JSONValue msg) {
 			assert (false);
 	}
 	if (redOpPushed && blueOpPushed) {
+		++turn_count;
 		board = updateBoard(board, blueOp, redOp);
 		auto reply = genReplyMsg("distribute-board", board.jsonOfBoard);
 		auto f = File(format!"./log/%d.json"(++cnt), "w");
-		f.write(board.jsonOfBoard.toPrettyString);
 		timekeeper.stop;
 		timekeeper.reset;
 		foreach(sock; sockets) {
@@ -181,7 +193,7 @@ void handlePush(JSONValue msg) {
 void handleConn(scope WebSocket sock) {
 	// 接続中のソケットに登録
 	sockets ~= sock;
-	while (sock.connected) {
+	while (sock.connected && turn_count < turn_max) {
 		auto msg = sock.receiveText.parseJSON;
 		switch (msg["type"].str) {
 		case "req-board":
