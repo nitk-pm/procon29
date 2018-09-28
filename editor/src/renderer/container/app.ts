@@ -33,9 +33,27 @@ export class ActionDispatcher {
 		};
 		reader.readAsText(path);
 	}
+
+	changeHeight(h: number) {
+		this.dispatch({
+			type: AppModule.ActionNames.CHANGE_HEIGHT,
+			payload: { h }
+		});
+	}
+
+	changeWidth(w: number) {
+		this.dispatch({
+			type: AppModule.ActionNames.CHANGE_WIDTH,
+			payload: { w }
+		});
+	}
 }
 
 export default ReactRedux.connect(
-	(state: Store.State) => ({state: state.state}),
+	(state: Store.State) => ({
+		state: state.state,
+		height: state.tbl.h,
+		width: state.tbl.w
+	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(AppComponent);

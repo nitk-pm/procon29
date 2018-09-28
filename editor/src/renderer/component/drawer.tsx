@@ -22,6 +22,8 @@ const styles = {
 		marginTop: '10vh'
 	},
 	save: {
+	},
+	new: {
 	}
 };
 
@@ -47,6 +49,9 @@ export default withStyles(styles)<DrawerProps>(
 							<ListItemIcon><SaveIcon /></ListItemIcon>
 							<ListItemText primary='Save'/>
 						</ ListItem>
+						<ListItem button className={props.classes.new} onClick={() => props.actions.new()}>
+							<ListItemText primary='New'/>
+						</ListItem>
 					</List>
 				</div>
 			</Drawer>

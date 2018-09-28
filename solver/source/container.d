@@ -1,24 +1,30 @@
 module procon.container;
-       
+
 import std.stdio;
 import std.typecons;
+const float INF=1e9+7;
 
-struct Square {//マスの得点、エージェントの有無、色
+struct Cell {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
-	int color;
+	Color color;
+}
+struct Board{
+	Cell[] cells;
+	int width;
+
 }
 enum Color{
 	Red,Blue,Neut,Out
 }
 struct Agent { //エージェントの色と座標
-	int color;
+	Color color;
 	int pos;//座標は一つの整数で表現する
 }
 struct Operation{
-	Tuple!(int,int) from;
-	Tuple!(int,int) to;
-	int type;
+	Tuple!(int,"x",int,"y") from;
+	Tuple!(int,"x",int,"y") to;
+	Type type;
 }
 enum Type{
 	Move,Clear
@@ -33,14 +39,15 @@ struct Queue(T){
 		return arr[0];
 	}
 	void pop(){
-		arr = arr[1..$];
+		arr=arr[1..$];
 	}
 	void push(T a){
-		arr ~= a;
+		arr~=a;
 	}
 }
+
 unittest {
-	auto q = Queue!int();
+	auto q=Queue!int();
 	q.push(1);
 	assert(q.top()==1);
 	q.push(2);
