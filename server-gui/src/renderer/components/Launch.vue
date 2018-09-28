@@ -11,6 +11,7 @@
 
 <script>
   import jsQR from 'jsqr';
+  import parse from '../parser';
   export default {
     name: 'app',
     data() {
@@ -43,7 +44,8 @@
         const qr = jsQR(imageData.data, 640, 480);
         if (qr) {
           this.cannot_launch = false;
-          console.log(qr);
+          // TODO: choice color
+          this.code = parse(qr.data, 'Red');
         }
       }, 100);
     },
