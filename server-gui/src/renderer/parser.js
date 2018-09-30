@@ -63,8 +63,8 @@ export function tryInferAgents(tbl, positions, myColor) {
 export default function parseQR(code, myColor) {
   const sections = code.split(':');
   const header = sections[0].split(' ');
-  const h = header[0];
-  const w = header[1];
+  const h = parseInt(header[0], 10);
+  const w = parseInt(header[1], 10);
   const agents = [
     decodePos(sections[sections.length - 2]),
     decodePos(sections[sections.length - 3]),
