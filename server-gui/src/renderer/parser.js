@@ -48,7 +48,7 @@ export function tryInferAgents(tbl, positions, myColor) {
     } else if (symmetry === 'MirrorX') {
       arr[y][w - x - 1].color = rivalColor;
       arr[y][w - x - 1].agent = true;
-    } else if (symmetry === 'MirrorX') {
+    } else if (symmetry === 'MirrorY') {
       arr[h - y - 1][x].color = rivalColor;
       arr[h - y - 1][x].agent = true;
     } else { // Asymmetry
