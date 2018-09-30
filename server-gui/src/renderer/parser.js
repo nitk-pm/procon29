@@ -10,17 +10,29 @@ function decodePos(code) {
 }
 
 // ([{x: integer, y: integer}], integer, integer) -> Symmetry
-export function checkSymmetry(positions, w, h) {
-  console.log(positions);
-  console.log(w, h);
+export function checkAgentsSymmetry(positions, w, h) {
   const mirrorX = positions[0].x === w - positions[1].x - 1;
   const mirrorY = positions[0].y === h - positions[1].y - 1;
-  console.log(mirrorX, mirrorY);
   if (mirrorX && mirrorY) return 'Point';
   const sameX = positions[0].x === positions[1].x;
   const sameY = positions[0].y === positions[1].y;
   if (mirrorX && sameY) return 'MirrorY';
   if (mirrorY && sameX) return 'MirrorX';
+  return 'Asymmetry';
+}
+
+export function checkBoardSymmetry(tbl) {
+  const { arr, w, h } = tbl;
+  let xSymmetry = true;
+  let ySymmetry = true;
+  for (let x = 0; x < w; x += 1) {
+    for (let y = 0; y < h; y += 1) {
+      xSymmetry = (xSymmetry && arr[y][x].score === arr[y][w - x - 1].score);
+      ySymmetry = (ySymmetry && arr[y][x].score === arr[h - y - 1][x].score);
+    }
+  }
+  if (xSymmetry) return 'MirrorY';
+  if (ySymmetry) return 'MirrorX';
   return 'Asymmetry';
 }
 
@@ -34,7 +46,10 @@ export function checkSymmetry(positions, w, h) {
 //   succes: bool
 // }
 export function tryInferAgents(tbl, positions, myColor) {
-  const symmetry = checkSymmetry(positions, tbl.w, tbl.h);
+  let symmetry = checkAgentsSymmetry(positions, tbl.w, tbl.h);
+  if (symmetry === 'Asymmetry') {
+    symmetry = checkBoardSymmetry(tbl);
+  }
   const rivalColor = myColor === 'Red' ? 'Blue' : 'Red';
   const { h, w, arr } = tbl;
   let succes = true;
