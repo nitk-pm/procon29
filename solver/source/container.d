@@ -6,6 +6,7 @@ const float INF=1e9+7;
 
 struct Cell {//マスの得点、エージェントの有無、色
 	int score;
+	int priority;
 	bool agent;
 	Color color;
 }
@@ -30,7 +31,13 @@ enum Type{
 	Move,Clear
 }
 struct Node{
-	int parentNodeIdx;
+	int opCmp(ref const Node node)const{return this.evalPoint>node.evalPoint};
+	int ownIdx=0;
+	int parentNodeIdx=0;
+	int evalPoint=0;
+	int depth=0;
+	//Operation[2] op;後にopでrestoreするように
+	//Board board;盤面もたせると重そう
 }
 
 struct Queue(T){

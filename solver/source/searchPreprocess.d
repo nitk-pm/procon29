@@ -1,3 +1,4 @@
+module procon.searchPreprocess;
 import std.conv;
 import procon.container;
 immutable int INF = 100000;
@@ -7,8 +8,10 @@ int abs(int a){
 }
 
 @safe
-pure nothrow int[] calcSquarePriority(in Board board){
+pure nothrow Board calcSquarePriority(in Board board){
 	int[] priorities;
+	priorities.length = board.cells.length;
+	int cnt=0;
 	foreach(thisSquare;board.cells){
 		int thisPriority;
 		if (thisSquare.color==Color.Out){
@@ -18,7 +21,7 @@ pure nothrow int[] calcSquarePriority(in Board board){
 			int tmp=thisSquare.score;
 			thisPriority=tmp*tmp*tmp/abs(tmp);
 		}
-		priorities~=thisPriority;
+		priorities[cnt++]=thisPriority;
 	}
 	int width=board.width;
 	foreach(i;0..board.cells.length){
