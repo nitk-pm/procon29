@@ -3,7 +3,7 @@
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
-        <md-button class='md-raised md-primary' v-bind:disabled="cannot_launch">Launch!</md-button>
+        <md-button class='md-raised md-primary' v-bind:disabled="cannot_launch" @click='launch()'>Launch!</md-button>
       </div>
     </div>
   </div>
@@ -11,6 +11,7 @@
 
 <script>
   import jsQR from 'jsqr';
+  import { ipcRender } from 'electron';
   import parse from '../parser';
   export default {
     name: 'app',
@@ -49,7 +50,12 @@
         }
       }, 100);
     },
-    methods: {},
+    methods: {
+      launch() {
+        console.log(ipcRender);
+        ipcRender.send('launch', this.code, 100);
+      },
+    },
   };
 </script>
 
