@@ -1,5 +1,6 @@
-module procon.mct;
 
+module procon.mct;
+/+
 import procon.simulator;
 import procon.container;
 import procon.calc;
@@ -142,3 +143,4 @@ unittest{
 	auto opjson=makeOperationJson(color,bestOp);
 	writeln(opjson);
 }
++/

@@ -14,7 +14,7 @@ auto decode(JSONValue json){
 	foreach(y;0..h+2){
 		foreach(x;0..w+2){
 			if (y==0||x==0||y==h+1||x==w+1){
-				board.cells~=Cell(0,false,Color.Out);
+				board.cells~=Cell(0,false,Color.Out,0);
 				continue;
 			}
 			else {
@@ -33,12 +33,16 @@ auto decode(JSONValue json){
 	}
 	board.width=w+2;
 	auto priorities=calcSquarePriority(board);
-	foreach(i;priorities.length){
+	foreach(i;0..priorities.length){
 		board.cells[i].priority=priorities[i];
 	}
 	return board;
 }
 unittest{
 	auto json=parseJSON(ExampleJson); 
-	auto tmp=decode(json);
+	auto board=decode(json);
+	assert(board.cells[idx(2,3,11)].priority==1);
+	assert(board.cells[idx(7,4,11)].priority==4);
+	assert(board.cells[idx(7,6,11)].priority==-4);
+	assert(board.cells[idx(4,1,11)].priority==4);
 }
