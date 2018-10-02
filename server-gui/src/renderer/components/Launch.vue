@@ -29,7 +29,7 @@
         navigator.mediaDevices
           .getUserMedia({ video: true })
           .then((stream) => {
-            this.video.src = window.URL.createObjectURL(stream);
+            this.video.srcObject = stream;
             this.video.play();
           });
       }
@@ -46,6 +46,7 @@
         if (qr) {
           this.cannot_launch = false;
           // TODO: choice color
+          console.log(qr);
           this.code = parse(qr.data, 'Red');
         }
       }, 100);
