@@ -1,6 +1,6 @@
 
 module procon.mct;
-/+
+
 import procon.simulator;
 import procon.container;
 import procon.calc;
@@ -17,7 +17,22 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 
 */
-struct Node{
+@safe
+
+int rnd(){//adhoc太郎
+	auto rnd=Random(unpredictableSeed);
+//	return uniform(0,9,rnd);
+	return uniform(0,8,rnd);//停留をしない行動パターン
+}
+unittest {
+	// これはあまり意味ない気がする
+	assert(rnd() < 9);
+	assert(rnd() >= 0);
+}
+
+
+
+struct MCTNode{
 	int ownIdx=0;
 	int parentNodeIdx=0;
 	int[] childNodesIdx;
@@ -38,7 +53,7 @@ struct MCT{
 	float C=0.5; // UCB1の定数、後々小さくするかも
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
-	Node[] nodes;
+	MCTNode[] nodes;
 	private void calculateUCB1(){
 		foreach(i;0..nodes.length){
 			if (nodes[i].visits==0){
@@ -84,8 +99,8 @@ struct MCT{
 			this.backPropagate(nodes[idx].parentNodeIdx,isWon);
 	}
 	void expandNode(int expandNodeIdx){
-		Node parent=nodes[expandNodeIdx];
-		Node child;
+		MCTNode parent=nodes[expandNodeIdx];
+		MCTNode child;
 		parent.board.cells=parent.board.cells.dup;
 		++this.size;
 		auto tmp=proceedGame(parent.board);
@@ -133,7 +148,7 @@ unittest{
 	MCT mct;
 	mct.color=color;
 	mct.gameTurn=turn;
-	Node rootNode;
+	MCTNode rootNode;
 	rootNode.board=board;
 	mct.nodes~=rootNode;
 	foreach(i;0..searchLimit){
@@ -143,4 +158,3 @@ unittest{
 	auto opjson=makeOperationJson(color,bestOp);
 	writeln(opjson);
 }
-+/

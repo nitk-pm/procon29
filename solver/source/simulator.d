@@ -13,20 +13,6 @@ import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
 
-@safe
-int rnd(){//adhoc太郎
-	auto rnd=Random(unpredictableSeed);
-//	return uniform(0,9,rnd);
-	return uniform(0,8,rnd);//停留をしない行動パターン
-}
-unittest {
-	// これはあまり意味ない気がする
-	assert(rnd() < 9);
-	assert(rnd() >= 0);
-}
-
-
-
 @safe @nogc
 pure auto searchAgentInitialPos(in Board board){//左上から右へ走査、見つけた順にぶち込む
 	Agent[4] agents;
@@ -80,8 +66,8 @@ unittest {
 	assert (decideDirection(7, 8) == -9);
 	assert (decideDirection(8, 9) == 0);
 }
-/*
-auto proceedGame(in Color color,in Board origBoard,in int[2] directions){//1ターン進める、進めたあとの盤面のみを返す
+
+auto proceedGameWithoutOp(in Color color,in Board origBoard,in int[2] directions){//1ターン進める、進めたあとの盤面のみを返す
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Board board=origBoard.dup;
@@ -139,7 +125,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] directions){//1タ�
 	}
 	return board;
 }
-*/
+
 auto proceedGame(in Color color,in Board origBoard,in int[2] directions){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知

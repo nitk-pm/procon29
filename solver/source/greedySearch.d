@@ -1,4 +1,4 @@
-module procon.search;
+module procon.greedySearch;
 
 import std.json;
 import std.conv;
@@ -14,7 +14,7 @@ JSONValue search(in Color color,in int turn,in Board board){
 		foreach(direction2;0..8){
 			Node node;
 			int[2] directions;directions[0]=direction1;directions[1]=direction2;
-			auto tmp=proceedGame(color,board,directions);
+			auto tmp=proceedGameWithoutOp(color,board,directions);
 			Operation[2] tmpOp;
 			switch(color){
 				case color.Red:tmpOp=tmp.redOp;break;

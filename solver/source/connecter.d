@@ -5,7 +5,7 @@ import vibe.d;
 import vibe.http.websockets;
 import std.json;
 import procon.container;
-import procon.search;
+import procon.greedySearch;
 import procon.encoder;
 import procon.decoder;
 const serverURL = "ws://127.0.0.1:8080";
