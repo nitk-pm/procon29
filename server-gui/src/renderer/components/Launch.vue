@@ -3,10 +3,14 @@
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
-        <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
-        <input v-model="turn" type="number"></input>
-        <input type="radio" name="color" v-model="color" value="Red">Red</input>
-        <input type="radio" name="color" v-model="color" value="Blue">Blue</input>
+        <div class="controll">
+          <input v-model="turn" type="number"></input>
+          <div class="radio">
+            <input type="radio" name="color" v-model="color" value="Red">Red</input>
+            <input type="radio" name="color" v-model="color" value="Blue">Blue</input>
+          </div>
+          <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
+        </div>
       </div>
     </div>
   </div>
@@ -77,5 +81,18 @@
   align-items: center;
   justify-content: space-around;
   margin-top: 5%;
+}
+
+.radio {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.controll {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 480px;
 }
 </style>
