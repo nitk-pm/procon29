@@ -1,4 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron' // eslint-disable-line
+import { exec } from 'child_process';
+import fs from 'fs';
 
 /**
  * Set `__static` path to static files in production
@@ -42,4 +44,18 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+ipcMain.on('launch', (event, arg) => {
+  fs.open('board.json', 'w', (err, fd) => {
+    fs.write(fd, JSON.stringify(arg.tbl.tbl.arr, null, 1), () => {
+      exec(`./server -b ./board.json -t ${arg.turn}`, (err, stdout, stderr) => {
+        if (err) {
+          console.log(`err: ${err}`);
+          console.log(`stdout: ${stdout}`);
+          console.log(`stderr: ${stderr}`);
+        }
+      });
+    });
+  });
 });

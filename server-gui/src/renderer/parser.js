@@ -91,14 +91,6 @@ export default function parseQR(code, myColor) {
       agent: false,
       color: 'Neut',
     })));
-  const { tbl, succes } = tryInferAgents({ arr: emptyTbl, w, h }, agents, myColor);
-  return {
-    tbl: {
-      arr: tbl,
-      w,
-      h,
-    },
-    succes,
-  };
+  return tryInferAgents({ arr: emptyTbl, w, h }, agents, myColor);
 }
 

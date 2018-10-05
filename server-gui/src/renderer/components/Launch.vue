@@ -11,7 +11,7 @@
 
 <script>
   import jsQR from 'jsqr';
-  import { ipcRender } from 'electron';
+  import { ipcRenderer } from 'electron';
   import parse from '../parser';
   export default {
     name: 'app',
@@ -48,13 +48,18 @@
           // TODO: choice color
           console.log(qr);
           this.code = parse(qr.data, 'Red');
+          console.log(this.code);
         }
       }, 100);
     },
     methods: {
       launch() {
-        console.log(ipcRender);
-        ipcRender.send('launch', this.code, 100);
+        console.log(ipcRenderer);
+        ipcRenderer.send('launch', {
+          tbl: this.code,
+          // TODO
+          turn: 100,
+        });
       },
     },
   };
