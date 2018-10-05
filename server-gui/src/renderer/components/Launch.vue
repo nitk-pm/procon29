@@ -3,13 +3,10 @@
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
-        <md-button class='md-raised md-primary' v-bind:disabled="cannot_launch" @click='launch()'>Launch!</md-button>
-        <md-field>
-          <label>turn</label>
-          <md-input v-model="turn" type="number"></md-input>
-        </md-field>
-        <md-radio v-model="color" value="Red">Red</md-radio>
-        <md-radio v-model="color" value="Blue" class="md-primary">Blue</md-radio>
+        <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
+        <input v-model="turn" type="number"></input>
+        <input type="radio" name="color" v-model="color" value="Red">Red</input>
+        <input type="radio" name="color" v-model="color" value="Blue">Blue</input>
       </div>
     </div>
   </div>
