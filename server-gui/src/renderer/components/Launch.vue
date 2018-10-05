@@ -4,6 +4,12 @@
       <div id="container">
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
         <md-button class='md-raised md-primary' v-bind:disabled="cannot_launch" @click='launch()'>Launch!</md-button>
+        <md-field>
+          <label>turn</label>
+          <md-input v-model="turn" type="number"></md-input>
+        </md-field>
+        <md-radio v-model="color" value="Red">Red</md-radio>
+        <md-radio v-model="color" value="Blue" class="md-primary">Blue</md-radio>
       </div>
     </div>
   </div>
@@ -21,6 +27,8 @@
         video: {},
         canvas: {},
         captures: {},
+        turn: 10,
+        color: 'Red',
       };
     },
     mounted() {
@@ -45,10 +53,7 @@
         const qr = jsQR(imageData.data, 640, 480);
         if (qr) {
           this.cannot_launch = false;
-          // TODO: choice color
-          console.log(qr);
-          this.code = parse(qr.data, 'Red');
-          console.log(this.code);
+          this.code = parse(qr.data, this.color);
         }
       }, 100);
     },
@@ -58,7 +63,7 @@
         ipcRenderer.send('launch', {
           tbl: this.code,
           // TODO
-          turn: 100,
+          turn: this.turn,
         });
       },
     },
