@@ -8,13 +8,15 @@ import procon.encoder;
 import procon.simulator;
 //import procon.mct;
 
-JSONValue search(in Color color,in int turn,in Board board){
+JSONValue greedySearch(in Color color,in Board board){
 	Node[] candidateList;
 	foreach(direction1;0..8)
 		foreach(direction2;0..8){
 			Node node;
-			int[2] directions;directions[0]=direction1;directions[1]=direction2;
-			auto tmp=proceedGameWithoutOp(color,board,directions);
+			Board cpBoard;
+			cpBoard.cells=board.cells.dup;
+			cpBoard.width=board.width;
+			auto tmp=proceedGameWithoutOp(color,cpBoard,{direcition1,direction2});
 			Operation[2] tmpOp;
 			switch(color){
 				case color.Red:tmpOp=tmp.redOp;break;
@@ -22,14 +24,13 @@ JSONValue search(in Color color,in int turn,in Board board){
 				default:assert(false);
 			}
 			node.evalPoint=evalute(color,tmp.board);
-			node.operations=tmpOp;
+			node.directions={direction1,direction2};
 			candidateList~=node;
 		}
-	Operation[2] bestOp=bestOperation(candidateList);
-	return makeOperationJson(color,bestOp);
+	return bestDirections(candidateList);
 }
 @safe @nogc
-pure nothrow Operation[2] bestOperation(in Node[] list){
+pure nothrow int bestDirections(in Node[] list){
 	int bestEval=-100000000;
 	int bestEvalIdx=0;
 	foreach(i;0..list.length){
@@ -38,7 +39,7 @@ pure nothrow Operation[2] bestOperation(in Node[] list){
 			bestEvalIdx=cast(int)i;
 		}
 	}
-	return list[bestEvalIdx].operations;
+	return list[bestEvalIdx].directions;
 }
 @safe @nogc
 pure nothrow auto evalute(Color color,Board board){

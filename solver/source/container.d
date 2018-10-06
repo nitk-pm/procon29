@@ -45,7 +45,7 @@ struct Node{
 	int parentNodeIdx=0;
 	int evalPoint=0;
 	int depth=0;
-	Operation[2] operations;//後にopでrestoreするように
+	int[2] directions;//後にopでrestoreするように
 	//Board board;盤面もたせると重そう
 }
 

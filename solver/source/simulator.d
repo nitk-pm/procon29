@@ -67,10 +67,9 @@ unittest {
 	assert (decideDirection(8, 9) == 0);
 }
 
-auto proceedGameWithoutOp(in Color color,in Board origBoard,in int[2] directions){//1ターン進める、進めたあとの盤面のみを返す
+auto proceedGameWithoutOp(in Color color,Board board,in int[2] directions){//1ターン進める、進めたあとの盤面のみを返す
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
-	Board board=origBoard.dup;
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用

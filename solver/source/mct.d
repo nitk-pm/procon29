@@ -41,6 +41,7 @@ struct MCTNode{
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
+	int[2] enemyMove;
 	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
 	bool isRoot(){return ownIdx==parentNodeIdx;}
 	bool isLeaf(){return childNodesIdx.length<1;}
@@ -112,12 +113,12 @@ struct MCT{
 		nodes~=child;
 		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
-	Board playout(Board origBoard,int turn){
+	Board playout(Board board,int turn){
 		Board proceededBoard;
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
 		foreach(i;0..turn){
-			proceededBoard=proceedGameWithoutOp(proceededBoard);
+			proceededBoard=proceedGameWithoutOp(color,proceededBoard),{rnd(),rnd()};
 		}
 		return proceededBoard;
 	}
