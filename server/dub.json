@@ -13,5 +13,5 @@
 	"description": "Igokabaddi Server",
 	"copyright": "Copyright © 2018, Nakano Masaki",
 	"license": "MIT",
-	"versions": ["VibeDefaultMain"]
+	"versions": ["VibeCustomMain"]
 }

@@ -65,18 +65,17 @@ function genListenChannel(socket: WebSocket) {
 	return eventChannel(emit => {
 		socket.addEventListener('message', (event: any) => {
 			const msg = JSON.parse(event.data);
+			console.log(msg);
 			switch (msg.type) {
 			case 'distribute-board':
 				// 盤面が配信された場合、Common.Boardに変換して
-				const board = Common.loadBoard(msg.payload);
+				const board = Common.loadBoard(msg.payload.board);
 				// 盤面の更新
 				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
-				// 操作の解凍
-				emit({type: AppModule.ActionNames.THAWING});
-				break;
-			case 'distribute-time':
 				const time = msg.payload.time;
 				emit({type: ActionNames.RESET_TIME, payload: {time}});
+				// 操作の解凍
+				emit({type: AppModule.ActionNames.THAWING});
 				break;
 			case 'distribute-op':
 				const ops = msg.payload;
@@ -195,7 +194,6 @@ function* flow() {
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
 	socket.send(JSON.stringify({type: 'req-board'}));
-	socket.send(JSON.stringify({type: 'req-time'}));
 	yield Effects.fork(listenMsg, socket);
 	yield Effects.fork(sendMsg, socket);
 	yield Effects.fork(runTimer);

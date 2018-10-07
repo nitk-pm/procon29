@@ -1,0 +1,39 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: "distribute-board"
+
+type: "object"
+required:
+  - "type"
+  - "payload"
+properties:
+  type:
+    type: "string"
+    pattern: "distribute-board"
+  payload:
+    required:
+      - "turn"
+      - "time"
+      - "board"
+    properties:
+      time:
+        type: "number"
+      turn:
+        type: "integer"
+      board:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - "score"
+              - "color"
+              - "agent"
+            properties:
+              score:
+                type: "integer"
+              color:
+                type: "string"
+                pattern: "Red|Blue|Neut"
+              agent:
+                type: "boolean"
