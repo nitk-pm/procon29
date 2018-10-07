@@ -8,7 +8,7 @@ import procon.greedySearch;
 import std.math;
 import std.typecons;
 import std.stdio;
-
+import std.algorithm :min;
 import std.json;
 import procon.decoder;
 import procon.example;
@@ -17,7 +17,7 @@ import procon.encoder;
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
-immutable int searchLimit=1000;
+immutable int searchLimit=10000;
 struct MCTNode{
 	int ownIdx=0;
 	int parentNodeIdx=0;
@@ -34,8 +34,8 @@ struct MCTNode{
 }
 struct MCT{
 	int gameTurn;//ゲームの残りターン数
-	const int threshold=5;//展開するかどうかの訪問回数のしきい値
-	const int expandWidth=12;//一回の展開で開く状態の数
+	const int threshold=30;//展開するかどうかの訪問回数のしきい値
+	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
 	float C=0.5; // UCB1の定数、後々小さくするかも
@@ -73,10 +73,16 @@ struct MCT{
 		}
 		bool isWon=result>0;
 		this.backPropagate(visitedNodeIdx,isWon);
-		if (nodes[visitedNodeIdx].visits>=threshold)
-			foreach(i;0..expandWidth){
+		if (nodes[visitedNodeIdx].visits>=threshold){
+			if (nodes[visitedNodeIdx].depth==0){
+			foreach(i;0..51)
 				this.expandNode(visitedNodeIdx);
 			}
+			else{
+			foreach(i;0..expandWidth)
+				this.expandNode(visitedNodeIdx);
+			}
+		}
 	}
 	void backPropagate(int idx,bool isWon){
 		if (isWon)
@@ -106,7 +112,8 @@ struct MCT{
 		Board proceededBoard;
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
-		foreach(i;0..turn){
+		int searchDepth=min(proceededBoard.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+		foreach(i;0..searchDepth){
 			int[2] directions=[0:rnd(),1:rnd()];
 			proceededBoard=proceedGameWithoutOp(color,proceededBoard,directions);
 		}
