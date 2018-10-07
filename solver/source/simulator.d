@@ -12,6 +12,18 @@ import procon.example;
 import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
+@safe
+
+int rnd(){//adhoc太郎
+	auto rnd=Random(unpredictableSeed);
+//	return uniform(0,9,rnd);
+	return uniform(0,8,rnd);//停留をしない行動パターン
+}
+unittest {
+	// これはあまり意味ない気がする
+	assert(rnd() < 9);
+	assert(rnd() >= 0);
+}
 
 @safe @nogc
 pure auto searchAgentInitialPos(in Board board){//左上から右へ走査、見つけた順にぶち込む
@@ -67,7 +79,7 @@ unittest {
 	assert (decideDirection(8, 9) == 0);
 }
 
-auto proceedGameWithoutOp(in Color color,Board board,in int[2] directions){//1ターン進める、進めたあとの盤面のみを返す
+auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ターン進める、進めたあとの盤面のみを返す
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
@@ -78,7 +90,7 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] directions){//1�
 	foreach(i;0..4){
 		int direction;
 		if(color==agents[i].color)
-			direction=decideDirection(directions[directionCnt++], board.width);
+			direction=decideDirection(myMove[directionCnt++], board.width);
 		else 
 			direction=decideDirection(8, board.width);//自チームじゃないエージェントは動かない
 		int destination=agents[i].pos+direction;//進んだ先の座標
@@ -125,7 +137,7 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] directions){//1�
 	return board;
 }
 
-auto proceedGame(in Color color,in Board origBoard,in int[2] directions){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
+auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Board board;
@@ -141,12 +153,17 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] directions){//1タ�
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用
+	int direcitionCnt=0;
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
 		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
-		int direction=decideDirection(rnd, board.width);
+		int direction;
+		if (color==agents[i].color)
+			direction=decideDirection(rnd(),board.width);//展開するときは味方はランダム
+		else 
+			direction=decideDirection(enemyMove[direcitionCnt++],board.width);//敵は貪欲
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);

@@ -8,7 +8,7 @@ import procon.encoder;
 import procon.simulator;
 //import procon.mct;
 
-JSONValue greedySearch(in Color color,in Board board){
+int[2] greedySearch(in Color color,in Board board){
 	Node[] candidateList;
 	foreach(direction1;0..8)
 		foreach(direction2;0..8){

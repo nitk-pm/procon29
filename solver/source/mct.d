@@ -4,6 +4,7 @@ module procon.mct;
 import procon.simulator;
 import procon.container;
 import procon.calc;
+import procon.greedySearch;
 import std.math;
 import std.typecons;
 import std.stdio;
@@ -15,21 +16,7 @@ import procon.encoder;
 /*
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
-
 */
-@safe
-
-int rnd(){//adhoc太郎
-	auto rnd=Random(unpredictableSeed);
-//	return uniform(0,9,rnd);
-	return uniform(0,8,rnd);//停留をしない行動パターン
-}
-unittest {
-	// これはあまり意味ない気がする
-	assert(rnd() < 9);
-	assert(rnd() >= 0);
-}
-
 
 
 struct MCTNode{
@@ -50,7 +37,8 @@ struct MCT{
 	int gameTurn;//ゲームの残りターン数
 	const int threshold=5;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=12;//一回の展開で開く状態の数
-	int color;//チームの色
+	Color color;//チームの色
+	Color enemyColor;
 	float C=0.5; // UCB1の定数、後々小さくするかも
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
@@ -79,9 +67,10 @@ struct MCT{
 		Board resultBoard=this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
 		auto resultPair=scoreCalculation(resultBoard);
 		int result;
-		final switch(this.color){
+		switch(this.color){
 			case Color.Red:result=resultPair.Red-resultPair.Blue;break;
 			case Color.Blue:result=resultPair.Blue-resultPair.Red;break;
+			default:assert(false);
 		}
 		bool isWon=result>0;
 		this.backPropagate(visitedNodeIdx,isWon);
@@ -148,9 +137,11 @@ unittest{
 	auto searchLimit=10000;
 	MCT mct;
 	mct.color=color;
+	mct.enemyColor=color==Color.Red ? Color.Red:Color.Blue;
 	mct.gameTurn=turn;
 	MCTNode rootNode;
 	rootNode.board=board;
+	rootNode.enemyMove=greedySearch(mct.enemyColor,rootNode.board);
 	mct.nodes~=rootNode;
 	foreach(i;0..searchLimit){
 		mct.visitNode();
