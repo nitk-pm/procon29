@@ -17,8 +17,7 @@ import procon.encoder;
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
-
-
+immutable int searchLimit=1000;
 struct MCTNode{
 	int ownIdx=0;
 	int parentNodeIdx=0;
@@ -130,6 +129,21 @@ struct MCT{
 		else
 			return bestOp.blueOp;
 	}
+}
+JSONValue MCTSearch(Color color,int turn,Board board){
+	MCT mct;
+	mct.color=color;
+	mct.enemyColor= color==Color.Red ? Color.Red:Color.Blue;
+	mct.gameTurn=turn;
+	MCTNode root;
+	root.board=board;
+	root.enemyMove=greedySearch(mct.enemyColor,root.board);
+	mct.nodes~=root;
+	foreach(i;0..searchLimit){
+		mct.visitNode();
+	}
+	auto bestOp=mct.bestOp();
+	return makeOperationJson(color,bestOp);
 }
 unittest{
 	auto json=parseJSON(ExampleJson);
