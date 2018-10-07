@@ -37,7 +37,7 @@ void connect (Color color,int turn){
 			auto json=parseJSON(txt);
 			if (json["type"].toString=="\"distribute-board\""){
 				Board board=decode(json["payload"]);
-				auto opJson = search(color,turn,board);--turn;
+				auto opJson = MCTSearch(color,turn,board);--turn;
 				opJson.writeln();
 				ws.send(opJson.toString);
 			}

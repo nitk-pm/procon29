@@ -16,21 +16,16 @@ int[2] greedySearch(in Color color,in Board board){
 			Board cpBoard;
 			cpBoard.cells=board.cells.dup;
 			cpBoard.width=board.width;
-			auto tmp=proceedGameWithoutOp(color,cpBoard,{direcition1,direction2});
-			Operation[2] tmpOp;
-			switch(color){
-				case color.Red:tmpOp=tmp.redOp;break;
-				case color.Blue:tmpOp=tmp.blueOp;break;
-				default:assert(false);
-			}
-			node.evalPoint=evalute(color,tmp.board);
-			node.directions={direction1,direction2};
+			int[2] directions=[0:direction1,1:direction2];
+			auto tmp=proceedGameWithoutOp(color,cpBoard,directions);
+			node.evalPoint=evalute(color,tmp);
+			node.directions=directions;
 			candidateList~=node;
 		}
 	return bestDirections(candidateList);
 }
 @safe @nogc
-pure nothrow int bestDirections(in Node[] list){
+pure nothrow int[2] bestDirections(in Node[] list){
 	int bestEval=-100000000;
 	int bestEvalIdx=0;
 	foreach(i;0..list.length){

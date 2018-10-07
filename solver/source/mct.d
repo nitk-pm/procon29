@@ -93,21 +93,23 @@ struct MCT{
 		MCTNode child;
 		parent.board.cells=parent.board.cells.dup;
 		++this.size;
-		auto tmp=proceedGame(parent.board);
+		auto tmp=proceedGame(this.color,parent.board,parent.enemyMove);
 		child.operations=tuple(tmp.redOp,tmp.blueOp);
 		child.board=tmp.board;
 		child.ownIdx=size;
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
+		child.enemyMove=greedySearch(this.enemyColor,child.board);
 		nodes~=child;
 		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
-	Board playout(Board board,int turn){
+	Board playout(Board origBoard,int turn){
 		Board proceededBoard;
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
 		foreach(i;0..turn){
-			proceededBoard=proceedGameWithoutOp(color,proceededBoard),{rnd(),rnd()};
+			int[2] directions=[0:rnd(),1:rnd()];
+			proceededBoard=proceedGameWithoutOp(color,proceededBoard,directions);
 		}
 		return proceededBoard;
 	}
