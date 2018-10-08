@@ -11,6 +11,7 @@
           </div>
           <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
         </div>
+        <board tbl="tbl"/>
       </div>
     </div>
   </div>
@@ -30,6 +31,7 @@
         captures: {},
         turn: 10,
         color: 'Red',
+        tbl: [[]],
       };
     },
     mounted() {
@@ -55,6 +57,7 @@
         if (qr) {
           this.cannot_launch = false;
           this.code = parse(qr.data, this.color);
+          this.tbl = this.code.tbl;
         }
       }, 100);
     },
