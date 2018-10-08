@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-for="line in tbl">
+  <div class="board">
+    <div class="row" v-for="line in tbl">
       <div v-for="square in line">
         {{ square.score }}
       </div>
@@ -19,4 +19,15 @@ export default {
 </script>
 
 <style>
+.square {
+}
+.row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+.board {
+  display: flex;
+  flex-direction: row;
+}
 </style>
