@@ -11,7 +11,7 @@
           </div>
           <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
         </div>
-        <board tbl="tbl"/>
+        <board v-bind:tbl="tbl"/>
       </div>
     </div>
   </div>
@@ -56,8 +56,10 @@
         const qr = jsQR(imageData.data, 640, 480);
         if (qr) {
           this.cannot_launch = false;
-          this.code = parse(qr.data, this.color);
-          this.tbl = this.code.tbl;
+          const code = parse(qr.data, this.color);
+          console.log(code.tbl.arr);
+          this.tbl = code.tbl.arr;
+          this.code = code;
         }
       }, 100);
     },
