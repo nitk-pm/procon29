@@ -10,6 +10,7 @@
             <input type="radio" name="color" v-model="color" value="Red">Red</input>
             <input type="radio" name="color" v-model="color" value="Blue">Blue</input>
           </div>
+          <button v-bind:disabled="cannot_launch" @click="discord()">Undo</button>
           <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
         </div>
       </div>
@@ -67,6 +68,11 @@
       }, 100);
     },
     methods: {
+      discord() {
+        this.cannot_launch = true;
+        this.tbl = null;
+        this.code = null;
+      },
       launch() {
         console.log(ipcRenderer);
         ipcRenderer.send('launch', {
