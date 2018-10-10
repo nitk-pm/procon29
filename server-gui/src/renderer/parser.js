@@ -1,6 +1,7 @@
 'use module';
 
 function decodePos(code) {
+  console.log(code);
   const arr = code.split(' ');
   return {
     // 0-indexed

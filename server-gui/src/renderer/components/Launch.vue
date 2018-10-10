@@ -2,7 +2,8 @@
     <div>
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
-        <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
+        <canvas ref="canvas" id="canvas" width="640" height="480" v-if="tbl == null"></canvas>
+        <board v-bind:tbl="tbl" v-if="tbl != null"/>
         <div class="controll">
           <input v-model="turn" type="number"></input>
           <div class="radio">
@@ -11,7 +12,6 @@
           </div>
           <button v-bind:disabled="cannot_launch" @click='launch()'>Launch!</button>
         </div>
-        <board v-bind:tbl="tbl"/>
       </div>
     </div>
   </div>
@@ -31,7 +31,8 @@
         captures: {},
         turn: 10,
         color: 'Red',
-        tbl: [[]],
+        tbl: null,
+        table_shown: false,
       };
     },
     mounted() {
@@ -45,21 +46,23 @@
           });
       }
       this.intervalId = setInterval(() => {
-        this.canvas = this.$refs.canvas;
-        this.canvas
-          .getContext('2d')
-          .drawImage(
-            this.video,
-            0, 0, 640, 480,
-          );
-        const imageData = this.canvas.getContext('2d').getImageData(0, 0, 640, 480);
-        const qr = jsQR(imageData.data, 640, 480);
-        if (qr) {
-          this.cannot_launch = false;
-          const code = parse(qr.data, this.color);
-          console.log(code.tbl.arr);
-          this.tbl = code.tbl.arr;
-          this.code = code;
+        if (this.tbl == null) {
+          this.canvas = this.$refs.canvas;
+          this.canvas
+            .getContext('2d')
+            .drawImage(
+              this.video,
+              0, 0, 640, 480,
+            );
+          const imageData = this.canvas.getContext('2d').getImageData(0, 0, 640, 480);
+          const qr = jsQR(imageData.data, 640, 480);
+          if (qr) {
+            this.cannot_launch = false;
+            const code = parse(qr.data, this.color);
+            console.log(code.tbl.arr);
+            this.tbl = code.tbl.arr;
+            this.code = code;
+          }
         }
       }, 100);
     },
