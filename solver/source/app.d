@@ -13,6 +13,5 @@ startInput:
 		case "Blue":color=Color.Blue;break;
 		default:writeln("invalid input");goto startInput;
 	}
-	int turn = to!int(input[1]);
-	connect(color,turn);
+	connect(color);
 }

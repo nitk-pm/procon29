@@ -25,7 +25,7 @@ JSONValue search(Color color,int turn,Board board){
 	return makeOperationJson(color,bestOp);	
 }
 */
-void connect (Color color,int turn){
+void connect (Color color){
 	while (true){
 		auto ws=connectWebSocket(URL.parse(serverURL));
 		JSONValue req;
@@ -36,8 +36,9 @@ void connect (Color color,int turn){
 			//txt.writeln();
 			auto json=parseJSON(txt);
 			if (json["type"].toString=="\"distribute-board\""){
-				Board board=decode(json["payload"]);
-				auto opJson = MCTSearch(color,turn,board);--turn;
+				Board board=decode(json["payload"]["board"]);
+				int turn=to!int(json["payload"]["turn"].integer);
+				auto opJson = MCTSearch(color,turn,board);
 				opJson.writeln();
 				ws.send(opJson.toString);
 			}
