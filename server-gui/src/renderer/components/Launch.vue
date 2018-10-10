@@ -32,9 +32,14 @@
         captures: {},
         turn: 10,
         color: 'Red',
-        code: null,
-        table_shown: false,
+        orig_data: null,
       };
+    },
+    computed: {
+      code() {
+        if (this.orig_data == null) return null;
+        return parse(this.orig_data, this.color);
+      },
     },
     mounted() {
       this.video = this.$refs.video;
@@ -58,10 +63,8 @@
           const imageData = this.canvas.getContext('2d').getImageData(0, 0, 640, 480);
           const qr = jsQR(imageData.data, 640, 480);
           if (qr) {
-            this.cannot_launch = false;
             this.orig_data = qr.data;
-            const code = parse(qr.data, this.color);
-            this.code = code;
+            this.cannot_launch = false;
           }
         }
       }, 100);
