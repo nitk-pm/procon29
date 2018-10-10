@@ -2,8 +2,8 @@
     <div>
       <video ref="video" id="video" width="640" height="480" autoplay></video>
       <div id="container">
-        <canvas ref="canvas" id="canvas" width="640" height="480" v-if="tbl == null"></canvas>
-        <board v-bind:tbl="tbl" v-if="tbl != null"/>
+        <canvas ref="canvas" id="canvas" width="640" height="480" v-if="code == null"></canvas>
+        <board v-bind:tbl="code.tbl.arr" v-if="code != null"/>
         <div class="controll">
           <input v-model="turn" type="number"></input>
           <div class="radio">
@@ -32,7 +32,7 @@
         captures: {},
         turn: 10,
         color: 'Red',
-        tbl: null,
+        code: null,
         table_shown: false,
       };
     },
@@ -47,7 +47,7 @@
           });
       }
       this.intervalId = setInterval(() => {
-        if (this.tbl == null) {
+        if (this.code == null) {
           this.canvas = this.$refs.canvas;
           this.canvas
             .getContext('2d')
@@ -59,9 +59,8 @@
           const qr = jsQR(imageData.data, 640, 480);
           if (qr) {
             this.cannot_launch = false;
+            this.orig_data = qr.data;
             const code = parse(qr.data, this.color);
-            console.log(code.tbl.arr);
-            this.tbl = code.tbl.arr;
             this.code = code;
           }
         }
@@ -70,7 +69,6 @@
     methods: {
       discord() {
         this.cannot_launch = true;
-        this.tbl = null;
         this.code = null;
       },
       launch() {
