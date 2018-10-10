@@ -41,8 +41,4 @@ auto decode(JSONValue json){
 unittest{
 	auto json=parseJSON(ExampleJson); 
 	auto board=decode(json);
-	assert(board.cells[idx(2,3,11)].priority==1);
-	assert(board.cells[idx(7,4,11)].priority==4);
-	assert(board.cells[idx(7,6,11)].priority==-4);
-	assert(board.cells[idx(4,1,11)].priority==4);
 }
