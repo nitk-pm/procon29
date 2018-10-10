@@ -9,7 +9,6 @@ jobs:
       - restore_cache:
           keys:
             - v2-dep-{{ checksum "./gui/package.json" }}-{{ checksum "./editor/package.json" }}-{{ checksum "./server/dub.json" }}
-            - v2-dep-
       - run:
           name: GUI build
           command: bash ./gui/test.sh
