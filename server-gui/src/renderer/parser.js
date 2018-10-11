@@ -46,16 +46,12 @@ export function checkBoardSymmetry(tbl) {
 //   tbl: {tbl: [[{agent: bool, color: string, score: integer}]], w: integer, h: integer},
 //   succes: bool
 // }
-export function tryInferAgents(tbl, positions, myColor) {
-  let symmetry = checkAgentsSymmetry(positions, tbl.w, tbl.h);
-  if (symmetry === 'Asymmetry') {
-    symmetry = checkBoardSymmetry(tbl);
-  }
+export function placeAgents(tbl, agents, myColor, symmetry) {
   const rivalColor = myColor === 'Red' ? 'Blue' : 'Red';
-  const { h, w, arr } = tbl;
-  let succes = true;
-  for (let i = 0; i < positions.length; i += 1) {
-    const { x, y } = positions[i];
+  const { h, w } = tbl;
+  const arr = tbl.arr.map(l => l.map(s => ({ ...s })));
+  for (let i = 0; i < agents.length; i += 1) {
+    const { x, y } = agents[i];
     arr[y][x].color = myColor;
     arr[y][x].agent = true;
     if (symmetry === 'Point') {
@@ -67,16 +63,21 @@ export function tryInferAgents(tbl, positions, myColor) {
     } else if (symmetry === 'MirrorY') {
       arr[h - y - 1][x].color = rivalColor;
       arr[h - y - 1][x].agent = true;
-    } else { // Asymmetry
-      succes = false;
     }
   }
-  return { tbl: { arr, w, h }, succes };
+  return { arr, w, h };
 }
 
-// (string, string)
-// -> {tbl: [[{agent: bool, color: string, score: integer}]], w: integer, h: integer}
-export default function parseQR(code, myColor) {
+export function deducePlacement(tbl, agents) {
+  console.log(agents);
+  let symmetry = checkAgentsSymmetry(agents, tbl.w, tbl.h);
+  if (symmetry === 'Asymmetry') {
+    symmetry = checkBoardSymmetry(tbl);
+  }
+  return symmetry;
+}
+
+export function parseQR(code) {
   const sections = code.split(':');
   const header = sections[0].split(' ');
   const h = parseInt(header[0], 10);
@@ -86,12 +87,14 @@ export default function parseQR(code, myColor) {
     decodePos(sections[sections.length - 3]),
   ];
   const body = sections.slice(1, sections.length - 3);
-  const emptyTbl =
+  const arr =
     body.map(line => line.split(' ').map(score => ({
       score: parseInt(score, 10),
       agent: false,
       color: 'Neut',
     })));
-  return tryInferAgents({ arr: emptyTbl, w, h }, agents, myColor);
+  return {
+    arr, h, w, agents,
+  };
 }
 
