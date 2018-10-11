@@ -8,8 +8,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dep-{{ checksum "./gui/package.json" }}-{{ checksum "./editor/package.json" }}-{{ checksum "./server/dub.json" }}
-            - v1-dep-
+            - v2-dep-{{ checksum "./gui/package.json" }}-{{ checksum "./editor/package.json" }}-{{ checksum "./server/dub.json" }}
       - run:
           name: GUI build
           command: bash ./gui/test.sh
@@ -24,4 +23,4 @@ jobs:
             - "./gui/node_modules"
             - "./editor/node_modules"
             - "~/.dub"
-          key: v1-dep-{{ checksum "./gui/package.json"}}-{{ checksum "./editor/package.json" }}-{{ checksum "./server/dub.json" }}
+          key: v2-dep-{{ checksum "./gui/package.json"}}-{{ checksum "./editor/package.json" }}-{{ checksum "./server/dub.json" }}
