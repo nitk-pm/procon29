@@ -105,15 +105,15 @@ struct MCT{
 		MCTNode child;
 		child.board.cells=parent.board.cells.dup;
 		child.board.width=parent.board.width;
-		++this.size;
 		auto tmp=proceedGame(this.color,child.board,parent.enemyMove,myMove);
 		child.operations=tuple(tmp.redOp,tmp.blueOp);
 		child.board=tmp.board;
-		child.ownIdx=size;
+		child.ownIdx=size+1;
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
 		child.enemyMove=greedySearch(this.enemyColor,child.board);
-		if(evalute(this.color,parent.board)<evalute(this.color,child.board)){
+		if(evalute(this.color,parent.board)<=evalute(this.color,child.board)){
+			++this.size;
 			nodes~=child;
 			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 		}
@@ -130,6 +130,7 @@ struct MCT{
 	}
 	Operation[2] bestOp(){
 		int bestVisitsCount=0;
+		assert(nodes.length>2);
 		auto bestOp=nodes[1].operations;//型を書くのがめんどくさい
 		nodes[0].childNodesIdx.length.writeln();
 		foreach(currentNode;nodes){
@@ -151,6 +152,8 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	mct.color=color;
 	mct.enemyColor= color==Color.Red ? Color.Red:Color.Blue;
 	mct.gameTurn=turn;
+	assert(board.cells.length>20);
+	assert(turn>0);
 	mct.searchDepth=min(board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
 	MCTNode root;
 	root.board=board;
