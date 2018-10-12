@@ -59,7 +59,7 @@ struct MCT{
 		float bestUCB1=0;
 		int visitedNodeIdx=0;
 		foreach (currentNode;this.nodes){
-			if (currentNode.UCB1Score>=bestUCB1){
+			if (currentNode.UCB1Score>=bestUCB1&&currentNode.depth<=searchDepth){
 				bestUCB1=currentNode.UCB1Score;
 				visitedNodeIdx=currentNode.ownIdx;
 			}
