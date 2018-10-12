@@ -32,6 +32,9 @@ size_t turn_max;
 
 StopWatch timekeeper;
 
+version(unittest){
+}
+else {
 void main (string[] args) {
 
 	int turn;
@@ -63,6 +66,7 @@ void main (string[] args) {
 
 	listenHTTP(settings, router);
 	runEventLoop();
+}
 }
 
 string genReplyMsg(string type, JSONValue json) {
