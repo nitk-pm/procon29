@@ -5,6 +5,7 @@ import std.conv;
 import std.stdio;
 import procon.container;
 import procon.example;
+import procon.searchPreprocess;
 
 auto decode(JSONValue json){
 	Board board;
@@ -13,7 +14,7 @@ auto decode(JSONValue json){
 	foreach(y;0..h+2){
 		foreach(x;0..w+2){
 			if (y==0||x==0||y==h+1||x==w+1){
-				board.cells~=Cell(0,false,Color.Out);
+				board.cells~=Cell(0,false,Color.Out,0);
 				continue;
 			}
 			else {
@@ -31,9 +32,13 @@ auto decode(JSONValue json){
 		}
 	}
 	board.width=w+2;
+	auto priorities=calcSquarePriority(board);
+	foreach(i;0..priorities.length){
+		board.cells[i].priority=priorities[i];
+	}
 	return board;
 }
 unittest{
 	auto json=parseJSON(ExampleJson); 
-	auto tmp=decode(json);
+	auto board=decode(json);
 }

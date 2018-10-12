@@ -1,4 +1,4 @@
-module procon.playoutParts;
+module procon.simulator;
 
 import std.conv;
 import std.stdio;
@@ -12,25 +12,17 @@ import procon.example;
 import procon.decoder;
 
 //進む先が敵陣のパネルならパネル除去操作に変更
-
 @safe
+
 int rnd(){//adhoc太郎
 	auto rnd=Random(unpredictableSeed);
-	return uniform(0,9,rnd);
+//	return uniform(0,9,rnd);
+	return uniform(0,8,rnd);//停留をしない行動パターン
 }
 unittest {
 	// これはあまり意味ない気がする
 	assert(rnd() < 9);
 	assert(rnd() >= 0);
-}
-
-// テスト用の補助関数
-@safe @nogc
-pure nothrow int idx(int x, int y, int w) {
-	return (y + 1) * (w + 2) + x + 1;
-}
-unittest {
-	assert (idx(2, 0, 5) == 10);
 }
 
 @safe @nogc
@@ -87,15 +79,20 @@ unittest {
 	assert (decideDirection(8, 9) == 0);
 }
 
-auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあとの盤面のみを返す、プレイアウト用
+auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ターン進める、進めたあとの盤面のみを返す
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用
+	auto directionCnt=0;
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
-		int direction=decideDirection(rnd, board.width);
+		int direction;
+		if(color==agents[i].color)
+			direction=decideDirection(myMove[directionCnt++], board.width);
+		else 
+			direction=decideDirection(8, board.width);//自チームじゃないエージェントは動かない
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			continue;
@@ -139,21 +136,34 @@ auto proceedGameWithoutOp(Board board){//1ターン進める、進めたあと�
 	}
 	return board;
 }
-auto proceedGame(Board board){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
+
+auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
+	Board board;
+	{
+	auto tmpCells=origBoard.cells.dup;
+	auto tmpWidth=origBoard.width;
+	board.cells=tmpCells;
+	board.width=tmpWidth;
+	}
 	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
 	Type[4] typeList;
 	Tuple!(int,int)[4] prevPosList, nextPosList;
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用
+	int direcitionCnt=0;
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
 		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
-		int direction=decideDirection(rnd, board.width);
+		int direction;
+		if (color==agents[i].color)
+			direction=decideDirection(rnd(),board.width);//展開するときは味方はランダム
+		else 
+			direction=decideDirection(enemyMove[direcitionCnt++],board.width);//敵は貪欲
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
@@ -217,8 +227,3 @@ auto proceedGame(Board board){//1ターン進める、進めたあとの盤面�
 	}
 	return Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
 }
-
-unittest{
-
-}	
-

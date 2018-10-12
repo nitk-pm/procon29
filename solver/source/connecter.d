@@ -5,12 +5,27 @@ import vibe.d;
 import vibe.http.websockets;
 import std.json;
 import procon.container;
-import procon.search;
+import procon.greedySearch;
+import procon.mct;
 import procon.encoder;
 import procon.decoder;
 const serverURL = "ws://127.0.0.1:8080";
-
-void connect (Color color,int turn){
+/*
+JSONValue search(Color color,int turn,Board board){
+	MCT mct;
+	mct.color=color;
+	mct.gameTurn=turn;
+	Node rootNode;
+	rootNode.board=board;
+	mct.nodes~=rootNode;
+	foreach(i;0..searchLimit){
+		mct.visitNode();
+	}
+	auto bestOp=mct.bestOp();
+	return makeOperationJson(color,bestOp);	
+}
+*/
+void connect (Color color){
 	while (true){
 		auto ws=connectWebSocket(URL.parse(serverURL));
 		JSONValue req;
@@ -21,8 +36,9 @@ void connect (Color color,int turn){
 			//txt.writeln();
 			auto json=parseJSON(txt);
 			if (json["type"].toString=="\"distribute-board\""){
-				Board board=decode(json["payload"]);
-				auto opJson = search(color,turn,board);--turn;
+				Board board=decode(json["payload"]["board"]);
+				int turn=to!int(json["payload"]["turn"].integer);
+				auto opJson = MCTSearch(color,turn,board);
 				opJson.writeln();
 				ws.send(opJson.toString);
 			}

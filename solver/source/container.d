@@ -4,10 +4,20 @@ import std.stdio;
 import std.typecons;
 const float INF=1e9+7;
 
+// テスト用の補助関数
+@safe @nogc
+pure nothrow int idx(int x, int y, int w) {
+	return (y + 1) * (w + 2) + x + 1;
+}
+unittest {
+	assert (idx(2, 0, 5) == 10);
+}
+
 struct Cell {//マスの得点、エージェントの有無、色
 	int score;
 	bool agent;
 	Color color;
+	int priority;
 }
 struct Board{
 	Cell[] cells;
@@ -28,6 +38,15 @@ struct Operation{
 }
 enum Type{
 	Move,Clear
+}
+struct Node{
+	int opCmp(ref const Node node)const{return this.evalPoint>node.evalPoint;}
+	int ownIdx=0;
+	int parentNodeIdx=0;
+	int evalPoint=0;
+	int depth=0;
+	int[2] directions;//後にopでrestoreするように
+	//Board board;盤面もたせると重そう
 }
 
 struct Queue(T){
