@@ -137,7 +137,7 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ター
 	return board;
 }
 
-auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
+auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]myMove){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
 	Board board;
@@ -153,17 +153,18 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove){//1タ�
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用
-	int direcitionCnt=0;
 	auto prevBoard=board.cells;
+	int myDirecitionCnt=0;
+	int enemyDirecitionCnt=0;
 	foreach(i;0..4){
 		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
 		int direction;
 		if (color==agents[i].color)
-			direction=decideDirection(rnd(),board.width);//展開するときは味方はランダム
+			direction=decideDirection(myMove[myDirecitionCnt++],board.width);
 		else 
-			direction=decideDirection(enemyMove[direcitionCnt++],board.width);//敵は貪欲
+			direction=decideDirection(enemyMove[enemyDirecitionCnt++],board.width);//敵は貪欲
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
 			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);

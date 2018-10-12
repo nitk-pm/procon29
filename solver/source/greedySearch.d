@@ -37,7 +37,7 @@ pure nothrow int[2] bestDirections(in Node[] list){
 	return list[bestEvalIdx].directions;
 }
 @safe @nogc
-pure nothrow auto evalute(Color color,Board board){
+pure nothrow int evalute(Color color,Board board){
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
