@@ -1,4 +1,3 @@
-
 module procon.mct;
 
 import procon.simulator;
@@ -18,6 +17,7 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
 immutable int searchLimit=10000;
+immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
 	int parentNodeIdx=0;
@@ -64,6 +64,7 @@ struct MCT{
 				visitedNodeIdx=currentNode.ownIdx;
 			}
 		}
+		nodes[visitedNodeIdx].UCB1Score-=EPS;
 		Board resultBoard=this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
 		auto resultPair=scoreCalculation(resultBoard);
 		int result;
