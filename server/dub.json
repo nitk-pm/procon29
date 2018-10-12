@@ -7,9 +7,21 @@
 		"vibe-d": "~>0.8.4",
 		"vibe-d:tls": "*"
 	},
-	"subConfigurations": {
-		"vibe-d:tls": "openssl-1.1"
-	},
+	"configurations": [
+		{
+			"name": "windows",
+			"targetType": "executable",
+			"platforms": ["windows"]
+		},
+		{
+			"name": "posix",
+			"targetType": "executable",
+			"platforms": ["posix"],
+			"subConfigurations": {
+				"vibe-d:tls": "openssl-1.1"
+			}
+		}
+	],
 	"description": "Igokabaddi Server",
 	"copyright": "Copyright © 2018, Nakano Masaki",
 	"license": "MIT",
