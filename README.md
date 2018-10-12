@@ -18,3 +18,8 @@
 ## 仕様
 schema内の定義とサンプルファイルを参考にしてください。
 通信はblobではなくjsonをテキストで送ります。
+
+# Dependencies
+ * [dmd](https://dlang.org/download.html)
+ * [dub](https://code.dlang.org/download)
+ * [yarn](https://yarnpkg.com/lang/ja/)
