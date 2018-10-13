@@ -10,7 +10,15 @@ export enum ActionNames {
 	THAWING = 'IGOKABADDI_THAWING',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	BACK = 'IGOKABADDI_BACK',
-	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP'
+	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP',
+	CHANGE_DIR = 'IGOKABADDI_CHANGE_DIR'
+}
+
+export type ChangeDirAction = {
+	type: ActionNames.CHANGE_DIR;
+	payload: {
+		dir: string;
+	}
 }
 
 export type ApplySettingAction = {
@@ -81,6 +89,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	   return {
 		   ...state,
 		   rivalOps: action.payload.ops
+		};
+	case ActionNames.CHANGE_DIR:
+		return {
+			...state,
+			dir: action.payload.dir
 		};
 	default:
 		return state;

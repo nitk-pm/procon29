@@ -67,6 +67,16 @@ export class ActionDispatcher {
 		};
 		reader.readAsText(path);
 	}
+
+	changeDir(dir: string) {
+		console.log(dir);
+		this.dispatch({
+			type: AppModule.ActionNames.CHANGE_DIR,
+			payload: {
+				dir
+			}
+		});
+	}
 }
 
 export default ReactRedux.connect(
@@ -77,7 +87,8 @@ export default ReactRedux.connect(
 		freeze: state.freeze,
 		time: state.time,
 		board: state.board,
-		server: state.server
+		server: state.server,
+		dir: state.dir,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);
