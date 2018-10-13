@@ -62,7 +62,7 @@ export const initialState: State = {
 	highlight: None,
 	freeze: true,
 	time: 0.0,
-	dir: '',
+	dir: 'up',
 };
 
 export const getServerInfo = (state: State) => state.server;

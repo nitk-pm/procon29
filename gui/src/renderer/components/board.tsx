@@ -66,6 +66,7 @@ interface BoardProps {
 	highlight: Option<Common.Pos>;
 	operation: Array<Common.Operation>;
 	rivalOperation: Array<Common.Operation>;
+	dir: string;
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -99,9 +100,9 @@ export class Board extends React.Component<BoardProps> {
 			return {dir: 0, state: SquareState.Wait};
 		};
 		return (
-			<div style={boardStyle}>{
+			<div className={"board-root board-root-"+this.props.dir}>{
 				this.props.table.arr.map((line, y)  =>
-					<div className="board-row" key={y}>{
+					<div className={"board-row board-row-"+this.props.dir} key={y}>{
 						line.map((square, x) => {
 							let {dir, state} = calcIconAndDir({x, y}, this.props.operation.concat(this.props.rivalOperation));
 							return (<Square
