@@ -77,6 +77,12 @@ export class ActionDispatcher {
 			}
 		});
 	}
+
+	swapSuit() {
+		this.dispatch({
+			type: AppModule.ActionNames.SWAP_SUIT
+		});
+	}
 }
 
 export default ReactRedux.connect(

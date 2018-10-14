@@ -180,6 +180,9 @@ export const Game = withStyles(styles)(
 								left
 							</label>
 						</div>
+						<div>
+							<Button onClick={() => this.props.actions.swapSuit()}>Swap Suit</Button>
+						</div>
 						{suggest}
 					</div>);
 			}

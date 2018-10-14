@@ -17,6 +17,7 @@ interface SquareProps {
 	dir: number; // rad MoveまたはClearの場合
 	state: SquareState;
 	highlight: boolean;
+	colorMap: Array<{back: string; forward: string}>
 }
 
 export class Square extends React.Component<SquareProps> {
@@ -31,6 +32,7 @@ export class Square extends React.Component<SquareProps> {
 			transform: 'rotate(' + this.props.dir + 'rad)'
 		};
 		let img = null;
+		let scoreStyle;
 		if (this.props.square.agent >= 0) {
 			let imgPath;
 			switch (this.props.state) {
@@ -45,6 +47,10 @@ export class Square extends React.Component<SquareProps> {
 				break;
 			}
 			img = <img style={imgStyle} src={imgPath} className='square-icon'/>;
+			scoreStyle = {
+				backgroundColor: this.props.colorMap[this.props.square.agent].back,
+				color: this.props.colorMap[this.props.square.agent].forward
+			};
 		}
 		let containerOpacity = this.props.highlight ? 0.6 : 1.0;
 		return (
@@ -55,7 +61,7 @@ export class Square extends React.Component<SquareProps> {
 			<div className="square-iconbox">
 				{img}
 			</div>
-			<div className="square-score">{this.props.square.score}</div>
+			<div className="square-score" style={scoreStyle}>{this.props.square.score}</div>
 		</div>);
 	}
 }
@@ -67,6 +73,7 @@ interface BoardProps {
 	operation: Array<Common.Operation>;
 	rivalOperation: Array<Common.Operation>;
 	dir: string;
+	colorMap: Array<{back: string; forward: string}>
 }
 
 export class Board extends React.Component<BoardProps> {
@@ -112,6 +119,7 @@ export class Board extends React.Component<BoardProps> {
 								key={x*height+y}
 								dir={dir}
 								state={state}
+								colorMap={this.props.colorMap}
 								highlight={isHighlighted(x, y)}
 							/>);
 						})

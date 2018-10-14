@@ -38,7 +38,8 @@ export default ReactRedux.connect(
 		highlight: state.highlight,
 		operation: state.ops,
 		rivalOperation: state.rivalOps,
-		dir: state.dir
+		dir: state.dir,
+		colorMap: state.colorMap
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(BoardComponent.Board);
