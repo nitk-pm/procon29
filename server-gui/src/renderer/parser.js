@@ -54,7 +54,6 @@ export function placeAgents(tbl, agents, myColor, symmetry) {
   for (let i = 0; i < agents.length; i += 1) {
     const { x, y } = agents[i];
     arr[y][x].color = myColor;
-    cnt += 1;
     arr[y][x].agent = cnt;
     if (symmetry === 'Point') {
       arr[h - y - 1][x].color = rivalColor;
@@ -66,6 +65,7 @@ export function placeAgents(tbl, agents, myColor, symmetry) {
       arr[h - y - 1][x].color = rivalColor;
       arr[h - y - 1][x].agent = cnt;
     }
+    cnt += 1;
   }
   return { arr, w, h };
 }
