@@ -22,7 +22,7 @@
 		{"score":0,  "color":"Neut", "agent":-1},
 		{"score":-2, "color":"Neut", "agent":-1},
 		{"score":2,  "color":"Neut", "agent":-1},
-		{"score":0,  "color":"Red", "agent":1},
+		{"score":0,  "color":"Red", "agent":2},
 		{"score":1,  "color":"Neut", "agent":-1}
 	],
 	[
@@ -79,7 +79,7 @@
 	],
 	[
 		{"score":1,  "color":"Neut", "agent":-1},
-		{"score":0,  "color":"Red", "agent":1},
+		{"score":0,  "color":"Red", "agent":3},
 		{"score":2,  "color":"Neut", "agent":-1},
 		{"score":-2, "color":"Neut", "agent":-1},
 		{"score":0,  "color":"Neut", "agent":-1},
@@ -87,7 +87,7 @@
 		{"score":0,  "color":"Neut", "agent":-1},
 		{"score":-2, "color":"Neut", "agent":-1},
 		{"score":2,  "color":"Neut", "agent":-1},
-		{"score":0,  "color":"Blue", "agent":1},
+		{"score":0,  "color":"Blue", "agent":4},
 		{"score":1,  "color":"Neut", "agent":-1}
 	],
 	[
