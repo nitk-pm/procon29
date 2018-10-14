@@ -95,6 +95,8 @@ export default ReactRedux.connect(
 		board: state.board,
 		server: state.server,
 		dir: state.dir,
+		colorMap: state.colorMap,
+		rivalOps: state.rivalOps,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

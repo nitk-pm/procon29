@@ -41,6 +41,8 @@ export interface GameProps extends WithStyles<typeof styles>{
 	freeze: boolean;
 	time: number;
 	dir: string;
+	rivalOps: Array<Common.Operation>;
+	colorMap: Array<{back: string; forward: string}>;
 }
 
 export const Game = withStyles(styles)(
@@ -128,14 +130,43 @@ export const Game = withStyles(styles)(
 				);
 			}
 			else {
+				let calcSuitDir = (dir: string, op: Common.Operation) => {
+					return Math.atan2(op.to.y-op.from.y, op.to.x-op.from.y);
+				};
+				let baseAngle = 0.0;
+				switch (this.props.dir) {
+				case 'up': baseAngle = Math.PI*2; break;
+				case 'right': baseAngle = Math.PI / 2; break;
+				case 'down': baseAngle = Math.PI; break;
+				case 'left': baseAngle = Math.PI*3/2; break;
+				}
+				let spadeAngle = baseAngle, heartAngle = baseAngle + Math.PI;
+				for (let i = 0; i < this.props.rivalOps.length; ++i) {
+					let op = this.props.rivalOps[i];
+					let id =
+						this
+						.props
+						.board
+						.arr[op.from.y][op.to.x]
+						.agent;
+					if (this.props.colorMap[id].back == 'red') {
+						heartAngle += calcSuitDir(this.props.dir, op);
+					}
+					else {
+						spadeAngle += calcSuitDir(this.props.dir, op);
+					}
+				}
+				let genRotate = (dir: number) => ({
+					transform: 'rotate(' + dir + 'rad)'
+				});
 				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 				let time = props.time.toFixed(1);
 				let suggest = props.state == Store.UIState.User ? (
 					<div className='suggest-container'>
-						<div className='suggest-heart'>
+						<div className='suggest-heart' style={genRotate(heartAngle)}>
 							♥
 						</div>
-						<div className='suggest-spade'>
+						<div className='suggest-spade' style={genRotate(spadeAngle)}>
 							♠
 						</div>
 					</div>
@@ -168,12 +199,12 @@ export const Game = withStyles(styles)(
 								up
 							</label>
 							<label>
-								<input id='down' type='radio' name='dir' value='down' checked={this.props.dir == 'down'}  onChange={() => this.props.actions.changeDir('down')}/>
-								down
-							</label>
-							<label>
 								<input id='right' type='radio' name='dir' value='right' checked={this.props.dir == 'right'}  onChange={() => this.props.actions.changeDir('right')}/>
 								right
+							</label>
+							<label>
+								<input id='down' type='radio' name='dir' value='down' checked={this.props.dir == 'down'}  onChange={() => this.props.actions.changeDir('down')}/>
+								down
 							</label>
 							<label>
 								<input id='left' type='radio' name='dir' value='left' checked={this.props.dir == 'left'} onChange={() => this.props.actions.changeDir('left')}/>
