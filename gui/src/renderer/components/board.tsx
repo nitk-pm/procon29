@@ -31,7 +31,7 @@ export class Square extends React.Component<SquareProps> {
 			transform: 'rotate(' + this.props.dir + 'rad)'
 		};
 		let img = null;
-		if (this.props.square.agent) {
+		if (this.props.square.agent >= 0) {
 			let imgPath;
 			switch (this.props.state) {
 			case SquareState.Wait:

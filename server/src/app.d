@@ -106,7 +106,7 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 			immutable to = ops[i].to;
 			immutable dest = board[to.y][to.x];
 			auto disable = false;
-			if (dest.agent) {
+			if (dest.agent >= 0) {
 				bool willEvacuate = false;
 				// エージェントが退去予定ならフラグを立てる
 				for (size_t j=fixedPart; j < ops.length; ++j) {
@@ -130,18 +130,26 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 		for (int x; x < board[y].length; ++x) {
 			foreach (op; ops) {
 				if (op.from == Pos(x, y))
-					board[y][x].agent = false;
+					board[y][x].agent = -1;
 			}
 		}
 	}
 
 	foreach (op; ops) {
 		if (op.type == OpType.Move) {
-			board[op.to.y][op.to.x].agent = true;
+			board[op.to.y][op.to.x].agent = board[op.from.y][op.from.x].agent;
 			board[op.to.y][op.to.x].color = op.color;
 		}
 		else {
 			board[op.to.y][op.to.x].color = Color.Neut;
+		}
+	}
+	for (int y; y < board.length; ++y) {
+		for (int x; x < board[y].length; ++x) {
+			foreach (op; ops) {
+				if (op.from == Pos(x, y))
+					board[y][x].agent = -1;
+			}
 		}
 	}
 	return board;
