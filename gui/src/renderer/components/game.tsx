@@ -130,6 +130,16 @@ export const Game = withStyles(styles)(
 			else {
 				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 				let time = props.time.toFixed(1);
+				let suggest = props.state == Store.UIState.User ? (
+					<div className='suggest-container'>
+						<div className='suggest-heart'>
+							♥
+						</div>
+						<div className='suggest-spade'>
+							♠
+						</div>
+					</div>
+				) : null;
 				page = (
 					<div>
 						<div className='board-container'>
@@ -170,6 +180,7 @@ export const Game = withStyles(styles)(
 								left
 							</label>
 						</div>
+						{suggest}
 					</div>);
 			}
 			return (

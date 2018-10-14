@@ -127,6 +127,20 @@ body {
 	background: rgba(0,0,0,0.1);
 }
 
+.suggest-container {
+	font-size: 10vw;
+	display: flex;
+	flex-direction: row;
+}
+
+.suggest-heart {
+	color: red;
+}
+
+.suggest-spade {
+	color: black;
+}
+
 .fab {
 	position: fixed;
 	right: 10%;
