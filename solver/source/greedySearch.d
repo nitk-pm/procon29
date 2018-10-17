@@ -38,6 +38,8 @@ pure nothrow int[2] bestDirections(in Node[] list){
 }
 @safe @nogc
 pure nothrow int evalute(Color color,Board board){
+	auto agents=searchAgentInitialPos(board);
+	int agentDistance=calcAgentsDistance(agents,board.width)
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
@@ -47,7 +49,29 @@ pure nothrow int evalute(Color color,Board board){
 			blueEval+=board.cells[i].priority;
 	}
 	if (color==Color.Red)
-		return redEval-blueEval;
+		return redEval-blueEval+agentDistance;
 	else
-		return blueEval-redEval;
+		return blueEval-redEval+agentDistance;
+}
+int calcAgentsDistance(Agent[4] agents,int width){
+	int distanceSum=0;
+	Pos[2] redPos,bluePos;
+	foreach(agent;agents){
+		if (agent.color==Color.Red){
+			redPos.x=agent.pos%width;
+			redPos.y=agent.pos/width;
+		}
+		else{
+			bluePos.x=agent.pos%width;
+			bluePos.y=agent.pos/width;
+		}
+	}
+	foreach(i;0..2){
+		int minDist=100;
+		for(j;0..2){
+			minDist=min(minDist,min(redPos[i].x-bluePos[j].x,redPos[i].y-bluePos[j].y))//赤Aから青Aへ最短何ターンで到達できるか
+		}
+		distanceSum+=minDist;
+	}
+
 }
