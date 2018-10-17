@@ -31,9 +31,13 @@ struct Agent { //エージェントの色と座標
 	Color color;
 	int pos;//座標は一つの整数で表現する
 }
+struct Pos{
+	int x;
+	int y;
+}
 struct Operation{
-	Tuple!(int,"x",int,"y") from;
-	Tuple!(int,"x",int,"y") to;
+	Pos from;
+	Pos to;
 	Type type;
 }
 enum Type{
@@ -50,18 +54,19 @@ struct Node{
 }
 
 struct Queue(T){
-	T[] arr;
+	private int head=0,tail=0;
+	T[256] arr;
 	bool empty(){
-		return arr.length==0;
+		return head==tail;
 	}
 	T top(){
-		return arr[0];
+		return arr[head];
 	}
 	void pop(){
-		arr=arr[1..$];
+		head++;
 	}
 	void push(T a){
-		arr~=a;
+		arr[tail++]=a;
 	}
 }
 

@@ -22,8 +22,7 @@ auto surroundCalc(Board board){
 	foreach(color;team){//赤と青を分けて考える
 //FIXME~
 		bool[] visited;
-		foreach(x;0..board.cells.length)
-			visited~=false;
+			visited.length=board.cells.length;
 		auto q=Queue!int();
 		for (int i=0;i<board.cells.length;i++){
 			if (board.cells[i].color != Color.Out && board.cells[i].color != color && !visited[i]){//番兵と赤のマスと展開済みのマスは展開しちゃダメ
