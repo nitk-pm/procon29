@@ -82,7 +82,7 @@ struct MCT{
 					this.expandNode(visitedNodeIdx,myMove);
 				}
 			}
-			else{
+			else if (nodes[visitedNodeIdx].depth<=searchDepth){
 				foreach(i;0..expandWidth){
 					int[2] myMove=[0:rnd(),1:rnd()];
 					this.expandNode(visitedNodeIdx,myMove);
