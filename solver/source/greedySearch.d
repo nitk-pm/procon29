@@ -37,6 +37,36 @@ pure nothrow int[2] bestDirections(in Node[] list){
 	}
 	return list[bestEvalIdx].directions;
 }
+@safe 
+pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operation[2] operations){
+	Board board;
+	board.cells=origBoard.cells.dup;
+	board.width=origBoard.width;
+	auto agents=searchAgentInitialPos(board);
+	foreach(op;operations){
+		int idx=idx(op.to.x,op.to.y,board.width-2);
+		if (board.cells[idx].color==enemyColor)
+			board.cells[idx].color=Color.Neut;
+		else {
+			board.cells[idx].color=myColor;
+			board.cells[idx].agent=true;
+		}
+	}
+	int agentDistance=calcAgentsDistance(agents,board.width);
+	int redEval=0;
+	int blueEval=0;
+	foreach(i;0..board.cells.length){
+		if(board.cells[i].color==Color.Red)
+			redEval+=board.cells[i].priority;
+		else if (board.cells[i].color==Color.Blue)
+			blueEval+=board.cells[i].priority;
+	}
+	if (myColor==Color.Red)
+		return redEval-blueEval+agentDistance;
+	else
+		return blueEval-redEval+agentDistance;
+}
+
 @safe @nogc
 pure nothrow int evalute(Color color,Board board){
 	auto agents=searchAgentInitialPos(board);
