@@ -16,7 +16,7 @@ import procon.encoder;
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
-immutable int searchLimit=20000;
+immutable int searchLimit=10000;
 immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
@@ -24,6 +24,8 @@ struct MCTNode{
 	int[] childNodesIdx;
 	int wins=0;
 	int visits=0; //訪問回数
+	int evalution=0;
+	int scoreIncrease=0;
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
@@ -38,6 +40,8 @@ struct MCT{
 	Color color;//チームの色
 	Color enemyColor;
 	float C=1; // UCB1の定数、後々小さくするかも
+	float C2=0.2;//evalの増値をUCB1に組み込むための定数
+	float C3=0.5;//スコアの増値
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	int searchDepth;
@@ -49,7 +53,9 @@ struct MCT{
 			}
 			else {
 				nodes[i].UCB1Score=nodes[i].wins/nodes[i].visits
-							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits);
+							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
+							+C2*nodes[i].evalution
+							+C3*nodes[i].scoreIncrease;
 			}
 		}
 	}
@@ -111,6 +117,19 @@ struct MCT{
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
 		child.enemyMove=greedySearch(this.enemyColor,child.board);
+		{
+		Operation[2] tmpOp;
+		tmpOp=color==Color.Red?child.operations.redOp:child.operations.blueOp;
+		child.evalution=evalute(color,enemyColor,parent.board,tmpOp)-parent.evalution;
+		}
+		{
+		auto parentCalc=scoreCalculation(parent.board);
+		auto childCalc=scoreCalculation(child.board);
+		if (color==Color.Red)
+		child.scoreIncrease=(childCalc.Red-childCalc.Blue)-(parentCalc.Red-parentCalc.Blue);
+		else
+		child.scoreIncrease=(childCalc.Blue-childCalc.Red)-(parentCalc.Blue-parentCalc.Red);
+		}
 		if(!isStaying(color,child.operations)){
 			++this.size;
 			nodes~=child;
@@ -193,7 +212,6 @@ unittest{
 	MCT mct;
 	mct.color=color;
 	mct.enemyColor=color==Color.Red ? Color.Red:Color.Blue;
-	mct.gameTurn=turn;
 	mct.searchDepth=searchDepth;
 	MCTNode rootNode;
 	rootNode.board=board;
