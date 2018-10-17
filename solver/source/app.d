@@ -3,7 +3,7 @@ import procon.connecter;
 import procon.container;
 
 void main(){
-	writeln("\"YourColor(Red||Blue) GameTurn(integer)\"");
+	writeln("\"Input YourColor(Red||Blue)\"");
 startInput:
 	string[] input = split(readln());
 	string colorStr = input[0];
