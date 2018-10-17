@@ -57,7 +57,7 @@ pure nothrow int evalute(Color color,Board board){
 @safe @nogc
 pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
 	int distanceSum=0;
-	int redCnt=0,blueCnt=9;
+	int redCnt=0,blueCnt=0;
 	Pos[2] redPos,bluePos;
 	foreach(agent;agents){
 		if (agent.color==Color.Red){
