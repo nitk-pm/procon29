@@ -1,5 +1,6 @@
 module procon.greedySearch;
 
+import std.algorithm : min;
 import std.json;
 import std.conv;
 import std.typecons;
@@ -39,7 +40,7 @@ pure nothrow int[2] bestDirections(in Node[] list){
 @safe @nogc
 pure nothrow int evalute(Color color,Board board){
 	auto agents=searchAgentInitialPos(board);
-	int agentDistance=calcAgentsDistance(agents,board.width)
+	int agentDistance=calcAgentsDistance(agents,board.width);
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
@@ -53,25 +54,29 @@ pure nothrow int evalute(Color color,Board board){
 	else
 		return blueEval-redEval+agentDistance;
 }
-int calcAgentsDistance(Agent[4] agents,int width){
+@safe @nogc
+pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
 	int distanceSum=0;
+	int redCnt=0,blueCnt=9;
 	Pos[2] redPos,bluePos;
 	foreach(agent;agents){
 		if (agent.color==Color.Red){
-			redPos.x=agent.pos%width;
-			redPos.y=agent.pos/width;
+			redPos[redCnt].x=agent.pos%width;
+			redPos[redCnt++].y=agent.pos/width;
 		}
 		else{
-			bluePos.x=agent.pos%width;
-			bluePos.y=agent.pos/width;
+			bluePos[blueCnt].x=agent.pos%width;
+			bluePos[blueCnt++].y=agent.pos/width;
 		}
 	}
+	assert(redCnt==blueCnt&&redCnt==3);
 	foreach(i;0..2){
 		int minDist=100;
-		for(j;0..2){
-			minDist=min(minDist,min(redPos[i].x-bluePos[j].x,redPos[i].y-bluePos[j].y))//赤Aから青Aへ最短何ターンで到達できるか
+		foreach(j;0..2){
+			minDist=min(minDist,min(redPos[i].x-bluePos[j].x,redPos[i].y-bluePos[j].y));//赤Aから青Aへ最短何ターンで到達できるか
 		}
 		distanceSum+=minDist;
 	}
+	return distanceSum;
 
 }

@@ -149,7 +149,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 	}
 	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
 	Type[4] typeList;
-	Tuple!(int,int)[4] prevPosList, nextPosList;
+	Pos[4] prevPosList, nextPosList;
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto prevAgents=agents;//戻すとき用
@@ -157,7 +157,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 	int myDirecitionCnt=0;
 	int enemyDirecitionCnt=0;
 	foreach(i;0..4){
-		prevPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
+		prevPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
 		assert(heldAgents[i].pos!=0);
 		typeList[i]=Type.Move;
 		int direction;
@@ -167,7 +167,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 			direction=decideDirection(enemyMove[enemyDirecitionCnt++],board.width);//敵は貪欲
 		int destination=agents[i].pos+direction;//進んだ先の座標
 		if (board.cells[destination].color==Color.Out){
-			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
+			nextPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
 			continue;
 		}
 		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
@@ -177,7 +177,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 		else{
 			heldAgents[i].pos=destination;
 		}
-		nextPosList[i]=tuple(destination%board.width,destination/board.width);
+		nextPosList[i]=Pos(destination%board.width,destination/board.width);
 		assert(heldAgents[i].pos!=0);
 	}
 	//FIXME　ここの上下の処理は関数を分けるべき
@@ -200,7 +200,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 	foreach(i;0..4){
 		if (isInvalidMove[i]){
 			typeList[i]=Type.Move;
-			nextPosList[i]=tuple(agents[i].pos%board.width,agents[i].pos/board.width);
+			nextPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
 			continue;
 		}
 		board.cells[agents[i].pos].agent=false;//エージェントの移動処理
