@@ -69,7 +69,7 @@ pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
 			bluePos[blueCnt++].y=agent.pos/width;
 		}
 	}
-	assert(redCnt==blueCnt&&redCnt==3);
+	assert(redCnt==blueCnt&&redCnt==2);
 	foreach(i;0..2){
 		int minDist=100;
 		foreach(j;0..2){
