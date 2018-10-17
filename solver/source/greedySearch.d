@@ -7,6 +7,7 @@ import std.typecons;
 import procon.container;
 import procon.encoder;
 import procon.simulator;
+import procon.searchPreprocess:abs;
 //import procon.mct;
 
 int[2] greedySearch(in Color color,in Board board){
@@ -101,12 +102,13 @@ pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
 	}
 	assert(redCnt==blueCnt&&redCnt==2);
 	foreach(i;0..2){
-		int minDist=100;
+		int minEnemyDist=100;
 		foreach(j;0..2){
-			minDist=min(minDist,min(redPos[i].x-bluePos[j].x,redPos[i].y-bluePos[j].y));//赤Aから青Aへ最短何ターンで到達できるか
+			minEnemyDist=min(minEnemyDist,min(abs(redPos[i].x-bluePos[j].x),abs(redPos[i].y-bluePos[j].y)));//赤Aから青Aへ最短何ターンで到達できるか
 		}
-		distanceSum+=minDist;
+		distanceSum-=minEnemyDist;//敵が近ければ引かれる数が小さく(近いほどよい)
 	}
+	distanceSum-=min(abs(redPos[0].x-redPos[1].x),abs(redPos[0].y-redPos[1].y));//味方と近ければ足される数が小さく(遠いほどよい)
 	return distanceSum;
 
 }
