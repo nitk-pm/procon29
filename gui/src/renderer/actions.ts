@@ -24,4 +24,5 @@ export type T =
 	| ServerSaga.PushOp
 	| ServerSaga.ReceiveMsgAction
 	| ServerSaga.ResetTimeAction
+	| ServerSaga.UndoAction
 	| TimeModule.UpdateTimeAction;
