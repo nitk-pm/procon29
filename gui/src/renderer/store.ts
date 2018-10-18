@@ -45,6 +45,8 @@ export type State = {
 	highlight: Option<Common.Pos>;
 	freeze: boolean;
 	time: number;
+	dir: string;
+	colorMap: Array<{forward: string; back: string}>;
 }
 
 
@@ -61,6 +63,8 @@ export const initialState: State = {
 	highlight: None,
 	freeze: true,
 	time: 0.0,
+	dir: 'up',
+	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}]
 };
 
 export const getServerInfo = (state: State) => state.server;
