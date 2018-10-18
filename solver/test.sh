@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd $(dirname $0)
-dub test
+dub test --compiler=ldc2
