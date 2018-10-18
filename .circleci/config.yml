@@ -18,6 +18,9 @@ jobs:
       - run:
           name: Server test
           command: bash ./server/test.sh
+      - run:
+          name: Solver test
+          command: bash ./solver/test.sh
       - save_cache:
           paths:
             - "./gui/node_modules"
