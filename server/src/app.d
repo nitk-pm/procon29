@@ -126,15 +126,6 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 	// 無効な操作を全て削除
 	ops = ops[fixedPart..$];
 
-	for (int y; y < board.length; ++y) {
-		for (int x; x < board[y].length; ++x) {
-			foreach (op; ops) {
-				if (op.from == Pos(x, y))
-					board[y][x].agent = -1;
-			}
-		}
-	}
-
 	foreach (op; ops) {
 		if (op.type == OpType.Move) {
 			board[op.to.y][op.to.x].agent = board[op.from.y][op.from.x].agent;
@@ -142,6 +133,14 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 		}
 		else {
 			board[op.to.y][op.to.x].color = Color.Neut;
+		}
+	}
+	for (int y; y < board.length; ++y) {
+		for (int x; x < board[y].length; ++x) {
+			foreach (op; ops) {
+				if (op.from == Pos(x, y))
+					board[y][x].agent = -1;
+			}
 		}
 	}
 	for (int y; y < board.length; ++y) {
