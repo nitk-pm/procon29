@@ -10,7 +10,20 @@ export enum ActionNames {
 	THAWING = 'IGOKABADDI_THAWING',
 	UPDATE_BOARD = 'IGOKABADDI_UPDATE_BOARD',
 	BACK = 'IGOKABADDI_BACK',
-	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP'
+	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP',
+	CHANGE_DIR = 'IGOKABADDI_CHANGE_DIR',
+	SWAP_SUIT = 'IGOKABADDI_SWAP_SUIT',
+}
+
+export type SwapSuitAction = {
+	type: ActionNames.SWAP_SUIT;
+}
+
+export type ChangeDirAction = {
+	type: ActionNames.CHANGE_DIR;
+	payload: {
+		dir: string;
+	}
 }
 
 export type ApplySettingAction = {
@@ -77,10 +90,23 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			...state,
 			state: Store.UIState.Setting
 		};
-   case ActionNames.RECEIVE_OP:
-	   return {
-		   ...state,
-		   rivalOps: action.payload.ops
+	case ActionNames.RECEIVE_OP:
+		return {
+			...state,
+			rivalOps: action.payload.ops
+		};
+	case ActionNames.CHANGE_DIR:
+		return {
+			...state,
+			dir: action.payload.dir
+		};
+	case ActionNames.SWAP_SUIT:
+		return {
+			...state,
+			colorMap: [
+				state.colorMap[1],
+				state.colorMap[0]
+			]
 		};
 	default:
 		return state;

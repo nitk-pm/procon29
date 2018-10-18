@@ -12,7 +12,7 @@ export enum Color {
 export type Square = {
 	color: Color;
 	score: number;
-	agent: boolean;
+	agent: number;
 }
 
 export type Table = {
@@ -48,7 +48,7 @@ export function loadBoard(json: Array<Array<any>>): Table {
 			default: throw 'unexpected color'
 			}
 			let score = parseInt(square.score);
-			let agent = square.agent as boolean;
+			let agent = parseInt(square.agent);
 			return {color, score, agent};
 		}));
 	return {w, h, arr};
