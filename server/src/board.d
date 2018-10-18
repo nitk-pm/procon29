@@ -9,7 +9,7 @@ enum Color { Red, Blue, Neut }
 struct Square {
 	Color color;
 	int score;
-	bool agent;
+	int agent;
 }
 
 alias Board = Square[][];
@@ -44,7 +44,7 @@ Board boardOfJson(JSONValue json) {
 			default:
 				throw new Exception("Illegal board.json");
 			}
-			bool agent = squareJson["agent"].type == JSON_TYPE.TRUE;
+			int agent = squareJson["agent"].integer.to!int;
 			int score = squareJson["score"].integer.to!int;
 			col ~= Square(color, score, agent);
 		}

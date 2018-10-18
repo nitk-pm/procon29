@@ -86,13 +86,25 @@ export function loadBoard(json: Array<Array<any>>): Table {
 }
 
 export function exportBoard(tbl: Table) {
+	let redCnt = 0;
+	let blueCnt = 0;
 	let arr = tbl.arr.map(line =>
 		line.map(square => {
 			let score = square.score.match({
 				Some: score => score,
 				None: () => null
 			});
-			return { score, color: square.color, agent: square.color != Color.Neut };
+			let agent;
+			if (square.color == Color.Red) {
+				agent = redCnt++;
+			}
+			else if (square.color == Color.Blue) {
+				agent = blueCnt++;
+			}
+			else {
+				agent = -1;
+			}
+			return { score, color: square.color, agent};
 		}));
 	return arr;
 }
