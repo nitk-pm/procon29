@@ -83,6 +83,12 @@ export class ActionDispatcher {
 			type: AppModule.ActionNames.SWAP_SUIT
 		});
 	}
+
+	undo() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.UNDO
+		});
+	}
 }
 
 export default ReactRedux.connect(
