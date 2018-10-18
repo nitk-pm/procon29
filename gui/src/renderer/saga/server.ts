@@ -14,7 +14,12 @@ export enum ActionNames {
 	CONNECTED = 'IGOKABADDI_SOCKET_CONNECTED',	//Actionを定義しなくても良い(payloadも無くsaga内でしか投げられないので)
 	FAIL = 'IGOKABADDI_SOCKET_FAIL',
 	PUSH_OP = 'IGOKABADDI_PUSH_OP',
-	RESET_TIME = 'IGOKABADDI_RESET_TIME'
+	RESET_TIME = 'IGOKABADDI_RESET_TIME',
+	UNDO = 'IGOKABADDI_UNDO'
+}
+
+export type UndoAction = {
+	type: ActionNames.UNDO;
 }
 
 export type PushOp = {
@@ -70,6 +75,7 @@ function genListenChannel(socket: WebSocket) {
 			case 'distribute-board':
 				// 盤面が配信された場合、Common.Boardに変換して
 				const board = Common.loadBoard(msg.payload.board);
+				console.log(board);
 				// 盤面の更新
 				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				const time = msg.payload.time;
@@ -119,9 +125,20 @@ function* pushOp(socket: WebSocket) {
 	}
 }
 
+function* pushUndo(socket: WebSocket) {
+	while(true) {
+		yield Effects.take(ActionNames.UNDO);
+		const msg = JSON.stringify({
+			type: 'undo',
+		});
+		socket.send(msg);
+	}
+}
+
 // Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
 function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
+	yield Effects.fork(pushUndo, socket);
 }
 
 function wait(ms: number) {

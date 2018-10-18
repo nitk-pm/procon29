@@ -5,6 +5,8 @@ import std.file;
 import std.json;
 import std.conv;
 import std.format;
+import std.algorithm.iteration;
+import std.range;
 import std.conv;
 import std.datetime.stopwatch: StopWatch;
 import std.getopt;
@@ -15,6 +17,7 @@ import vibe.d;
 import procon29.server.board;
 
 Board board;
+Board[] hist;
 // operation購読者のsocketのリスト
 WebSocket[] opSubscribers;
 // 接続してるSokcet
@@ -154,6 +157,9 @@ Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
 	return board;
 }
 
+Board deepCopy(Board board) {
+	return board.map!(line => line.map!(square => square).array).array;
+}
 
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
@@ -172,7 +178,9 @@ void handlePush(JSONValue msg) {
 	}
 	if (redOpPushed && blueOpPushed) {
 		++turn_count;
+		hist ~= board.deepCopy;
 		board = updateBoard(board, blueOp, redOp);
+		
 		JSONValue payload;
 		timekeeper.stop;
 		timekeeper.reset;
@@ -221,6 +229,21 @@ void handleConn(scope WebSocket sock) {
 			break;
 		case "push":
 			handlePush(msg);
+			break;
+		case "undo":
+			if (hist.length > 0) {
+				writeln("undo");
+				board = hist[$-1];
+				--hist.length;
+				JSONValue payload;
+				payload["board"] = board.jsonOfBoard;
+				payload["turn"] = JSONValue(turn_max);
+				payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+				auto reply = genReplyMsg("distribute-board", payload);
+				foreach(subscriber; sockets) {
+					subscriber.send(reply);
+				}
+			}
 			break;
 		case "req-op":
 			switch (msg["color"].str) {

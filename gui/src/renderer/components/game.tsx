@@ -147,8 +147,9 @@ export const Game = withStyles(styles)(
 						this
 						.props
 						.board
-						.arr[op.from.y][op.to.x]
+						.arr[op.from.y][op.from.x]
 						.agent;
+					console.log(id);
 					if (this.props.colorMap[id].back == 'red') {
 						heartAngle += calcSuitDir(this.props.dir, op);
 					}
@@ -190,6 +191,10 @@ export const Game = withStyles(styles)(
 								<DoneIcon />
 							</Button>
 						</div>
+						<Button
+							aria-label='undo'
+							onClick={() => props.actions.undo()}
+						>Undo</Button>
 						<Typography variant='h4'>
 							{time}
 						</Typography>
