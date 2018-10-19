@@ -1,17 +1,20 @@
-import std.stdio,std.array,std.conv;
+import std.stdio,std.array,std.conv,std.getopt;
 import procon.connecter;
 import procon.container;
 
-void main(){
-	writeln("\"Input YourColor(Red||Blue)\"");
-startInput:
-	string[] input = split(readln());
-	string colorStr = input[0];
+void main(string[] args){
 	Color color;
-	switch(colorStr){
+	string str;
+	getopt(args,
+		std.getopt.config.required,
+		"color|c",&str);
+	switch(str){
 		case "Red":color=Color.Red;break;
 		case "Blue":color=Color.Blue;break;
-		default:writeln("invalid input");goto startInput;
+		default :writeln("Invalid color input");
+			 str.writeln;
+			 assert(false);
 	}
+
 	connect(color);
 }
