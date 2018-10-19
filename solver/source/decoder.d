@@ -14,7 +14,7 @@ auto decode(JSONValue json){
 	foreach(y;0..h+2){
 		foreach(x;0..w+2){
 			if (y==0||x==0||y==h+1||x==w+1){
-				board.cells~=Cell(0,false,Color.Out,0);
+				board.cells~=Cell(0,-1,Color.Out,0);
 				continue;
 			}
 			else {
@@ -27,7 +27,7 @@ auto decode(JSONValue json){
 					case "Neut":color=Color.Neut;break;
 					default :assert(false);
 				}
-				board.cells~=Cell(to!int(tmp["score"].integer),tmp["agent"].type==JSON_TYPE.TRUE,color);
+				board.cells~=Cell(to!int(tmp["score"].integer),to!int(tmp["agent"].integer),color);
 			}
 		}
 	}

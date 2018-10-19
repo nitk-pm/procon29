@@ -15,7 +15,7 @@ unittest {
 
 struct Cell {//マスの得点、エージェントの有無、色
 	int score;
-	bool agent;
+	int agent;
 	Color color;
 	int priority;
 }
