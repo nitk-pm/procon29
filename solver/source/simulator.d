@@ -86,7 +86,6 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ター
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
 	auto directionCnt=0;
-	auto prevBoard=board.cells;
 	foreach(i;0..4){
 		int direction;
 		if(color==agents[i].color)
@@ -139,6 +138,38 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ター
 auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]myMove){//1ターン進める、進めたあとの盤面とチームごとにOperation2つを返す。
 	//1.パネル除去なのか進むのか判定
 	//2.衝突などを検知
+	Tuple!(bool,"isValid",Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp"),"payload") result;
+	result.isValid=false;
+	int width=origBoard.width;
+	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
+	Type[4] typeList;
+	Pos[4] prevPosList, nextPosList;
+	Agent[4] agents=searchAgentInitialPos(origBoard);//最終的なエージェントの動作
+	int[4] destinationList;//エージェントの動きを保持して無効な動きを検知する用
+	auto prevAgents=agents;
+	int myDirecitionCnt=0;
+	int enemyDirecitionCnt=0;
+	foreach(i;0..4){
+		prevPosList[i]=Pos(agents[i].pos%width,agents[i].pos/width);
+		typeList[i]=Type.Move;
+		int direction;
+		if (color==agents[i].color)
+			direction=decideDirection(myMove[myDirecitionCnt++],width);
+		else 
+			direction=decideDirection(enemyMove[enemyDirecitionCnt++],width);//敵は貪欲
+		int destination=agents[i].pos+direction;//進んだ先の座標
+		if (board.cells[destination].color==Color.Out){
+			return result;
+		}
+		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
+			typeList[i]=Type.Clear;
+		}
+		destinationList[i]=destination;
+		nextPosList[i]=Pos(destination%board.width,destination/board.width);
+		assert(heldAgents[i].pos!=0);
+	}
+	//FIXME　ここの上下の処理は関数を分けるべき
+	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
 	Board board;
 	{
 	auto tmpCells=origBoard.cells.dup;
@@ -146,54 +177,26 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 	board.cells=tmpCells;
 	board.width=tmpWidth;
 	}
-	Tuple!(Operation[2],"redOp",Operation[2],"blueOp") operations;
-	Type[4] typeList;
-	Pos[4] prevPosList, nextPosList;
-	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
-	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
-	auto prevAgents=agents;
-	auto prevBoard=board.cells;
-	int myDirecitionCnt=0;
-	int enemyDirecitionCnt=0;
-	foreach(i;0..4){
-		prevPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
-		assert(heldAgents[i].pos!=0);
-		typeList[i]=Type.Move;
-		int direction;
-		if (color==agents[i].color)
-			direction=decideDirection(myMove[myDirecitionCnt++],board.width);
-		else 
-			direction=decideDirection(enemyMove[enemyDirecitionCnt++],board.width);//敵は貪欲
-		int destination=agents[i].pos+direction;//進んだ先の座標
-		if (board.cells[destination].color==Color.Out){
-			nextPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
-			continue;
-		}
-		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
-			board.cells[destination].color=Color.Neut;//自陣でもNeutでもない領域に進もうとしているのでタイル除去とする
-			typeList[i]=Type.Clear;
-		}
-		else{
-			heldAgents[i].pos=destination;
-		}
-		nextPosList[i]=Pos(destination%board.width,destination/board.width);
-		assert(heldAgents[i].pos!=0);
-	}
-	//FIXME　ここの上下の処理は関数を分けるべき
-	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
-	bool[4] isInvalidMove=false;
+/*
+   同じ場所に移動(除去)しようとしているなら無効->無効な手で移動できなかったエージェントの場所に移動しようとするのも無効
+   isInvalidMove==trueとなるとき，少なくとも二人は同じ座標に動こうとしている
+   ->残っているのは二人なので，二回ループすれば無効手の影響で動けなかったエージェントをすべて検出できる．
+*/
+bool[4] isInvalidMove=false;
 	foreach(i; 0..4){
 		foreach(j;0..4){
 			if (i==j)
 				continue;
-			isInvalidMove[i]|=heldAgents[i].pos==heldAgents[j].pos;//同じ場所に移動しようとしているなら無効
+			isInvalidMove[i]|=destinationList[i]==destinationList[j];//同じ場所に移動しようとしているなら無効
 		}
 	}
-	foreach(i;0..4){
-		foreach(j;0..4){
-			if(i==j||!isInvalidMove[j])//進む方向に移動し損ねたエージェントがいても無効
-				continue;
-			isInvalidMove[i]|=heldAgents[i].pos==agents[j].pos;
+	foreach(k;0..2){
+		foreach(i;0..4){
+			foreach(j;0..4){
+				if(i==j||(!isInvalidMove[j]&&typeList[i]==Type.Move))//進む方向に移動し損ねたエージェントがいても無効
+					continue;
+				isInvalidMove[i]|=destinationList[i].pos==agents[j].pos;
+			}
 		}
 	}
 	foreach(i;0..4){
@@ -202,15 +205,19 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 			nextPosList[i]=Pos(agents[i].pos%board.width,agents[i].pos/board.width);
 			continue;
 		}
-		swap(board.cells[agents[i].pos].agent,board.cells[prevAgents[i].pos].agent);//エージェントの移動処理
-		agents[i].pos=heldAgents[i].pos;
-		board.cells[agents[i].pos].color=agents[i].color;
+		if(typeList[i]==Type.Move){
+			swap(board.cells[destinationList[i]].agent,board.cells[prevAgents[i].pos].agent);//エージェントの移動処理
+			board.cells[destinationList[i]].color=agents[i].color;
+		}
+		if (typeList[i]==Type.Clear){
+			board.cells[destinationList[i]].color=Color.Neut;
+		}
 	}
 	int redOpCnt=0;//GCを回さないためにちゃんと数えないとだめ。
 	int blueOpCnt=0;
 
 	foreach(i;0..4){
-		board.cells[agents[i].pos].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
+		board.cells[destinationList[i]].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
 			if (agents[i].color==Color.Red){
 				operations.redOp[redOpCnt].from=prevPosList[i];
 				operations.redOp[redOpCnt].to=nextPosList[i];
@@ -224,5 +231,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 				++blueOpCnt;
 			}
 	}
-	return Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
+	result.isValid=true;
+	result.payload=Tuple!(Board ,"board", Operation[2],"redOp",Operation[2],"blueOp")(board,operations.redOp,operations.blueOp);
+	return result
 }
