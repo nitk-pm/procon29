@@ -5,6 +5,7 @@ import std.stdio;
 import std.math;
 import std.random;
 import std.typecons;
+import std.algorithm.mutation:swap;
 import std.json: parseJSON;
 import procon.container;
 import procon.calc;
@@ -23,14 +24,6 @@ unittest {
 	// これはあまり意味ない気がする
 	assert(rnd() < 9);
 	assert(rnd() >= 0);
-}
-
-@safe @nogc
-void swap(T)(ref T a,ref T b){
-	T tmp;
-	tmp=a;
-	a=b;
-	b=tmp;
 }
 
 @safe @nogc
@@ -92,7 +85,6 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] myMove){//1ター
 	//2.衝突などを検知
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
-	auto prevAgents=agents;//戻すとき用
 	auto directionCnt=0;
 	auto prevBoard=board.cells;
 	foreach(i;0..4){
@@ -159,7 +151,7 @@ auto proceedGame(in Color color,in Board origBoard,in int[2] enemyMove,in int[2]
 	Pos[4] prevPosList, nextPosList;
 	Agent[4] agents=searchAgentInitialPos(board);//最終的なエージェントの動作
 	auto heldAgents=agents;//エージェントの動きを保持して無効な動きを検知する用
-	auto prevAgents=agents;//戻すとき用
+	auto prevAgents=agents;
 	auto prevBoard=board.cells;
 	int myDirecitionCnt=0;
 	int enemyDirecitionCnt=0;
