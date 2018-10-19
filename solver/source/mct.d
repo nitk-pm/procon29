@@ -195,7 +195,7 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	root.board=board;
 	root.enemyMove=greedySearch(mct.enemyColor,root.board);
 	mct.nodes~=root;
-	while(mct.nodes.length<searchLimit){
+	foreach(i;0..searchLimit){
 		mct.visitNode();
 	}
 	auto bestOp=mct.bestOp();
