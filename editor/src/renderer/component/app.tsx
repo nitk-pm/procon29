@@ -48,7 +48,7 @@ export default withStyles(styles)<AppProps>(
 							label='width'
 							onChange={
 								(e: any) =>
-									props.actions.changeWidth(e.target.value)
+									props.actions.changeSize({w: e.target.value, h: props.height})
 							}
 						/>
 						<TextField
@@ -58,7 +58,7 @@ export default withStyles(styles)<AppProps>(
 							label='height'
 							onChange={
 								(e: any) =>
-									props.actions.changeHeight(e.target.value)
+									props.actions.changeSize({w: props.width, h: e.target.value})
 							}
 						/>
 					</div>
