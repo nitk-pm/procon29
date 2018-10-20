@@ -108,9 +108,7 @@ struct MCT{
 	void expandNode(in int expandNodeIdx,in int[2] myMove){
 		MCTNode parent=nodes[expandNodeIdx];
 		MCTNode child;
-		child.board.cells=parent.board.cells.dup;
-		child.board.width=parent.board.width;
-		auto tmp=proceedGame(this.color,child.board,parent.enemyMove,myMove);
+		auto tmp=proceedGame(this.color,parent.board,parent.enemyMove,myMove);
 		if (!tmp.isValid)
 			return;
 		auto trialResult=tmp.payload;
