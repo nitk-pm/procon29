@@ -32,31 +32,37 @@ export default withStyles(styles)<AppProps>(
 				<AppBar />
 				<Drawer/>
 				<ColorPicker />
-				<Board />
-				<input
-					accept='application/json, .json'
-					id='file-input'
-					style={{display: 'none'}}
-					onChange={(e) => props.actions.openFile(e)}
-					type='file' />
- 				<TextField
-					value={props.width}
-					type='number'
-					placeholder='width'
-					onChange={
-						(e: any) =>
-							props.actions.changeWidth(e.target.value)
-					}
-				/>
-				<TextField
-					value={props.height}
-					type='number'
-					placeholder='height'
-					onChange={
-						(e: any) =>
-							props.actions.changeHeight(e.target.value)
-					}
-				/>
+				<div className='content'>
+					<Board/>
+					<input
+						accept='application/json, .json'
+						id='file-input'
+						style={{display: 'none'}}
+						onChange={(e) => props.actions.openFile(e)}
+						type='file' />
+					<div className='controll'>
+						<TextField
+							value={props.width}
+							type='number'
+							placeholder='width'
+							label='width'
+							onChange={
+								(e: any) =>
+									props.actions.changeWidth(e.target.value)
+							}
+						/>
+						<TextField
+							value={props.height}
+							type='number'
+							placeholder='height'
+							label='height'
+							onChange={
+								(e: any) =>
+									props.actions.changeHeight(e.target.value)
+							}
+						/>
+					</div>
+				</div>
 			</div>
 		);
 	}
