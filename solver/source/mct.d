@@ -136,27 +136,9 @@ struct MCT{
 		else
 		child.scoreIncrease=(childCalc.Blue-childCalc.Red)-(parentCalc.Blue-parentCalc.Red);
 		}
-		if(!isStaying(color,child.operations)){
-			++this.size;
-			nodes~=child;
-			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
-		}
-	}
-	bool isStaying(Color color,Tuple!(Operation[2],"redOp",Operation[2],"blueOp")op){
-		Operation[2] myOpPair;
-		switch(color){
-			case Color.Red:myOpPair=op.redOp;break;
-			case Color.Blue:myOpPair=op.blueOp;break;
-			default :assert(false);
-		}
-		foreach(currentOp;myOpPair)
-				if (
-					currentOp.type==Type.Move&&
-					currentOp.from.x==currentOp.to.x &&
-					currentOp.from.y==currentOp.to.y
-					)
-						return true;
-		return false;
+		++this.size;
+		nodes~=child;
+		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
 	
 	Board playout(Board origBoard,int depth){
