@@ -39,23 +39,28 @@ struct MCT{
 	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
-	float C=1; // UCB1の定数、後々小さくするかも
-	float C2=0.2;//evalの増値をUCB1に組み込むための定数
-	float C3=0.5;//スコアの増値
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	int searchDepth;
 	MCTNode[] nodes;
+	
+	//係数たち
+	float C1=2.0;//勝率の重み
+	float C2=5.0;//探索回数の少なさの重み
+	float C3=2.0;//evalの増値の重み
+	float C4=2.0;//スコアの増値の重み
+
 	private void calculateUCB1(){
-		foreach(i;0..nodes.length){
+		foreach(i;1..nodes.length){
 			if (nodes[i].visits==0){
 				nodes[i].UCB1Score=INF;
 			}
 			else {
-				nodes[i].UCB1Score=nodes[i].wins/nodes[i].visits
-							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
-							+C2*nodes[i].evalution
-							+C3*nodes[i].scoreIncrease;
+				nodes[i].UCB1Score=
+							+C1*nodes[i].wins/nodes[i].visits
+							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
+							+C3*nodes[i].evalution
+							+C4*nodes[i].scoreIncrease;
 			}
 		}
 	}
