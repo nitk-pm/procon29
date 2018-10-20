@@ -111,8 +111,11 @@ struct MCT{
 		child.board.cells=parent.board.cells.dup;
 		child.board.width=parent.board.width;
 		auto tmp=proceedGame(this.color,child.board,parent.enemyMove,myMove);
-		child.operations=tuple(tmp.redOp,tmp.blueOp);
-		child.board=tmp.board;
+		if (!tmp.isValid)
+			return;
+		auto trialResult=tmp.payload;
+		child.operations=tuple(trialResult.redOp,trialResult.blueOp);
+		child.board=trialResult.board;
 		child.ownIdx=size+1;
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
@@ -158,8 +161,9 @@ struct MCT{
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
 		foreach(i;0..searchDepth-depth){
-			int[2] directions=[0:rnd(),1:rnd()];
-			proceededBoard=proceedGameWithoutOp(color,proceededBoard,directions);
+			int[2] myDirections=[0:rnd(),1:rnd()];
+			int[2] enemyDirections=[0:rnd(),1:rnd()];
+			proceededBoard=proceedGameWithoutOp(color,proceededBoard,enemyDirections,myDirections);
 		}
 		return proceededBoard;
 	}

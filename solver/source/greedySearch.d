@@ -19,7 +19,8 @@ int[2] greedySearch(in Color color,in Board board){
 			cpBoard.cells=board.cells.dup;
 			cpBoard.width=board.width;
 			int[2] directions=[0:direction1,1:direction2];
-			auto tmp=proceedGameWithoutOp(color,cpBoard,directions);
+			int[2] noMoves=[0:8,1:8];//動かない
+			auto tmp=proceedGameWithoutOp(color,cpBoard,noMoves,directions);
 			node.evalPoint=evalute(color,tmp);
 			node.directions=directions;
 			candidateList~=node;
