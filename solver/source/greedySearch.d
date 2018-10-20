@@ -1,5 +1,6 @@
 module procon.greedySearch;
 
+import std.algorithm : min;
 import std.json;
 import std.conv;
 import std.typecons;
@@ -36,8 +37,40 @@ pure nothrow int[2] bestDirections(in Node[] list){
 	}
 	return list[bestEvalIdx].directions;
 }
+@safe 
+pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operation[2] operations){
+	Board board;
+	board.cells=origBoard.cells.dup;
+	board.width=origBoard.width;
+	auto agents=searchAgentInitialPos(board);
+	foreach(op;operations){
+		int idx=idx(op.to.x,op.to.y,board.width-2);
+		if (board.cells[idx].color==enemyColor)
+			board.cells[idx].color=Color.Neut;
+		else {
+			board.cells[idx].color=myColor;
+			board.cells[idx].agent=true;
+		}
+	}
+	int agentDistance=calcAgentsDistance(agents,board.width);
+	int redEval=0;
+	int blueEval=0;
+	foreach(i;0..board.cells.length){
+		if(board.cells[i].color==Color.Red)
+			redEval+=board.cells[i].priority;
+		else if (board.cells[i].color==Color.Blue)
+			blueEval+=board.cells[i].priority;
+	}
+	if (myColor==Color.Red)
+		return redEval-blueEval+agentDistance;
+	else
+		return blueEval-redEval+agentDistance;
+}
+
 @safe @nogc
-pure nothrow auto evalute(Color color,Board board){
+pure nothrow int evalute(Color color,Board board){
+	auto agents=searchAgentInitialPos(board);
+	int agentDistance=calcAgentsDistance(agents,board.width);
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
@@ -47,7 +80,33 @@ pure nothrow auto evalute(Color color,Board board){
 			blueEval+=board.cells[i].priority;
 	}
 	if (color==Color.Red)
-		return redEval-blueEval;
+		return redEval-blueEval+agentDistance;
 	else
-		return blueEval-redEval;
+		return blueEval-redEval+agentDistance;
+}
+@safe @nogc
+pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
+	int distanceSum=0;
+	int redCnt=0,blueCnt=0;
+	Pos[2] redPos,bluePos;
+	foreach(agent;agents){
+		if (agent.color==Color.Red){
+			redPos[redCnt].x=agent.pos%width;
+			redPos[redCnt++].y=agent.pos/width;
+		}
+		else{
+			bluePos[blueCnt].x=agent.pos%width;
+			bluePos[blueCnt++].y=agent.pos/width;
+		}
+	}
+	assert(redCnt==blueCnt&&redCnt==2);
+	foreach(i;0..2){
+		int minDist=100;
+		foreach(j;0..2){
+			minDist=min(minDist,min(redPos[i].x-bluePos[j].x,redPos[i].y-bluePos[j].y));//赤Aから青Aへ最短何ターンで到達できるか
+		}
+		distanceSum+=minDist;
+	}
+	return distanceSum;
+
 }
