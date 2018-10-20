@@ -17,4 +17,4 @@ items:
         type: "string"
         pattern: "Red|Blue|Neut"
       agent:
-        type: "boolean"
+        type: "integer"
