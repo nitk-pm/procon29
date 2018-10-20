@@ -51,7 +51,6 @@ pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operatio
 			board.cells[idx].color=Color.Neut;
 		else {
 			board.cells[idx].color=myColor;
-			board.cells[idx].agent=true;
 		}
 	}
 	int agentDistance=calcAgentsDistance(agents,board.width);

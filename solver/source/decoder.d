@@ -14,7 +14,7 @@ auto decode(JSONValue json){
 	foreach(y;0..h+2){
 		foreach(x;0..w+2){
 			if (y==0||x==0||y==h+1||x==w+1){
-				board.cells~=Cell(0,-1,Color.Out,0);
+				board.cells~=Cell(-20,-1,Color.Out,0);
 				continue;
 			}
 			else {

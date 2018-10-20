@@ -188,7 +188,8 @@ struct MCT{
 JSONValue MCTSearch(Color color,int turn,Board board){
 	MCT mct;
 	mct.color=color;
-	mct.enemyColor=color==Color.Red ? Color.Red:Color.Blue;
+	mct.enemyColor=color==Color.Red ? Color.Blue:Color.Red;
+	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
 	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
