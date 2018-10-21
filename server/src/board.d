@@ -21,7 +21,7 @@ unittest {
 	assert(Pos(1, 2) == Pos(1, 2));
 }
 
-enum OpType { Move, Clear }
+enum OpType { Move, Clear, Stop }
 
 struct Operation {
 	OpType type;
@@ -85,10 +85,8 @@ Operation[] operationsOfJson(JSONValue json, in Color color) {
 			type = OpType.Clear;
 		to.x = op["to"]["x"].integer.to!int;
 		to.y = op["to"]["y"].integer.to!int;
-		if (type == OpType.Move) {
-			from.x = op["from"]["x"].integer.to!int;
-			from.y = op["from"]["y"].integer.to!int;
-		}
+		from.x = op["from"]["x"].integer.to!int;
+		from.y = op["from"]["y"].integer.to!int;
 		ops ~= Operation(type, color, from, to);
 	}
 	return ops;
