@@ -216,6 +216,7 @@ bool[4] isInvalidMove=false;
 		}
 		if(typeList[i]==Type.Move){
 			swap(board.cells[destinationList[i]].agent,board.cells[prevAgents[i].pos].agent);//エージェントの移動処理
+			agents[i].pos=destinationList[i];
 			board.cells[destinationList[i]].color=agents[i].color;
 		}
 		if (typeList[i]==Type.Clear){
@@ -226,7 +227,7 @@ bool[4] isInvalidMove=false;
 	int blueOpCnt=0;
 
 	foreach(i;0..4){
-		board.cells[destinationList[i]].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
+		board.cells[agents[i].pos].color=agents[i].color;//お互いの立ってるパネルを除去しようとしたとき、後で処理された方は成功してしまうのでその対策
 			if (agents[i].color==Color.Red){
 				operations.redOp[redOpCnt].from=prevPosList[i];
 				operations.redOp[redOpCnt].to=nextPosList[i];

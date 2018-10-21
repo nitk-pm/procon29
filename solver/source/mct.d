@@ -45,10 +45,10 @@ struct MCT{
 	MCTNode[] nodes;
 	
 	//係数たち
-	float C1=2.0;//勝率の重み
-	float C2=5.0;//探索回数の少なさの重み
-	float C3=2.0;//evalの増値の重み
-	float C4=2.0;//スコアの増値の重み
+	float C1=1.0;//勝率の重み
+	float C2=1.0;//探索回数の少なさの重み
+	float C3=0.0;//evalの増値の重み
+	float C4=0.0;//スコアの増値の重み
 
 	private void calculateUCB1(){
 		foreach(i;1..nodes.length){
