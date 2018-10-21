@@ -16,7 +16,17 @@ import procon.encoder;
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
-immutable int searchLimit=10000;
+
+pure int pow(int a,int n){//a^n
+	return n>1?a*(pow(a,n-1)):a;
+}
+unittest{
+assert(pow(1,3)==1);
+assert(pow(2,3)==8);
+assert(pow(3,2)==9);
+assert(pow(-2,3)==-8);
+}
+immutable int searchLimit=5000;
 immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
@@ -45,10 +55,10 @@ struct MCT{
 	MCTNode[] nodes;
 	
 	//係数たち
-	float C1=1.0;//勝率の重み
-	float C2=1.0;//探索回数の少なさの重み
-	float C3=0.0;//evalの増値の重み
-	float C4=0.0;//スコアの増値の重み
+	float C1=10.0;//勝率の重み
+	float C2=2.0;//探索回数の少なさの重み
+	float C3=2.0;//evalの増値の重み
+	float C4=2.0;//スコアの増値の重み
 
 	private void calculateUCB1(){
 		foreach(i;1..nodes.length){
@@ -60,7 +70,7 @@ struct MCT{
 							+C1*nodes[i].wins/nodes[i].visits
 							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
 							+C3*nodes[i].evalution
-							+C4*nodes[i].scoreIncrease;
+							+C4*pow(nodes[i].scoreIncrease,3);
 			}
 		}
 	}
@@ -185,7 +195,7 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	root.board=board;
 	root.enemyMove=greedySearch(mct.enemyColor,root.board);
 	mct.nodes~=root;
-	while(mct.nodes.length<searchLimit){
+	foreach(i;0..searchLimit){
 		mct.visitNode();
 	}
 	auto bestOp=mct.bestOp();
