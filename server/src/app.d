@@ -5,6 +5,8 @@ import std.file;
 import std.json;
 import std.conv;
 import std.format;
+import std.algorithm.iteration;
+import std.range;
 import std.conv;
 import std.datetime.stopwatch: StopWatch;
 import std.getopt;
@@ -15,6 +17,7 @@ import vibe.d;
 import procon29.server.board;
 
 Board board;
+Board[] hist;
 // operation購読者のsocketのリスト
 WebSocket[] opSubscribers;
 // 接続してるSokcet
@@ -76,77 +79,177 @@ string genReplyMsg(string type, JSONValue json) {
 	return res.toString;
 }
 
-Board updateBoard(Board board, Operation[] blueOp, Operation[] redOp) {
-	auto ops = blueOp ~ redOp;
-	// 0..fixedPart: 無効
-	// fixedPart..$: 有効
-	size_t fixedPart = 0;
-	// 行き先が衝突して無ければ候補に加える	
-	foreach (i, op1; ops) {
-		bool enable = true;
-		foreach (op2; ops) {
-			if (op1 == op2) continue;
-			if (!(op1.type == OpType.Move || op2.type == OpType.Move)) continue;
-			if (op1.to == op2.to) {
-				enable = false;
-				break;
-			}
-		}
-		if (!enable) {
-			auto tmp = ops[fixedPart];
-			ops[fixedPart] = ops[i];
-			ops[i] = tmp;
-			++fixedPart;
-		}
-	}
-	bool changed = true;
-	while(changed) {
-		changed = false;
-		for (size_t i=fixedPart; i < ops.length; ++i) {
-			immutable to = ops[i].to;
-			immutable dest = board[to.y][to.x];
-			auto disable = false;
-			if (dest.agent) {
-				bool willEvacuate = false;
-				// エージェントが退去予定ならフラグを立てる
-				for (size_t j=fixedPart; j < ops.length; ++j) {
-					willEvacuate |= ops[j].type == OpType.Move && ops[j].from == to;
-				}
-				disable = !willEvacuate;
-			}
-			if (disable) {
-				auto tmp = ops[fixedPart];
-				ops[fixedPart] = ops[i];
-				ops[i] = tmp;
-				++fixedPart;
-				changed = true;
-			}
-		}
-	}
-	// 無効な操作を全て削除
-	ops = ops[fixedPart..$];
+enum OpState {
+	Enable,
+	Disable,
+	Unknown
+}
 
-	for (int y; y < board.length; ++y) {
-		for (int x; x < board[y].length; ++x) {
-			foreach (op; ops) {
-				if (op.from == Pos(x, y))
-					board[y][x].agent = false;
+struct OpConainer {
+	Operation op;
+	OpState state;
+	int agent;
+}
+
+OpConainer[] conflictCheck(OpConainer[] ops) {
+	// conflict check
+	foreach (ref op1; ops) {
+		foreach (ref op2; ops) {
+			if (op1 == op2) continue;
+			if (op1.op.to == op2.op.to) {
+				op1.state = OpState.Disable;
+				op2.state = OpState.Disable;
+				continue;
 			}
+		}
+	}
+	return ops;
+}
+unittest {
+	auto ops = [
+		OpConainer(Operation(OpType.Move,  Color.Neut, Pos(0,0), Pos(1,1)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Clear, Color.Neut, Pos(2,2), Pos(1,1)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move,  Color.Neut, Pos(1,0), Pos(1,0)), OpState.Unknown, 0),
+	];
+	auto result = conflictCheck(ops);
+	assert (result[0].state == OpState.Disable);
+	assert (result[1].state == OpState.Disable);
+	assert (result[2].state == OpState.Unknown);
+}
+
+OpConainer[] validCheck(Board board, OpConainer[] ops) {
+	foreach (op; ops) {
+		auto p = op.op.to;
+		if (
+			op.op.type == OpType.Move &&
+			board[p.y][p.x].color != Color.Neut &&
+			board[p.y][p.x].color != op.op.color
+		) {
+			op.state = OpState.Disable;
+		}
+		else if (op.op.to.y >= board.length || op.op.to.x >= board[op.op.to.y].length) {
+			op.state = OpState.Disable;
+		}
+	}
+	return ops;
+}
+
+bool isActive(OpConainer start, OpConainer[] ops, OpConainer fence) {
+	foreach (op; ops) {
+		if (start == op) continue;
+		if (fence == op) return true;
+		if (start.op.to == op.op.from) {
+			if (op.op.type == OpType.Move) {
+				final switch (op.state) {
+				case OpState.Enable:
+					return true;
+				case OpState.Disable:
+					return false;
+				case OpState.Unknown:
+					return isActive(op, ops, fence);
+				}
+			}
+			else {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+unittest {
+	auto ops1 = [
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(0,0), Pos(1,1)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,1), Pos(1,2)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,0), Pos(1,0)), OpState.Disable, 0),
+	];
+	assert (isActive(ops1[0], ops1, ops1[0]));
+	auto ops2 = [
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(0,0), Pos(1,1)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,1), Pos(1,2)), OpState.Disable, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,0), Pos(1,0)), OpState.Disable, 0),
+	];
+	assert (!isActive(ops2[0], ops2, ops2[0]));
+	auto ops3 = [
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(0,0), Pos(1,1)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,1), Pos(1,2)), OpState.Unknown, 0),
+		OpConainer(Operation(OpType.Move, Color.Neut, Pos(1,2), Pos(0,0)), OpState.Unknown, 0),
+	];
+	assert (isActive(ops1[0], ops1, ops1[0]));
+}
+
+OpConainer[] solveRearEnd(Board board, OpConainer[] ops) {
+	foreach(ref rear; ops) {
+		if (rear.state == OpState.Unknown && isActive(rear, ops, rear))
+			rear.state = OpState.Enable;
+		else
+			rear.state = OpState.Disable;
+	}
+	return ops;
+}
+
+Board solve(Board board, Operation[] opOrigins) {
+	writeln("start solve");
+	OpConainer[] ops;
+	foreach (y, line; board) {
+		foreach (x, square; line) {
+			bool existInOps = false;
+			foreach (op; opOrigins) {
+				if (op.from == Pos(x.to!int, y.to!int)) {
+					ops ~= OpConainer(op, OpState.Unknown, square.agent);
+					existInOps = true;
+					break;
+				}
+			}
+			if (!existInOps && square.agent >= 0) {
+				ops ~= OpConainer(
+					Operation(OpType.Stop, square.color, Pos(x.to!int, y.to!int), Pos(x.to!int, y.to!int)),
+					OpState.Disable,
+					square.agent
+				);
+			}
+		}
+	}
+
+	writeln(ops);
+	ops = conflictCheck(ops);
+	ops = validCheck(board, ops);
+	ops = solveRearEnd(board, ops);
+	writeln(ops);
+
+	foreach (ref line; board) {
+		foreach (ref square; line) {
+			square.agent = -1;
 		}
 	}
 
 	foreach (op; ops) {
-		if (op.type == OpType.Move) {
-			board[op.to.y][op.to.x].agent = true;
-			board[op.to.y][op.to.x].color = op.color;
+		if (op.state == OpState.Enable) {
+			final switch (op.op.type) {
+			case OpType.Move:
+				board[op.op.to.y][op.op.to.x].agent = op.agent;
+				board[op.op.to.y][op.op.to.x].color = op.op.color;
+				break;
+			case OpType.Stop:
+				board[op.op.to.y][op.op.to.x].agent = op.agent;
+				board[op.op.to.y][op.op.to.x].color = op.op.color;
+				break;
+			case OpType.Clear:
+				board[op.op.to.y][op.op.to.x].color = Color.Neut;
+				board[op.op.from.y][op.op.from.x].agent = op.agent;
+				break;
+			}
 		}
 		else {
-			board[op.to.y][op.to.x].color = Color.Neut;
+			board[op.op.from.y][op.op.from.x].agent = op.agent;
 		}
 	}
+	writeln("finish solve");
 	return board;
 }
 
+Board deepCopy(Board board) {
+	return board.map!(line => line.map!(square => square).array).array;
+}
 
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
@@ -165,7 +268,9 @@ void handlePush(JSONValue msg) {
 	}
 	if (redOpPushed && blueOpPushed) {
 		++turn_count;
-		board = updateBoard(board, blueOp, redOp);
+		hist ~= board.deepCopy;
+		board = solve(board, blueOp ~ redOp);
+		
 		JSONValue payload;
 		timekeeper.stop;
 		timekeeper.reset;
@@ -178,6 +283,7 @@ void handlePush(JSONValue msg) {
 		foreach(sock; sockets) {
 			sock.send(reply);
 		}
+		writeln("-------------------------------------------------------------");
 
 		redOpPushed = false;
 		blueOpPushed = false;
@@ -187,6 +293,7 @@ void handlePush(JSONValue msg) {
 	else {
 		JSONValue res;
 		auto reply = genReplyMsg("distribute-op", msg["payload"]);
+		writeln("reply: ", reply);
 		foreach (sock; opSubscribers) {
 			sock.send(reply);
 		}
@@ -214,6 +321,21 @@ void handleConn(scope WebSocket sock) {
 			break;
 		case "push":
 			handlePush(msg);
+			break;
+		case "undo":
+			if (hist.length > 0) {
+				writeln("undo");
+				board = hist[$-1];
+				--hist.length;
+				JSONValue payload;
+				payload["board"] = board.jsonOfBoard;
+				payload["turn"] = JSONValue(turn_max);
+				payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+				auto reply = genReplyMsg("distribute-board", payload);
+				foreach(subscriber; sockets) {
+					subscriber.send(reply);
+				}
+			}
 			break;
 		case "req-op":
 			switch (msg["color"].str) {

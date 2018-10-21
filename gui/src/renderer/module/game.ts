@@ -53,7 +53,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
 				Some: p => None,
-				None: () => state.board.arr[y][x].agent && state.board.arr[y][x].color == state.color ? Option({x, y}) : None
+				None: () => state.board.arr[y][x].agent >= 0 && state.board.arr[y][x].color == state.color ? Option({x, y}) : None
 			});
 			let ops = state.highlight.match({
 				Some: from => {

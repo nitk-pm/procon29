@@ -67,6 +67,28 @@ export class ActionDispatcher {
 		};
 		reader.readAsText(path);
 	}
+
+	changeDir(dir: string) {
+		console.log(dir);
+		this.dispatch({
+			type: AppModule.ActionNames.CHANGE_DIR,
+			payload: {
+				dir
+			}
+		});
+	}
+
+	swapSuit() {
+		this.dispatch({
+			type: AppModule.ActionNames.SWAP_SUIT
+		});
+	}
+
+	undo() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.UNDO
+		});
+	}
 }
 
 export default ReactRedux.connect(
@@ -77,7 +99,10 @@ export default ReactRedux.connect(
 		freeze: state.freeze,
 		time: state.time,
 		board: state.board,
-		server: state.server
+		server: state.server,
+		dir: state.dir,
+		colorMap: state.colorMap,
+		rivalOps: state.rivalOps,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

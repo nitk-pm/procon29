@@ -25,6 +25,26 @@ body {
 	flex-direction: column;
 }
 
+.board-root {
+	display: flex;
+}
+
+.board-root-up {
+	flex-direction: column;
+}
+
+.board-root-right {
+	flex-direction: row;
+}
+
+.board-root-down {
+	flex-direction: column-reverse;
+}
+
+.board-root-left {
+	flex-direction: row-reverse;
+}
+
 .info-container {
 	margin: 1vh;
 	float: left;
@@ -33,7 +53,27 @@ body {
 .board-row::after {
 	clear: both; //改行
 	content: "";
-	display: table;
+	display: flex;
+}
+
+.board-row-up {
+	flex-direction: row;
+	height: 7vh;
+}
+
+.board-row-right {
+	flex-direction: column;
+	width: 7vh;
+}
+
+.board-row-down {
+	flex-direction: row-reverse;
+	height: 7vh;
+}
+
+.board-row-left {
+	flex-direction: column-reverse;
+	width: 7vh;
 }
 
 .square {
@@ -85,6 +125,20 @@ body {
 
 .suggested {
 	background: rgba(0,0,0,0.1);
+}
+
+.suggest-container {
+	font-size: 10vw;
+	display: flex;
+	flex-direction: row;
+}
+
+.suggest-heart {
+	color: red;
+}
+
+.suggest-spade {
+	color: black;
 }
 
 .fab {

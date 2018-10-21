@@ -50,20 +50,22 @@ export function placeAgents(tbl, agents, myColor, symmetry) {
   const rivalColor = myColor === 'Red' ? 'Blue' : 'Red';
   const { h, w } = tbl;
   const arr = tbl.arr.map(l => l.map(s => ({ ...s })));
+  let cnt = 0;
   for (let i = 0; i < agents.length; i += 1) {
     const { x, y } = agents[i];
     arr[y][x].color = myColor;
-    arr[y][x].agent = true;
+    arr[y][x].agent = cnt;
     if (symmetry === 'Point') {
       arr[h - y - 1][x].color = rivalColor;
-      arr[h - y - 1][x].agent = true;
+      arr[h - y - 1][x].agent = cnt;
     } else if (symmetry === 'MirrorX') {
       arr[y][w - x - 1].color = rivalColor;
-      arr[y][w - x - 1].agent = true;
+      arr[y][w - x - 1].agent = cnt;
     } else if (symmetry === 'MirrorY') {
       arr[h - y - 1][x].color = rivalColor;
-      arr[h - y - 1][x].agent = true;
+      arr[h - y - 1][x].agent = cnt;
     }
+    cnt += 1;
   }
   return { arr, w, h };
 }
@@ -90,7 +92,7 @@ export function parseQR(code) {
   const arr =
     body.map(line => line.split(' ').map(score => ({
       score: parseInt(score, 10),
-      agent: false,
+      agent: -1,
       color: 'Neut',
     })));
   return {

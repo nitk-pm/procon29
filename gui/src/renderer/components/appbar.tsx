@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -14,14 +14,10 @@ import { ActionDispatcher } from '../container/appbar';
 
 import * as Store from '../store';
 
-export interface WindowAppBarProps{
-	actions: ActionDispatcher;
-	state: Store.UIState;
-}
 
 type ClassNames = keyof typeof styles;
 
-const styles = {
+const styles = (theme: Theme) => createStyles({
 	root: {
 		flexGrow: 1,
 		WebkitAppRegion: 'drag'
@@ -42,55 +38,63 @@ const styles = {
 	closeButton: {
 		WebkitAppRegion: 'no-drag'
 	}
-};
+});
 
-export const WindowAppBar = withStyles(styles)<WindowAppBarProps>(
-	(props: WindowAppBarProps & WithStyles<ClassNames>) => {
-		const classes = props.classes;
-		if (props.state == Store.UIState.Viewer) {
-			return (
-				<div className={classes.root}>
-					<AppBar position='static'>
-						<Toolbar>
-							<IconButton className={classes.backButton}
-								onClick={() => props.actions.back()}>
-								<ArrowBackIcon />
-							</IconButton>
-							<Typography variant='title' color='inherit' className={classes.flex}>
-								囲碁カバディ
-							</Typography>
-							<IconButton
-								color='inherit'
-								className={classes.closeButton}
-								onClick={() => props.actions.close()}>
-								<CloseIcon />
-							</IconButton>
-						</Toolbar>
-					</AppBar>
-				</div>);
-		}
-		else {
-			return (
-				<div className={classes.root}>
-					<AppBar position='static'>
-						<Toolbar>
-							<IconButton className={classes.menuButton}
-								color='inherit'
-								aria-label='Menu'>
-								<MenuIcon />
-							</IconButton>
-							<Typography variant='title' color='inherit' className={classes.flex}>
-								囲碁カバディ
-							</Typography>
-							<IconButton
-								color='inherit'
-								className={classes.closeButton}
-								onClick={() => props.actions.close()}>
-								<CloseIcon />
-							</IconButton>
-						</Toolbar>
-					</AppBar>
-				</div>);
+export interface WindowAppBarProps extends WithStyles<typeof styles>{
+	actions: ActionDispatcher;
+	state: Store.UIState;
+}
+
+export const WindowAppBar = withStyles(styles)(
+	class extends React.Component<WindowAppBarProps> {
+		render() {
+			const classes = this.props.classes;
+			const props = this.props;
+			if (props.state == Store.UIState.Viewer) {
+				return (
+					<div className={classes.root}>
+						<AppBar position='static'>
+							<Toolbar>
+								<IconButton className={classes.backButton}
+									onClick={() => props.actions.back()}>
+									<ArrowBackIcon />
+								</IconButton>
+								<Typography variant='h6' color='inherit' className={classes.flex}>
+									囲碁カバディ
+								</Typography>
+								<IconButton
+									color='inherit'
+									className={classes.closeButton}
+									onClick={() => props.actions.close()}>
+									<CloseIcon />
+								</IconButton>
+							</Toolbar>
+						</AppBar>
+					</div>);
+			}
+			else {
+				return (
+					<div className={classes.root}>
+						<AppBar position='static'>
+							<Toolbar>
+								<IconButton className={classes.menuButton}
+									color='inherit'
+									aria-label='Menu'>
+									<MenuIcon />
+								</IconButton>
+								<Typography variant='h6' color='inherit' className={classes.flex}>
+									囲碁カバディ
+								</Typography>
+								<IconButton
+									color='inherit'
+									className={classes.closeButton}
+									onClick={() => props.actions.close()}>
+									<CloseIcon />
+								</IconButton>
+							</Toolbar>
+						</AppBar>
+					</div>);
+			}
 		}
 	}
 );

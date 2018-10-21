@@ -1,4 +1,3 @@
-
 module procon.mct;
 
 import procon.simulator;
@@ -18,12 +17,15 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
 immutable int searchLimit=10000;
+immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
 	int parentNodeIdx=0;
 	int[] childNodesIdx;
 	int wins=0;
 	int visits=0; //訪問回数
+	int evalution=0;
+	int scoreIncrease=0;
 	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
@@ -33,23 +35,32 @@ struct MCTNode{
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 struct MCT{
-	int gameTurn;//ゲームの残りターン数
-	const int threshold=30;//展開するかどうかの訪問回数のしきい値
+	const int threshold=15;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
-	float C=0.5; // UCB1の定数、後々小さくするかも
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
+	int searchDepth;
 	MCTNode[] nodes;
+	
+	//係数たち
+	float C1=1.0;//勝率の重み
+	float C2=1.0;//探索回数の少なさの重み
+	float C3=0.0;//evalの増値の重み
+	float C4=0.0;//スコアの増値の重み
+
 	private void calculateUCB1(){
-		foreach(i;0..nodes.length){
+		foreach(i;1..nodes.length){
 			if (nodes[i].visits==0){
 				nodes[i].UCB1Score=INF;
 			}
 			else {
-				nodes[i].UCB1Score=nodes[i].wins/nodes[i].visits
-							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits);
+				nodes[i].UCB1Score=
+							+C1*nodes[i].wins/nodes[i].visits
+							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
+							+C3*nodes[i].evalution
+							+C4*nodes[i].scoreIncrease;
 			}
 		}
 	}
@@ -63,7 +74,8 @@ struct MCT{
 				visitedNodeIdx=currentNode.ownIdx;
 			}
 		}
-		Board resultBoard=this.playout(nodes[visitedNodeIdx].board,gameTurn-nodes[visitedNodeIdx].depth);
+		nodes[visitedNodeIdx].UCB1Score-=EPS;
+		Board resultBoard=this.playout(nodes[visitedNodeIdx].board,nodes[visitedNodeIdx].depth);
 		auto resultPair=scoreCalculation(resultBoard);
 		int result;
 		switch(this.color){
@@ -75,12 +87,17 @@ struct MCT{
 		this.backPropagate(visitedNodeIdx,isWon);
 		if (nodes[visitedNodeIdx].visits>=threshold){
 			if (nodes[visitedNodeIdx].depth==0){
-			foreach(i;0..51)
-				this.expandNode(visitedNodeIdx);
+			foreach(i;0..8)
+				foreach(j;0..8){
+					int[2] myMove=[0:i,1:j];
+					this.expandNode(visitedNodeIdx,myMove);
+				}
 			}
-			else{
-			foreach(i;0..expandWidth)
-				this.expandNode(visitedNodeIdx);
+			else if (nodes[visitedNodeIdx].depth<=searchDepth){
+				foreach(i;0..expandWidth){
+					int[2] myMove=[0:rnd(),1:rnd()];
+					this.expandNode(visitedNodeIdx,myMove);
+				}
 			}
 		}
 	}
@@ -93,36 +110,53 @@ struct MCT{
 		else
 			this.backPropagate(nodes[idx].parentNodeIdx,isWon);
 	}
-	void expandNode(int expandNodeIdx){
+	void expandNode(in int expandNodeIdx,in int[2] myMove){
 		MCTNode parent=nodes[expandNodeIdx];
 		MCTNode child;
-		parent.board.cells=parent.board.cells.dup;
-		++this.size;
-		auto tmp=proceedGame(this.color,parent.board,parent.enemyMove);
-		child.operations=tuple(tmp.redOp,tmp.blueOp);
-		child.board=tmp.board;
-		child.ownIdx=size;
+		auto tmp=proceedGame(this.color,parent.board,parent.enemyMove,myMove);
+		if (!tmp.isValid)
+			return;
+		auto trialResult=tmp.payload;
+		child.operations=tuple(trialResult.redOp,trialResult.blueOp);
+		child.board=trialResult.board;
+		child.ownIdx=size+1;
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
 		child.enemyMove=greedySearch(this.enemyColor,child.board);
+		{
+		Operation[2] tmpOp;
+		tmpOp=color==Color.Red?child.operations.redOp:child.operations.blueOp;
+		child.evalution=evalute(color,enemyColor,parent.board,tmpOp)-parent.evalution;
+		}
+		{
+		auto parentCalc=scoreCalculation(parent.board);
+		auto childCalc=scoreCalculation(child.board);
+		if (color==Color.Red)
+		child.scoreIncrease=(childCalc.Red-childCalc.Blue)-(parentCalc.Red-parentCalc.Blue);
+		else
+		child.scoreIncrease=(childCalc.Blue-childCalc.Red)-(parentCalc.Blue-parentCalc.Red);
+		}
+		++this.size;
 		nodes~=child;
 		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
-	Board playout(Board origBoard,int turn){
+	
+	Board playout(Board origBoard,int depth){
 		Board proceededBoard;
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
-		int searchDepth=min(proceededBoard.cells.length/20,turn);//盤面は対称なので10%のさらに半分
-		foreach(i;0..searchDepth){
-			int[2] directions=[0:rnd(),1:rnd()];
-			proceededBoard=proceedGameWithoutOp(color,proceededBoard,directions);
+		foreach(i;0..searchDepth-depth){
+			int[2] myDirections=[0:rnd(),1:rnd()];
+			int[2] enemyDirections=[0:rnd(),1:rnd()];
+			proceededBoard=proceedGameWithoutOp(color,proceededBoard,enemyDirections,myDirections);
 		}
 		return proceededBoard;
 	}
 	Operation[2] bestOp(){
 		int bestVisitsCount=0;
+		nodes.length.writeln();
+		assert(nodes.length>2);
 		auto bestOp=nodes[1].operations;//型を書くのがめんどくさい
-		nodes[0].childNodesIdx.length.writeln();
 		foreach(currentNode;nodes){
 			if (currentNode.depth==1){
 				if (bestVisitsCount < currentNode.visits){
@@ -131,6 +165,7 @@ struct MCT{
 				}
 			}
 		}
+		bestVisitsCount.writeln;
 		if (this.color==Color.Red)
 			return bestOp.redOp;
 		else
@@ -140,13 +175,17 @@ struct MCT{
 JSONValue MCTSearch(Color color,int turn,Board board){
 	MCT mct;
 	mct.color=color;
-	mct.enemyColor= color==Color.Red ? Color.Red:Color.Blue;
-	mct.gameTurn=turn;
+	mct.enemyColor=color==Color.Red ? Color.Blue:Color.Red;
+	assert(mct.color!=mct.enemyColor);
+	assert(board.cells.length>20);
+	assert(turn>=0);
+	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	mct.searchDepth.writeln;
 	MCTNode root;
 	root.board=board;
 	root.enemyMove=greedySearch(mct.enemyColor,root.board);
 	mct.nodes~=root;
-	foreach(i;0..searchLimit){
+	while(mct.nodes.length<searchLimit){
 		mct.visitNode();
 	}
 	auto bestOp=mct.bestOp();
@@ -158,10 +197,12 @@ unittest{
 	auto color=Color.Red;
 	auto turn=10;
 	auto searchLimit=10000;
+	//auto searchDepth=min(board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	auto searchDepth=turn;
 	MCT mct;
 	mct.color=color;
 	mct.enemyColor=color==Color.Red ? Color.Red:Color.Blue;
-	mct.gameTurn=turn;
+	mct.searchDepth=searchDepth;
 	MCTNode rootNode;
 	rootNode.board=board;
 	rootNode.enemyMove=greedySearch(mct.enemyColor,rootNode.board);
