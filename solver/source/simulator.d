@@ -210,8 +210,8 @@ bool[4] isInvalidMove=false;
 	}
 	foreach(i;0..4){
 		if (isInvalidMove[i]){
-			typeList[i]=Type.Move;
-			nextPosList[i]=Pos(agents[i].pos%width,agents[i].pos/width);
+			//typeList[i]=Type.Move;
+			//nextPosList[i]=Pos(agents[i].pos%width,agents[i].pos/width);
 			continue;
 		}
 		if(typeList[i]==Type.Move){
