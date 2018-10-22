@@ -130,17 +130,7 @@ export const Game = withStyles(styles)(
 				);
 			}
 			else {
-				let calcSuitDir = (dir: string, op: Common.Operation) => {
-					return Math.atan2(op.to.y-op.from.y, op.to.x-op.from.y);
-				};
-				let baseAngle = 0.0;
-				switch (this.props.dir) {
-				case 'up': baseAngle = Math.PI*2; break;
-				case 'right': baseAngle = Math.PI / 2; break;
-				case 'down': baseAngle = Math.PI; break;
-				case 'left': baseAngle = Math.PI*3/2; break;
-				}
-				let spadeAngle = baseAngle, heartAngle = baseAngle + Math.PI;
+				let heartAngle, spadeAngle;
 				for (let i = 0; i < this.props.rivalOps.length; ++i) {
 					let op = this.props.rivalOps[i];
 					let id =
@@ -151,10 +141,10 @@ export const Game = withStyles(styles)(
 						.agent;
 					console.log(id);
 					if (this.props.colorMap[id].back == 'red') {
-						heartAngle += calcSuitDir(this.props.dir, op);
+						heartAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI/2;
 					}
 					else {
-						spadeAngle += calcSuitDir(this.props.dir, op);
+						spadeAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI*3/2;
 					}
 				}
 				let genRotate = (dir: number) => ({

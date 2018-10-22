@@ -67,3 +67,34 @@ export function loadOperations(json: Array<any> ): Operation[] {
 		return { from, to, type };
 	});
 }
+
+export function calcBaseDir(dir: string) {
+	let baseAngle = 0.0;
+
+}
+
+export function calcDir(dir: string, origin: {x: number, y: number}, target: {x: number, y: number}) {
+	let baseDir = Math.PI;
+	let dy = target.y - origin.y;
+	let dx = target.x - origin.x;
+	let dx_, dy_;
+	switch (dir) {
+	case 'up':
+		dx_ = dx;
+		dy_ = dy;
+		break;
+	case 'right':
+		dx_ = dy;
+		dy_ = dx;
+		break;
+	case 'down':
+		dx_ = dx;
+		dy_ = -dy;
+		break;
+	case 'left':
+		dx_ = -dy;
+		dy_ = dx;
+		break;
+	}
+	return Math.atan2(dy_, dx_) + baseDir;
+}
