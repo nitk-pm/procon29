@@ -31,7 +31,7 @@ pure nothrow int[] calcSquarePriority(in Board board){
 	}
 	int width=board.width;
 	foreach(i;0..board.cells.length){
-		if (board.cells[i].score>=0)
+		if (board.cells[i].score>=0||board.cells[i].color==Color.Out)
 			continue;
 		else{
 			auto tmp=board.cells[i].score*board.cells[i].score;

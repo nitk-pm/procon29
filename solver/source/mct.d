@@ -16,7 +16,17 @@ import procon.encoder;
 	訪問：あるノードに対しプレイアウトを行う(ランダムに終局までシミュレートする) こと
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
-immutable int searchLimit=10000;
+
+pure int pow(int a,int n){//a^n
+	return n>1?a*(pow(a,n-1)):a;
+}
+unittest{
+assert(pow(1,3)==1);
+assert(pow(2,3)==8);
+assert(pow(3,2)==9);
+assert(pow(-2,3)==-8);
+}
+immutable int searchLimit=5000;
 immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
@@ -39,23 +49,28 @@ struct MCT{
 	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
-	float C=1; // UCB1の定数、後々小さくするかも
-	float C2=0.2;//evalの増値をUCB1に組み込むための定数
-	float C3=0.5;//スコアの増値
 	private int size=0;//最初にrootNodeをぶちこむので
 	int totalVisitsCount=0;
 	int searchDepth;
 	MCTNode[] nodes;
+	
+	//係数たち
+	float C1=10.0;//勝率の重み
+	float C2=2.0;//探索回数の少なさの重み
+	float C3=2.0;//evalの増値の重み
+	float C4=2.0;//スコアの増値の重み
+
 	private void calculateUCB1(){
-		foreach(i;0..nodes.length){
+		foreach(i;1..nodes.length){
 			if (nodes[i].visits==0){
 				nodes[i].UCB1Score=INF;
 			}
 			else {
-				nodes[i].UCB1Score=nodes[i].wins/nodes[i].visits
-							+C*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
-							+C2*nodes[i].evalution
-							+C3*nodes[i].scoreIncrease;
+				nodes[i].UCB1Score=
+							+C1*nodes[i].wins/nodes[i].visits
+							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
+							+C3*nodes[i].evalution
+							+C4*pow(nodes[i].scoreIncrease,3);
 			}
 		}
 	}
@@ -108,11 +123,12 @@ struct MCT{
 	void expandNode(in int expandNodeIdx,in int[2] myMove){
 		MCTNode parent=nodes[expandNodeIdx];
 		MCTNode child;
-		child.board.cells=parent.board.cells.dup;
-		child.board.width=parent.board.width;
-		auto tmp=proceedGame(this.color,child.board,parent.enemyMove,myMove);
-		child.operations=tuple(tmp.redOp,tmp.blueOp);
-		child.board=tmp.board;
+		auto tmp=proceedGame(this.color,parent.board,parent.enemyMove,myMove);
+		if (!tmp.isValid)
+			return;
+		auto trialResult=tmp.payload;
+		child.operations=tuple(trialResult.redOp,trialResult.blueOp);
+		child.board=trialResult.board;
 		child.ownIdx=size+1;
 		child.parentNodeIdx=parent.ownIdx;
 		child.depth=parent.depth+1;
@@ -130,27 +146,9 @@ struct MCT{
 		else
 		child.scoreIncrease=(childCalc.Blue-childCalc.Red)-(parentCalc.Blue-parentCalc.Red);
 		}
-		if(!isStaying(color,child.operations)){
-			++this.size;
-			nodes~=child;
-			nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
-		}
-	}
-	bool isStaying(Color color,Tuple!(Operation[2],"redOp",Operation[2],"blueOp")op){
-		Operation[2] myOpPair;
-		switch(color){
-			case Color.Red:myOpPair=op.redOp;break;
-			case Color.Blue:myOpPair=op.blueOp;break;
-			default :assert(false);
-		}
-		foreach(currentOp;myOpPair)
-				if (
-					currentOp.type==Type.Move&&
-					currentOp.from.x==currentOp.to.x &&
-					currentOp.from.y==currentOp.to.y
-					)
-						return true;
-		return false;
+		++this.size;
+		nodes~=child;
+		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
 	}
 	
 	Board playout(Board origBoard,int depth){
@@ -158,8 +156,9 @@ struct MCT{
 		proceededBoard.cells=origBoard.cells.dup;
 		proceededBoard.width=origBoard.width;
 		foreach(i;0..searchDepth-depth){
-			int[2] directions=[0:rnd(),1:rnd()];
-			proceededBoard=proceedGameWithoutOp(color,proceededBoard,directions);
+			int[2] myDirections=[0:rnd(),1:rnd()];
+			int[2] enemyDirections=[0:rnd(),1:rnd()];
+			proceededBoard=proceedGameWithoutOp(color,proceededBoard,enemyDirections,myDirections);
 		}
 		return proceededBoard;
 	}
@@ -186,7 +185,8 @@ struct MCT{
 JSONValue MCTSearch(Color color,int turn,Board board){
 	MCT mct;
 	mct.color=color;
-	mct.enemyColor=color==Color.Red ? Color.Red:Color.Blue;
+	mct.enemyColor=color==Color.Red ? Color.Blue:Color.Red;
+	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
 	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
