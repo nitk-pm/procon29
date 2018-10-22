@@ -89,11 +89,15 @@ export class Board extends React.Component<BoardProps> {
 				Some: p => p.x == x && p.y == y,
 				None: () => false});
 
+		let baseDir = 0;
+
 		// FIXME 読みにくくないですか
 		let calcIconAndDir = (pos: Common.Pos, ops: Array<Common.Operation>) => {
 			for(var i=0; i < ops.length; ++i) {
 				if (ops[i].from.x == pos.x && ops[i].from.y == pos.y) {
-					let dir = Math.atan2(ops[i].to.y-pos.y, ops[i].to.x-pos.x);
+					//baseDir = Common.calcBaseDir(this.props.dir);
+					//let dir = Math.atan2(ops[i].to.y-pos.y, ops[i].to.x-pos.x);
+					let dir = Common.calcDir(this.props.dir, ops[i].to, ops[i].from);
 					let state = SquareState.Wait;
 					if (ops[i].type == Common.OperationType.Move) {
 						state = SquareState.Move;
