@@ -9,6 +9,9 @@ $neut-highlight:#E0E0E0;
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
 	margin: 0;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
 }
 
 .root {
