@@ -152,7 +152,7 @@ export const Game = withStyles(styles)(
 				});
 				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 				let time = props.time.toFixed(1);
-				let suggest = props.state == Store.UIState.User ? (
+				let suggest = props.state == Store.UIState.User || props.state == Store.UIState.Alone ? (
 					<div className='suggest-container'>
 						<div className='suggest-heart' style={genRotate(heartAngle)}>
 							♥

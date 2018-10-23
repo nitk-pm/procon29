@@ -15,6 +15,7 @@ export type T =
 	| AppModule.ReceiveOpAction
 	| AppModule.ChangeDirAction
 	| AppModule.SwapSuitAction
+	| AppModule.AloneModeAction
 	| GameModule.ClickSquareAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
