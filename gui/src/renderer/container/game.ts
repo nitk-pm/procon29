@@ -89,6 +89,12 @@ export class ActionDispatcher {
 			type: ServerSaga.ActionNames.UNDO
 		});
 	}
+
+	ignoreSolver() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.IGNORE_SOLVER
+		});
+	}
 }
 
 export default ReactRedux.connect(

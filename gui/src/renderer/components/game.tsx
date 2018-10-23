@@ -181,10 +181,6 @@ export const Game = withStyles(styles)(
 								<DoneIcon />
 							</Button>
 						</div>
-						<Button
-							aria-label='undo'
-							onClick={() => props.actions.undo()}
-						>Undo</Button>
 						<Typography variant='h4'>
 							{time}
 						</Typography>
@@ -206,8 +202,10 @@ export const Game = withStyles(styles)(
 								left
 							</label>
 						</div>
-						<div>
-							<Button onClick={() => this.props.actions.swapSuit()}>Swap Suit</Button>
+						<div className='carefull-buttons'>
+							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
+							<Button onClick={() => props.actions.undo()} color='secondary' variant='contained'>Undo</Button>
+							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
 						</div>
 						{suggest}
 					</div>);

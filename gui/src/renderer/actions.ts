@@ -25,4 +25,5 @@ export type T =
 	| ServerSaga.ReceiveMsgAction
 	| ServerSaga.ResetTimeAction
 	| ServerSaga.UndoAction
+	| ServerSaga.IgnoreSolverAction
 	| TimeModule.UpdateTimeAction;

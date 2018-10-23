@@ -15,7 +15,12 @@ export enum ActionNames {
 	FAIL = 'IGOKABADDI_SOCKET_FAIL',
 	PUSH_OP = 'IGOKABADDI_PUSH_OP',
 	RESET_TIME = 'IGOKABADDI_RESET_TIME',
-	UNDO = 'IGOKABADDI_UNDO'
+	UNDO = 'IGOKABADDI_UNDO',
+	IGNORE_SOLVER = 'IGOKABADDI_IGNORE'
+}
+
+export type IgnoreSolverAction = {
+	type: ActionNames.IGNORE_SOLVER;
 }
 
 export type UndoAction = {
@@ -135,10 +140,21 @@ function* pushUndo(socket: WebSocket) {
 	}
 }
 
+function* pushIgnoreSolver(socket: WebSocket) {
+	while(true) {
+		yield Effects.take(ActionNames.IGNORE_SOLVER);
+		const msg = JSON.stringify({
+			type: 'clear-op',
+		});
+		socket.send(msg);
+	}
+}
+
 // Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
 function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
 	yield Effects.fork(pushUndo, socket);
+	yield Effects.fork(pushIgnoreSolver, socket);
 }
 
 function wait(ms: number) {
