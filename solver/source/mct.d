@@ -18,7 +18,7 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
 
-immutable int searchLimit=5000;
+immutable int searchLimit=10000;
 immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
@@ -48,10 +48,10 @@ struct MCT{
 	MCTNode[] nodes;
 	
 	//係数たち
-	double  C1=1000.0;//勝率の重み
-	double C2=300.0;//探索回数の少なさの重み
-	double C3=0.05;//evalの増値の重み
-	double C4=3.0;//スコアの増値の重み
+	double  C1=80.0;//勝率の重み
+	double C2=0.0;//探索回数の少なさの重み
+	double C3=2.0;//evalの増値の重み
+	double C4=80.0;//スコアの増値の重み
 	double C5=4.0;//エージェントの距離
 
 	private void calculateUCB1(){
@@ -66,7 +66,7 @@ struct MCT{
 							+C3*nodes[i].evalution*abs(nodes[i].evalution)
 							+C4*pow(nodes[i].scoreIncrease,3)
 							+C5*nodes[i].agentDistance*abs(nodes[i].agentDistance);
-			}
+								}
 		}
 	}
 	void visitNode(){
@@ -192,7 +192,7 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
-	mct.searchDepth=min(board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	mct.searchDepth=min(2,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
 	mct.searchDepth.writeln;
 	MCTNode root;
 	root.board=board;

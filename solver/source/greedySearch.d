@@ -110,11 +110,11 @@ pure nothrow int calcAgentsDistance(in Color color,in Board board){
 	int tmpDist1=calcMinDist(redPos[0],bluePos[1])+calcMinDist(redPos[1],bluePos[0]);
 	int tmpDist2=calcMinDist(redPos[0],bluePos[0])+calcMinDist(redPos[1],bluePos[1]);
 	int enemyDist=min(tmpDist1,tmpDist2);
-	distanceSum-=pow(enemyDist,3);
-	if (color==Color.Red)
-		distanceSum-=pow(calcMinDist(redPos[0],redPos[1]),2);
-	else 
-		distanceSum-=pow(calcMinDist(bluePos[0],bluePos[1]),2);
+	distanceSum-=enemyDist;
+	//if (color==Color.Red)
+		//distanceSum-=pow(calcMinDist(redPos[0],redPos[1]),2);
+	//else 
+	//	distanceSum-=pow(calcMinDist(bluePos[0],bluePos[1]),2);
 	return distanceSum;
 }
 @safe @nogc
