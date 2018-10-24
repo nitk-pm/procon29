@@ -9,6 +9,9 @@ $neut-highlight:#E0E0E0;
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
 	margin: 0;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
 }
 
 .root {
@@ -135,10 +138,20 @@ body {
 
 .suggest-heart {
 	color: red;
+	margin: 5vw;
 }
 
 .suggest-spade {
 	color: black;
+	margin: 5vw;
+}
+
+.carefull-buttons {
+	margin: 2vw;
+	width: 35vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .fab {

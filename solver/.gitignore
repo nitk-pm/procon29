@@ -2,6 +2,7 @@
 docs.json
 __dummy.html
 docs/
+solver
 solver.so
 solver.dylib
 solver.dll

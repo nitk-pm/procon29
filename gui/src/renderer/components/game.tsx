@@ -43,6 +43,7 @@ export interface GameProps extends WithStyles<typeof styles>{
 	dir: string;
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
+	turn: number;
 }
 
 export const Game = withStyles(styles)(
@@ -130,17 +131,7 @@ export const Game = withStyles(styles)(
 				);
 			}
 			else {
-				let calcSuitDir = (dir: string, op: Common.Operation) => {
-					return Math.atan2(op.to.y-op.from.y, op.to.x-op.from.y);
-				};
-				let baseAngle = 0.0;
-				switch (this.props.dir) {
-				case 'up': baseAngle = Math.PI*2; break;
-				case 'right': baseAngle = Math.PI / 2; break;
-				case 'down': baseAngle = Math.PI; break;
-				case 'left': baseAngle = Math.PI*3/2; break;
-				}
-				let spadeAngle = baseAngle, heartAngle = baseAngle + Math.PI;
+				let heartAngle, spadeAngle;
 				for (let i = 0; i < this.props.rivalOps.length; ++i) {
 					let op = this.props.rivalOps[i];
 					let id =
@@ -151,10 +142,10 @@ export const Game = withStyles(styles)(
 						.agent;
 					console.log(id);
 					if (this.props.colorMap[id].back == 'red') {
-						heartAngle += calcSuitDir(this.props.dir, op);
+						heartAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI/2;
 					}
 					else {
-						spadeAngle += calcSuitDir(this.props.dir, op);
+						spadeAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI*3/2;
 					}
 				}
 				let genRotate = (dir: number) => ({
@@ -162,7 +153,7 @@ export const Game = withStyles(styles)(
 				});
 				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 				let time = props.time.toFixed(1);
-				let suggest = props.state == Store.UIState.User ? (
+				let suggest = props.state == Store.UIState.User || props.state == Store.UIState.Alone ? (
 					<div className='suggest-container'>
 						<div className='suggest-heart' style={genRotate(heartAngle)}>
 							♥
@@ -191,12 +182,11 @@ export const Game = withStyles(styles)(
 								<DoneIcon />
 							</Button>
 						</div>
-						<Button
-							aria-label='undo'
-							onClick={() => props.actions.undo()}
-						>Undo</Button>
 						<Typography variant='h4'>
-							{time}
+							{ 'time: ' + time }
+						</Typography>
+						<Typography variant='h4'>
+							{ 'turn: ' + props.turn }
 						</Typography>
 						<div>
 							<label>
@@ -216,8 +206,10 @@ export const Game = withStyles(styles)(
 								left
 							</label>
 						</div>
-						<div>
-							<Button onClick={() => this.props.actions.swapSuit()}>Swap Suit</Button>
+						<div className='carefull-buttons'>
+							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
+							<Button onClick={() => props.actions.undo()} color='secondary' variant='contained'>Undo</Button>
+							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
 						</div>
 						{suggest}
 					</div>);

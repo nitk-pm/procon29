@@ -15,7 +15,12 @@ export enum ActionNames {
 	FAIL = 'IGOKABADDI_SOCKET_FAIL',
 	PUSH_OP = 'IGOKABADDI_PUSH_OP',
 	RESET_TIME = 'IGOKABADDI_RESET_TIME',
-	UNDO = 'IGOKABADDI_UNDO'
+	UNDO = 'IGOKABADDI_UNDO',
+	IGNORE_SOLVER = 'IGOKABADDI_IGNORE'
+}
+
+export type IgnoreSolverAction = {
+	type: ActionNames.IGNORE_SOLVER;
 }
 
 export type UndoAction = {
@@ -80,6 +85,8 @@ function genListenChannel(socket: WebSocket) {
 				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				const time = msg.payload.time;
 				emit({type: ActionNames.RESET_TIME, payload: {time}});
+				const turn = msg.payload.turn;
+				emit({type: AppModule.ActionNames.UPDATE_TURN, payload: { turn }});
 				// 操作の解凍
 				emit({type: AppModule.ActionNames.THAWING});
 				break;
@@ -109,9 +116,21 @@ function* pushOp(socket: WebSocket) {
 	while (true) {
 		yield Effects.take(ActionNames.PUSH_OP);
 		const color = yield Effects.select(Store.getColor);
+		const rivalColor = color == Common.Color.Red ? Common.Color.Blue : Common.Color.Red;
 		// メッセージを投げる処理
 		yield Effects.fork(function* (socket: WebSocket) {
 			const ops = yield Effects.select(Store.getOps);
+			const state = yield Effects.select(Store.getState);
+
+			if (state == Store.UIState.Alone) {
+				const rivalOps = yield Effects.select(Store.getRivalOps);
+				const rivalMsg = JSON.stringify({
+					type: 'push',
+					color: rivalColor,
+					payload: rivalOps
+				});
+				socket.send(rivalMsg);
+			}
 			// メッセージ作成
 			const msg = JSON.stringify({
 				type: 'push',
@@ -119,6 +138,7 @@ function* pushOp(socket: WebSocket) {
 				payload: ops
 			});
 			socket.send(msg);
+
 		}, socket);
 		// メッセージを投げるのとは独立にGUIの操作を無効化する。
 		yield Effects.put({type: AppModule.ActionNames.FREEZE});
@@ -135,10 +155,24 @@ function* pushUndo(socket: WebSocket) {
 	}
 }
 
+function* pushIgnoreSolver(socket: WebSocket) {
+	while(true) {
+		yield Effects.take(ActionNames.IGNORE_SOLVER);
+		yield Effects.put({
+			type: AppModule.ActionNames.ALONE_MODE
+		});
+		const msg = JSON.stringify({
+			type: 'clear-op',
+		});
+		socket.send(msg);
+	}
+}
+
 // Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
 function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
 	yield Effects.fork(pushUndo, socket);
+	yield Effects.fork(pushIgnoreSolver, socket);
 }
 
 function wait(ms: number) {
