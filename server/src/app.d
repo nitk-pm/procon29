@@ -30,8 +30,7 @@ enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
 
 size_t cnt = 0;
-size_t turn_count;
-size_t turn_max;
+size_t turn;
 
 StopWatch timekeeper;
 
@@ -40,7 +39,6 @@ version(unittest){
 else {
 void main (string[] args) {
 
-	int turn;
 	string boardFileName;
 
 	auto helpInformation = getopt(
@@ -52,8 +50,6 @@ void main (string[] args) {
 	);
 	auto boardJson = boardFileName.readText.parseJSON;
 	board = boardOfJson(boardJson);
-
-	turn_max = turn;
 
 	timekeeper.start;
 	if (!exists("./log")) {
@@ -267,7 +263,6 @@ void handlePush(JSONValue msg) {
 			assert (false);
 	}
 	if (redOpPushed && blueOpPushed) {
-		++turn_count;
 		hist ~= board.deepCopy;
 		board = solve(board, blueOp ~ redOp);
 		
@@ -276,9 +271,10 @@ void handlePush(JSONValue msg) {
 		timekeeper.reset;
 
 		payload["board"] = board.jsonOfBoard;
-		payload["turn"] = JSONValue(turn_max);
+		payload["turn"] = JSONValue(--turn);
 		payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
 		auto reply = genReplyMsg("distribute-board", payload);
+		reply.writeln;
 
 		foreach(sock; sockets) {
 			sock.send(reply);
@@ -303,14 +299,14 @@ void handlePush(JSONValue msg) {
 void handleConn(scope WebSocket sock) {
 	// 接続中のソケットに登録
 	sockets ~= sock;
-	while (sock.connected && turn_count < turn_max) {
+	while(sock.connected) {
 		auto msg = sock.receiveText.parseJSON;
 		writeln("received message:", msg.toPrettyString);
 		switch (msg["type"].str) {
 		case "req-board":
 			JSONValue payload;
 			payload["board"] = board.jsonOfBoard;
-			payload["turn"] = JSONValue(turn_max);
+			payload["turn"] = JSONValue(turn);
 			payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
 			auto reply = genReplyMsg("distribute-board", payload);
 			sock.send(reply);
@@ -329,7 +325,7 @@ void handleConn(scope WebSocket sock) {
 				--hist.length;
 				JSONValue payload;
 				payload["board"] = board.jsonOfBoard;
-				payload["turn"] = JSONValue(turn_max);
+				payload["turn"] = JSONValue(++turn);
 				payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
 				auto reply = genReplyMsg("distribute-board", payload);
 				foreach(subscriber; sockets) {
@@ -350,6 +346,12 @@ void handleConn(scope WebSocket sock) {
 			default:
 				assert (false);
 			}
+			break;
+		case "clear-op":
+			redOp = [];
+			blueOp = [];
+			redOpPushed = false;
+			blueOpPushed = false;
 			break;
 		default:
 			assert(false);

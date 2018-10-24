@@ -89,6 +89,12 @@ export class ActionDispatcher {
 			type: ServerSaga.ActionNames.UNDO
 		});
 	}
+
+	ignoreSolver() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.IGNORE_SOLVER
+		});
+	}
 }
 
 export default ReactRedux.connect(
@@ -103,6 +109,7 @@ export default ReactRedux.connect(
 		dir: state.dir,
 		colorMap: state.colorMap,
 		rivalOps: state.rivalOps,
+		turn: state.turn,
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);
