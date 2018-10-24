@@ -1,6 +1,6 @@
 module procon.greedySearch;
 
-import std.algorithm : min;
+import std.algorithm : max,min;
 import std.json;
 import std.math:pow,abs;
 import std.conv;
@@ -121,5 +121,5 @@ pure nothrow int calcAgentsDistance(in Color color,in Board board){
 private pure nothrow int calcMinDist(in Pos aPos,in Pos bPos){
 	int xDist=abs(aPos.x-bPos.x);
 	int yDist=abs(aPos.y-bPos.y);
-	return min(xDist,yDist);
+	return max(xDist,yDist);
 }

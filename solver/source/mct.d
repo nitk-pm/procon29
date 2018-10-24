@@ -192,7 +192,7 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
-	mct.searchDepth=min(2,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
 	mct.searchDepth.writeln;
 	MCTNode root;
 	root.board=board;
