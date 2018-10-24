@@ -8,7 +8,7 @@ import std.math;
 import std.typecons;
 import std.conv: to;
 import std.stdio;
-import std.algorithm :min;
+import std.algorithm :min,max;
 import std.json;
 import procon.decoder;
 import procon.example;
@@ -18,7 +18,7 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
 
-immutable int searchLimit=10000;
+immutable int searchLimit=5000;
 immutable double EPS= 1e-9;
 struct MCTNode{
 	int ownIdx=0;
@@ -38,7 +38,7 @@ struct MCTNode{
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 struct MCT{
-	const int threshold=100;//展開するかどうかの訪問回数のしきい値
+	const int threshold=40;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
@@ -48,30 +48,30 @@ struct MCT{
 	MCTNode[] nodes;
 	
 	//係数たち
-	double  C1=80.0;//勝率の重み
-	double C2=0.0;//探索回数の少なさの重み
-	double C3=2.0;//evalの増値の重み
-	double C4=80.0;//スコアの増値の重み
-	double C5=4.0;//エージェントの距離
+	double C1=50.0;//勝率の重み
+	double C2=10.0;//探索回数の少なさの重み
+	double C3=20.0;//evalの増値の重み
+	double C4=60.0;//スコアの増値の重み
+	double C5=200.0;//エージェントの距離
 
 	private void calculateUCB1(){
 		foreach(i;1..nodes.length){
 			if (nodes[i].visits==0){
-				nodes[i].UCB1Score=10000000000;
+				nodes[i].UCB1Score=1e10;
 			}
 			else {
 				nodes[i].UCB1Score=
 							+C1*nodes[i].wins/nodes[i].visits
 							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
 							+C3*nodes[i].evalution*abs(nodes[i].evalution)
-							+C4*pow(nodes[i].scoreIncrease,3)
+							+C4*nodes[i].scoreIncrease*abs(nodes[i].scoreIncrease*nodes[i].scoreIncrease)*nodes[i].depth
 							+C5*nodes[i].agentDistance*abs(nodes[i].agentDistance);
 								}
 		}
 	}
 	void visitNode(){
 		this.calculateUCB1();
-		double bestUCB1=-INF;
+		double bestUCB1=-1e10;
 		int visitedNodeIdx=0;
 		foreach (currentNode;this.nodes){
 			if (currentNode.UCB1Score>=bestUCB1){
@@ -192,10 +192,11 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
-	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	mct.searchDepth=min(max(3,board.cells.length/20),turn);//盤面は対称なので10%のさらに半分
 	mct.searchDepth.writeln;
 	MCTNode root;
 	root.board=board;
+	root.evalution=evalute(color,board);
 	root.enemyMove=greedySearch(mct.enemyColor,root.board);
 	mct.nodes~=root;
 	foreach(i;0..searchLimit){

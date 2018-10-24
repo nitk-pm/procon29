@@ -30,7 +30,7 @@ int[2] greedySearch(in Color color,in Board board){
 			int[2] directions=[0:direction1,1:direction2];
 			int[2] noMoves=[0:8,1:8];//動かない
 			auto tmp=proceedGameWithoutOp(color,cpBoard,noMoves,directions);
-			node.evalPoint=evalute(color,tmp);
+			node.evalPoint=evalute(color,tmp)+calcAgentsDistance(color,tmp);
 			node.directions=directions;
 			candidateList~=node;
 		}
