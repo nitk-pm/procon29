@@ -13,6 +13,11 @@ electron .
 ## Font Awesome
 ### content
  * icons/fontawesome/\*
+# エージェントの色分け
+|色|人|
+|:-:|:-:|
+|赤|中野|
+|黒|村田|
 ### License
 CC-BY 4.0
 
