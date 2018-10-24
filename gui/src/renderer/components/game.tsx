@@ -43,6 +43,7 @@ export interface GameProps extends WithStyles<typeof styles>{
 	dir: string;
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
+	turn: number;
 }
 
 export const Game = withStyles(styles)(
@@ -186,7 +187,10 @@ export const Game = withStyles(styles)(
 							onClick={() => props.actions.undo()}
 						>Undo</Button>
 						<Typography variant='h4'>
-							{time}
+							{ 'time: ' + time }
+						</Typography>
+						<Typography variant='h4'>
+							{ 'turn: ' + props.turn }
 						</Typography>
 						<div>
 							<label>
