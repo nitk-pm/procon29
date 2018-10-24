@@ -48,6 +48,7 @@ export type State = {
 	time: number;
 	dir: string;
 	colorMap: Array<{forward: string; back: string}>;
+	turn: number;
 }
 
 
@@ -65,7 +66,8 @@ export const initialState: State = {
 	freeze: true,
 	time: 0.0,
 	dir: 'up',
-	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}]
+	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}],
+	turn: 0
 };
 
 export const getServerInfo = (state: State) => state.server;

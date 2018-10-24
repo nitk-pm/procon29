@@ -85,6 +85,8 @@ function genListenChannel(socket: WebSocket) {
 				emit({type: AppModule.ActionNames.UPDATE_BOARD, payload: {board}});
 				const time = msg.payload.time;
 				emit({type: ActionNames.RESET_TIME, payload: {time}});
+				const turn = msg.payload.turn;
+				emit({type: AppModule.ActionNames.UPDATE_TURN, payload: { turn }});
 				// 操作の解凍
 				emit({type: AppModule.ActionNames.THAWING});
 				break;

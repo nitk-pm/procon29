@@ -17,7 +17,14 @@ export enum ActionNames {
 }
 
 export type AloneModeAction = {
-	type: ActionNames.ALONE_MODE;
+	UPDATE_TURN = 'IGOKABADDI_TURN'
+}
+
+export type UpdateTurnAction = {
+	type: ActionNames.UPDATE_TURN;
+	payload: {
+		turn: number;
+	}
 }
 
 export type SwapSuitAction = {
@@ -123,6 +130,10 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			state: Store.UIState.Alone
+	case ActionNames.UPDATE_TURN:
+		return {
+			...state,
+			turn: action.payload.turn
 		};
 	default:
 		return state;
