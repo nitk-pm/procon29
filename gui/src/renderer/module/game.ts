@@ -38,6 +38,30 @@ function isContiguoused(p1: Common.Pos, p2: Common.Pos) {
 	return false;
 }
 
+export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, board: Common.Table, origOps: Common.Operation[], color: Common.Color) {
+	let contigused = isContiguoused(from, to);
+	let isClear = type == ClickType.Right;
+	let destColorIsEnemys =
+		board.arr[from.y][from.x].color != Common.Color.Neut &&
+		board.arr[from.y][from.x].color != color;
+	if (contigused && (isClear || !destColorIsEnemys)) {
+		let ops = removeOp(origOps, from);
+		if (to.x == from.x && to.y == from.y) {
+			return ops;
+		}
+		else if (isClear) {
+			ops.push({from, to, type: Common.OperationType.Clear});
+		}
+		else {
+			ops.push({from, to, type: Common.OperationType.Move});
+		}
+		return ops;
+	}
+	else {
+		return origOps;
+	}
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
@@ -53,38 +77,38 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
 				Some: p => None,
-				None: () => state.board.arr[y][x].agent >= 0 && state.board.arr[y][x].color == state.color ? Option({x, y}) : None
+				None: () => {
+					if (state.board.arr[y][x].agent >= 0) {
+ 						if (state.board.arr[y][x].color == state.color) {
+							return Option(to);
+						}
+						if (state.state == Store.UIState.Alone && state.board.arr[y][x].color != 'Neut') {
+							return Option(to);
+						}
+					}
+					else {
+						return None;
+					}
+				}
 			});
-			let ops = state.highlight.match({
+
+			// ハイライトされていた場合
+			let ops, rivalOps = state.rivalOps;
+			state.highlight.match({
 				Some: from => {
-						let contigused = isContiguoused(from, to);
-						let isClear = action.payload.type == ClickType.Right;
-						let destColorIsEnemys =
-							state.board.arr[y][x].color != Common.Color.Neut &&
-							state.board.arr[y][x].color != state.color;
-						if (contigused && (isClear || !destColorIsEnemys)) {
-							let ops = removeOp(state.ops, from);
-							if (to.x == from.x && to.y == from.y) {
-								return ops;
-							}
-							if (isClear) {
-								ops.push({from, to, type: Common.OperationType.Clear});
-							}
-							else {
-								ops.push({from, to, type: Common.OperationType.Move});
-							}
-							return ops;
-						}
-						else {
-							return state.ops;
-						}
-					},
-				None: () => state.ops
+					ops = updateOps(from, to, action.payload.type, state.board, state.ops, state.color)
+					if (state.state == Store.UIState.Alone) {
+						let rivalColor = state.color == Common.Color.Red ? Common.Color.Blue : Common.Color.Red;
+						rivalOps = updateOps(from, to, action.payload.type, state.board, state.rivalOps, rivalColor)
+					}
+				},
+				None: () => { ops = state.ops; }
 			});
 			return {
 				...state,
 				highlight,
-				ops
+				ops,
+				rivalOps
 			};
 		}
 		else {

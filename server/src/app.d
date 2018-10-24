@@ -347,6 +347,12 @@ void handleConn(scope WebSocket sock) {
 				assert (false);
 			}
 			break;
+		case "clear-op":
+			redOp = [];
+			blueOp = [];
+			redOpPushed = false;
+			blueOpPushed = false;
+			break;
 		default:
 			assert(false);
 		}

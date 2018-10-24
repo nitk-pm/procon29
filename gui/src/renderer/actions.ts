@@ -15,6 +15,7 @@ export type T =
 	| AppModule.ReceiveOpAction
 	| AppModule.ChangeDirAction
 	| AppModule.SwapSuitAction
+	| AppModule.AloneModeAction
 	| AppModule.UpdateTurnAction
 	| GameModule.ClickSquareAction
 	| ServerModule.ChangeIpAddressAction
@@ -26,4 +27,5 @@ export type T =
 	| ServerSaga.ReceiveMsgAction
 	| ServerSaga.ResetTimeAction
 	| ServerSaga.UndoAction
+	| ServerSaga.IgnoreSolverAction
 	| TimeModule.UpdateTimeAction;

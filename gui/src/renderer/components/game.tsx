@@ -153,7 +153,7 @@ export const Game = withStyles(styles)(
 				});
 				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
 				let time = props.time.toFixed(1);
-				let suggest = props.state == Store.UIState.User ? (
+				let suggest = props.state == Store.UIState.User || props.state == Store.UIState.Alone ? (
 					<div className='suggest-container'>
 						<div className='suggest-heart' style={genRotate(heartAngle)}>
 							♥
@@ -182,10 +182,6 @@ export const Game = withStyles(styles)(
 								<DoneIcon />
 							</Button>
 						</div>
-						<Button
-							aria-label='undo'
-							onClick={() => props.actions.undo()}
-						>Undo</Button>
 						<Typography variant='h4'>
 							{ 'time: ' + time }
 						</Typography>
@@ -210,8 +206,10 @@ export const Game = withStyles(styles)(
 								left
 							</label>
 						</div>
-						<div>
-							<Button onClick={() => this.props.actions.swapSuit()}>Swap Suit</Button>
+						<div className='carefull-buttons'>
+							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
+							<Button onClick={() => props.actions.undo()} color='secondary' variant='contained'>Undo</Button>
+							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
 						</div>
 						{suggest}
 					</div>);

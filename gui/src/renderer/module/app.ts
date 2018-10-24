@@ -13,7 +13,12 @@ export enum ActionNames {
 	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP',
 	CHANGE_DIR = 'IGOKABADDI_CHANGE_DIR',
 	SWAP_SUIT = 'IGOKABADDI_SWAP_SUIT',
-	UPDATE_TURN = 'IGOKABADDI_TURN'
+	ALONE_MODE = 'IGOKABADDI_ALONE_MODE',
+	UPDATE_TURN = 'IGOKABADDI_UPDATE_TURN'
+}
+
+export type AloneModeAction = {
+	type: ActionNames.ALONE_MODE;
 }
 
 export type UpdateTurnAction = {
@@ -90,6 +95,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: action.payload.board,
+			state: state.state == Store.UIState.Alone ? Store.UIState.User : state.state,
 			rivalOps: [],
 			ops: []
 		};
@@ -99,10 +105,15 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			state: Store.UIState.Setting
 		};
 	case ActionNames.RECEIVE_OP:
-		return {
-			...state,
-			rivalOps: action.payload.ops
-		};
+		if (state.state != Store.UIState.Alone) {
+			return {
+				...state,
+				rivalOps: action.payload.ops
+			};
+		}
+		else {
+			return state;
+		}
 	case ActionNames.CHANGE_DIR:
 		return {
 			...state,
@@ -115,6 +126,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 				state.colorMap[1],
 				state.colorMap[0]
 			]
+		};
+	case ActionNames.ALONE_MODE:
+		return {
+			...state,
+			state: Store.UIState.Alone
 		};
 	case ActionNames.UPDATE_TURN:
 		return {

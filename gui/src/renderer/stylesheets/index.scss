@@ -138,10 +138,20 @@ body {
 
 .suggest-heart {
 	color: red;
+	margin: 5vw;
 }
 
 .suggest-spade {
 	color: black;
+	margin: 5vw;
+}
+
+.carefull-buttons {
+	margin: 2vw;
+	width: 35vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .fab {
