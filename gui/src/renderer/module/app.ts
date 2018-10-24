@@ -13,11 +13,12 @@ export enum ActionNames {
 	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP',
 	CHANGE_DIR = 'IGOKABADDI_CHANGE_DIR',
 	SWAP_SUIT = 'IGOKABADDI_SWAP_SUIT',
-	ALONE_MODE = 'IGOKABADDI_ALONE_MODE'
+	ALONE_MODE = 'IGOKABADDI_ALONE_MODE',
+	UPDATE_TURN = 'IGOKABADDI_UPDATE_TURN'
 }
 
 export type AloneModeAction = {
-	UPDATE_TURN = 'IGOKABADDI_TURN'
+	type: ActionNames.ALONE_MODE;
 }
 
 export type UpdateTurnAction = {
@@ -130,6 +131,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			state: Store.UIState.Alone
+		};
 	case ActionNames.UPDATE_TURN:
 		return {
 			...state,
