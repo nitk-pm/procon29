@@ -13,6 +13,14 @@ export enum ActionNames {
 	RECEIVE_OP = 'IGOKABADDI_RECEIVE_OP',
 	CHANGE_DIR = 'IGOKABADDI_CHANGE_DIR',
 	SWAP_SUIT = 'IGOKABADDI_SWAP_SUIT',
+	UPDATE_TURN = 'IGOKABADDI_TURN'
+}
+
+export type UpdateTurnAction = {
+	type: ActionNames.UPDATE_TURN;
+	payload: {
+		turn: number;
+	}
 }
 
 export type SwapSuitAction = {
@@ -107,6 +115,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 				state.colorMap[1],
 				state.colorMap[0]
 			]
+		};
+	case ActionNames.UPDATE_TURN:
+		return {
+			...state,
+			turn: action.payload.turn
 		};
 	default:
 		return state;
