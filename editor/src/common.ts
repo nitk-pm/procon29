@@ -92,7 +92,7 @@ export function exportBoard(tbl: Table) {
 		line.map(square => {
 			let score = square.score.match({
 				Some: score => score,
-				None: () => null
+				None: () => 0
 			});
 			let agent;
 			if (square.color == Color.Red) {
