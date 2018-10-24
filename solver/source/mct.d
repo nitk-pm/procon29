@@ -130,7 +130,7 @@ struct MCT{
 		child.enemyMove=greedySearch(this.enemyColor,child.board);
 		{
 		Operation[2] tmpOp;
-		tmpOp=color==Color.Red?child.operations.redOp:child.operations.blueOp;
+		tmpOp=color==Color.Red?child.operations.blueOp:child.operations.redOp;
 		child.evalution=evalute(color,enemyColor,parent.board,tmpOp)-parent.evalution;
 		}
 		{
