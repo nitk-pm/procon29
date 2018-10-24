@@ -14,8 +14,7 @@ export type T =
 	| AppModule.CloseColorPickerAction
 	| AppModule.ChangeColorAction
 	| AppModule.NewBoardAction
-	| AppModule.ChangeHeightAction
-	| AppModule.ChangeWidthAction
+	| BoardModule.ChangeSizeAction
 	| DrawerModule.CloseDrawerAction
 	| DrawerModule.OpenDrawerAction
 	| BoardModule.UpdateScoreAction
