@@ -74,7 +74,7 @@ export default class Board extends React.Component<BoardProps> {
 		if (this.props.board != null) {
 			return (
 				// flex-direction: rowする
-				<div className='board'>
+				<div className='board' style={{margin: '2%'}}>
 					{tbl.arr.slice(0, tbl.h).map(
 						// 疑似要素で改行するのでCSSに
 						(line, y) => (<div key={y} className='board-row'>{

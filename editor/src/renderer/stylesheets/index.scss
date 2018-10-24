@@ -29,3 +29,14 @@ body {
 	display: flex;
 	flex-direction: row;
 }
+
+.content {
+	margin: 2%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.controll {
+	margin-right: 2%;
+}

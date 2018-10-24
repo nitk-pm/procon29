@@ -8,6 +8,7 @@ import * as Common from '../../common';
 import AppComponent from '../component/app';
 
 import * as AppModule from '../module/app';
+import * as BoardModule from '../module/board';
 
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
@@ -34,17 +35,10 @@ export class ActionDispatcher {
 		reader.readAsText(path);
 	}
 
-	changeHeight(h: number) {
+	changeSize(size: {w: number, h: number}) {
 		this.dispatch({
-			type: AppModule.ActionNames.CHANGE_HEIGHT,
-			payload: { h }
-		});
-	}
-
-	changeWidth(w: number) {
-		this.dispatch({
-			type: AppModule.ActionNames.CHANGE_WIDTH,
-			payload: { w }
+			type: BoardModule.ActionNames.CHANGE_SIZE,
+			payload: { ...size }
 		});
 	}
 }
