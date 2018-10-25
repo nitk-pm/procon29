@@ -17,7 +17,6 @@ import vibe.d;
 import procon29.server.board;
 
 Board board;
-Board[] hist;
 // operation購読者のsocketのリスト
 WebSocket[] opSubscribers;
 // 接続してるSokcet
@@ -263,7 +262,6 @@ void handlePush(JSONValue msg) {
 			assert (false);
 	}
 	if (redOpPushed && blueOpPushed) {
-		hist ~= board.deepCopy;
 		board = solve(board, blueOp ~ redOp);
 		
 		JSONValue payload;
@@ -317,21 +315,6 @@ void handleConn(scope WebSocket sock) {
 			break;
 		case "push":
 			handlePush(msg);
-			break;
-		case "undo":
-			if (hist.length > 0) {
-				writeln("undo");
-				board = hist[$-1];
-				--hist.length;
-				JSONValue payload;
-				payload["board"] = board.jsonOfBoard;
-				payload["turn"] = JSONValue(++turn);
-				payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-				auto reply = genReplyMsg("distribute-board", payload);
-				foreach(subscriber; sockets) {
-					subscriber.send(reply);
-				}
-			}
 			break;
 		case "req-op":
 			switch (msg["color"].str) {
