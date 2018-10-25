@@ -49,6 +49,7 @@ export type State = {
 	dir: string;
 	colorMap: Array<{forward: string; back: string}>;
 	turn: number;
+	agentTurnout: Array<number>;
 }
 
 
@@ -67,7 +68,8 @@ export const initialState: State = {
 	time: 0.0,
 	dir: 'up',
 	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}],
-	turn: 0
+	turn: 0,
+	agentTurnout: []
 };
 
 export const getServerInfo = (state: State) => state.server;

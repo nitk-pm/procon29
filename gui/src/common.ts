@@ -73,6 +73,14 @@ export function calcBaseDir(dir: string) {
 
 }
 
+export function deepCopy(tbl: Table) {
+	return {
+		h: tbl.h,
+		w: tbl.w,
+		arr: tbl.arr.map(l => l.map(s => ({...s,})))
+	};
+}
+
 export function calcDir(dir: string, origin: {x: number, y: number}, target: {x: number, y: number}) {
 	let baseDir = Math.PI;
 	let dy = target.y - origin.y;

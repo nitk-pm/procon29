@@ -18,6 +18,8 @@ export type T =
 	| AppModule.AloneModeAction
 	| AppModule.UpdateTurnAction
 	| GameModule.ClickSquareAction
+	| GameModule.ChangeColorAction
+	| GameModule.ToggleAgentAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.ConnectAction

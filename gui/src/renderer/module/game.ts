@@ -5,7 +5,20 @@ import * as Common from '../../common';
 import { None, Option } from 'monapt';
 
 export enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE'
+	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
+	CHANGE_COLOR = 'IGOKABADDI_CANGE_COLOR',
+	TOGGLE_AGENT = 'IGOKABADDI_TOGGLE_AGENT'
+}
+
+export type ChangeColorAction = {
+	type: ActionNames.CHANGE_COLOR;
+	payload: {
+		color: Common.Color;
+	}
+}
+
+export type ToggleAgentAction = {
+	type: ActionNames.TOGGLE_AGENT;
 }
 
 export enum ClickType {
@@ -68,6 +81,7 @@ export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, boa
  * 操作を一度行う度にlogに盤面を保存
  */
 export function reducer(state: Store.State = Store.initialState, action: Action.T): Store.State {
+	let boardCopy = Common.deepCopy(state.board);
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		if (!state.freeze) {
@@ -104,6 +118,35 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
+	case ActionNames.CHANGE_COLOR:
+		state.highlight.match({
+			Some: p => { boardCopy.arr[p.y][p.x].color = action.payload.color; },
+			None: () => {}
+		});
+		return {
+			...state,
+			board: boardCopy
+		};
+	case ActionNames.TOGGLE_AGENT:
+		let agentTurnout = state.agentTurnout.slice();
+		state.highlight.match({
+			Some: p => {
+				let agent = boardCopy.arr[p.y][p.x].agent;
+				if (agent >= 0) {
+					agentTurnout.push(agent);
+					boardCopy.arr[p.y][p.x].agent = -1;
+				}
+				else if (agentTurnout.length > 0) {
+					boardCopy.arr[p.y][p.x].agent = agentTurnout.pop();
+				}
+			},
+			None: () => {}
+		});
+		return {
+			...state,
+			board: boardCopy,
+			agentTurnout
+		};
 	default:
 		return state;
 	}
