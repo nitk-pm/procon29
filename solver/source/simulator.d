@@ -103,9 +103,7 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] enemyMove,in int[
 		if (!(board.cells[destination].color==board.cells[agents[i].pos].color||board.cells[destination].color==Color.Neut)){
 			typeList[i]=Type.Clear;
 		}
-		else{
-			destinationList[i]=destination;
-		}
+		destinationList[i]=destination;
 	}
 	//FIXME　ここの上下の処理は関数を分けるべき
 	//FORGIVEME Operationを取る関係で、上下で分けると戻り値がすごいTupleになってキモい
@@ -120,7 +118,7 @@ auto proceedGameWithoutOp(in Color color,Board board,in int[2] enemyMove,in int[
 	foreach(k;0..2){
 		foreach(i;0..4){
 			foreach(j;0..4){
-				if(i==j||!isInvalidMove[j])//進む方向に移動し損ねたエージェントがいても無効
+				if(i==j||!(isInvalidMove[j]&&typeList[i]==Type.Move))//進む方向に移動し損ねたエージェントがいても無効
 					continue;
 				isInvalidMove[i]|=destinationList[i]==agents[j].pos;
 			}

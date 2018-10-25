@@ -3,6 +3,7 @@ module procon.calc;
 import std.json;
 import std.conv;
 import std.stdio;
+import std.math:abs;
 import std.typecons;
 import procon.container;
 import procon.decoder;
@@ -12,9 +13,6 @@ import procon.example;
 	完結に説明するために以下では赤視点でコメントを書いている
 	実用上は82行目以降を見ればよい
 */
-int abs(int a){
-	return a>0?a:-a;
-}
 
 auto surroundCalc(Board board){
 	Tuple!(int,"Red",int,"Blue") score;
