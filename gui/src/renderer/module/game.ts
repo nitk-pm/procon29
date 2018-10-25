@@ -7,7 +7,12 @@ import { None, Option } from 'monapt';
 export enum ActionNames {
 	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
 	CHANGE_COLOR = 'IGOKABADDI_CANGE_COLOR',
-	TOGGLE_AGENT = 'IGOKABADDI_TOGGLE_AGENT'
+	TOGGLE_AGENT = 'IGOKABADDI_TOGGLE_AGENT',
+	UNSET_HIGHLIGHT = 'IGOKABADDI_UNSET_HIGHLIGHT'
+}
+
+export type UnsetHighLightAction = {
+	type: ActionNames.UNSET_HIGHLIGHT;
 }
 
 export type ChangeColorAction = {
@@ -104,7 +109,10 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			// ハイライトされた箇所がなければクリック箇所にエージェントが居るか確認してハイライト
 			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
-				Some: p => Option(action.payload.pos),
+				Some: p => {
+					if (p == action.payload.pos) return None;
+					else return Option(action.payload.pos);
+				},
 				None: () => {
 					return Option(to);
 				}
@@ -159,6 +167,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: boardCopy,
+		};
+	case ActionNames.UNSET_HIGHLIGHT:
+		return {
+			...state,
+			highlight: None
 		};
 	default:
 		return state;

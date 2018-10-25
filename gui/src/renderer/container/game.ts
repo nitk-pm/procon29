@@ -102,6 +102,10 @@ export class ActionDispatcher {
 			return this.dispatch({
 				type: GameModule.ActionNames.TOGGLE_AGENT,
 			});
+		case 'KeyS':
+			return this.dispatch({
+				type: GameModule.ActionNames.UNSET_HIGHLIGHT
+			});
 		case 'KeyQ': color = Common.Color.Red; break;
 		case 'KeyW': color = Common.Color.Neut; break;
 		case 'KeyE': color = Common.Color.Blue; break;

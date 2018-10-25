@@ -20,6 +20,7 @@ export type T =
 	| GameModule.ClickSquareAction
 	| GameModule.ChangeColorAction
 	| GameModule.ToggleAgentAction
+	| GameModule.UnsetHighLightAction
 	| ServerModule.ChangeIpAddressAction
 	| ServerModule.ChangePortAction
 	| ServerModule.ConnectAction
