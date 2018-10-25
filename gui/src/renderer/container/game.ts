@@ -113,6 +113,12 @@ export class ActionDispatcher {
 			}
 		});
 	}
+
+	submitBoard() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.PUSH_BOARD
+		});
+	}
 }
 
 export default ReactRedux.connect(

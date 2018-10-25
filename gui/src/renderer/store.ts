@@ -76,3 +76,4 @@ export const getRivalOps = (state: State) => state.rivalOps;
 export const getColor = (state: State) => state.color;
 export const getTime = (state: State) => state.time;
 export const getState = (state: State) => state.state;
+export const getBoard = (state: State) => state.board;

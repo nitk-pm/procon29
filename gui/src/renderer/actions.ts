@@ -30,4 +30,5 @@ export type T =
 	| ServerSaga.ResetTimeAction
 	| ServerSaga.UndoAction
 	| ServerSaga.IgnoreSolverAction
+	| ServerSaga.PushBoardAction
 	| TimeModule.UpdateTimeAction;

@@ -75,6 +75,14 @@ string genReplyMsg(string type, JSONValue json) {
 	return res.toString;
 }
 
+string genDistributeBoardMsg() {
+	JSONValue payload;
+	payload["board"] = board.jsonOfBoard;
+	payload["turn"] = JSONValue(turn);
+	payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+	return genReplyMsg("distribute-board", payload);
+}
+
 enum OpState {
 	Enable,
 	Disable,
@@ -279,10 +287,8 @@ void handlePush(JSONValue msg) {
 		timekeeper.stop;
 		timekeeper.reset;
 
-		payload["board"] = board.jsonOfBoard;
-		payload["turn"] = JSONValue(--turn);
-		payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-		auto reply = genReplyMsg("distribute-board", payload);
+		--turn;
+		auto reply = genDistributeBoardMsg();
 		reply.writeln;
 
 		foreach(sock; sockets) {
@@ -316,10 +322,7 @@ void handleConn(scope WebSocket sock) {
 		switch (msg["type"].str) {
 		case "req-board":
 			JSONValue payload;
-			payload["board"] = board.jsonOfBoard;
-			payload["turn"] = JSONValue(turn);
-			payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-			auto reply = genReplyMsg("distribute-board", payload);
+			auto reply = genDistributeBoardMsg();
 			sock.send(reply);
 			break;
 		case "subscribe-op":
@@ -359,6 +362,19 @@ void handleConn(scope WebSocket sock) {
 			refuseBluePush = !blueOpPushed;
 			redOpPushed = false;
 			blueOpPushed = false;
+			break;
+		case "push-board":
+			redOp = [];
+			blueOp = [];
+			refuseRedPush = !redOpPushed;
+			refuseBluePush = !blueOpPushed;
+			redOpPushed = false;
+			blueOpPushed = false;
+			board = msg["payload"]["arr"].boardOfJson;
+			auto reply = genDistributeBoardMsg();
+			foreach (subscriber; sockets) {
+				subscriber.send(reply);
+			}
 			break;
 		default:
 			assert(false);
