@@ -88,8 +88,8 @@ export function loadBoard(json: Array<Array<any>>): Table {
 export function exportBoard(tbl: Table) {
 	let redCnt = 0;
 	let blueCnt = 0;
-	let arr = tbl.arr.map(line =>
-		line.map(square => {
+	let arr = tbl.arr.slice(0, tbl.h).map(line =>
+		line.slice(0, tbl.w).map(square => {
 			let score = square.score.match({
 				Some: score => score,
 				None: () => 0
