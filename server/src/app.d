@@ -114,7 +114,7 @@ unittest {
 }
 
 OpConainer[] validCheck(Board board, OpConainer[] ops) {
-	foreach (op; ops) {
+	foreach (ref op; ops) {
 		auto p = op.op.to;
 		if (
 			op.op.type == OpType.Move &&
