@@ -167,6 +167,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: boardCopy,
+			boardIsValid: Common.validCheck(boardCopy)
 		};
 	case ActionNames.UNSET_HIGHLIGHT:
 		return {

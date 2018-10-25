@@ -46,6 +46,7 @@ export interface GameProps extends WithStyles<typeof styles>{
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
 	turn: number;
+	boardIsValid: boolean;
 }
 
 export const Game = withStyles(styles)(
@@ -216,7 +217,7 @@ export const Game = withStyles(styles)(
 						<div className='carefull-buttons'>
 							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
 							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
-							<Button onClick={() => props.actions.submitBoard()} color='secondary' variant='contained'>Submit board</Button>
+							<Button onClick={() => props.actions.submitBoard()} color='secondary' variant='contained' disabled={!this.props.boardIsValid}>Submit board</Button>
 						</div>
 						{suggest}
 					</div>);

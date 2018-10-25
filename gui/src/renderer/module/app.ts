@@ -95,6 +95,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: action.payload.board,
+			boardIsValid: true,
 			state: state.state == Store.UIState.Alone ? Store.UIState.User : state.state,
 			rivalOps: [],
 			ops: []
