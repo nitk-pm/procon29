@@ -24,6 +24,7 @@ WebSocket[] sockets;
 
 Operation[] blueOp, redOp;
 bool blueOpPushed, redOpPushed;
+bool refuseBluePush, refuseRedPush;
 
 enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
@@ -251,12 +252,22 @@ Board deepCopy(Board board) {
 void handlePush(JSONValue msg) {
 	switch (msg["color"].str) {
 		case "Red":
-			redOp = msg["payload"].operationsOfJson(Color.Red);
-			redOpPushed = true;
+			if (refuseRedPush) {
+				refuseRedPush = false;
+			}
+			else {
+				redOp = msg["payload"].operationsOfJson(Color.Red);
+				redOpPushed = true;
+			}
 			break;
 		case "Blue":
-			blueOp = msg["payload"].operationsOfJson(Color.Blue);
-			blueOpPushed = true;
+			if (refuseBluePush) {
+				refuseBluePush = false;
+			}
+			else {
+				blueOp = msg["payload"].operationsOfJson(Color.Blue);
+				blueOpPushed = true;
+			}
 			break;
 		default:
 			assert (false);
@@ -279,6 +290,8 @@ void handlePush(JSONValue msg) {
 		}
 		writeln("-------------------------------------------------------------");
 
+		refuseRedPush = false;
+		refuseBluePush = false;
 		redOpPushed = false;
 		blueOpPushed = false;
 		timekeeper.start;
@@ -316,6 +329,15 @@ void handleConn(scope WebSocket sock) {
 		case "push":
 			handlePush(msg);
 			break;
+		case "push-force":
+			auto _refuseRedPush = refuseRedPush;
+			auto _refuseBluePush = refuseBluePush;
+			refuseRedPush = false;
+			refuseBluePush = false;
+			handlePush(msg);
+			refuseRedPush = _refuseRedPush;
+			refuseBluePush = _refuseBluePush;
+			break;
 		case "req-op":
 			switch (msg["color"].str) {
 			case "Red":
@@ -333,6 +355,8 @@ void handleConn(scope WebSocket sock) {
 		case "clear-op":
 			redOp = [];
 			blueOp = [];
+			refuseRedPush = !redOpPushed;
+			refuseBluePush = !blueOpPushed;
 			redOpPushed = false;
 			blueOpPushed = false;
 			break;

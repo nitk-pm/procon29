@@ -177,7 +177,7 @@ export const Game = withStyles(styles)(
 								color='primary'
 								aria-label='done'
 								disabled={props.freeze}
-								onClick={() => props.actions.done()}
+								onClick={() => props.actions.done(props.state == Store.UIState.Alone)}
 								>
 								<DoneIcon />
 							</Button>

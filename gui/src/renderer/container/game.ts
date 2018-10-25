@@ -13,8 +13,13 @@ import * as ServerSaga from '../saga/server';
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
-	done () {
-		return this.dispatch({type: ServerSaga.ActionNames.PUSH_OP});
+	done (force: boolean) {
+		return this.dispatch({
+			type: ServerSaga.ActionNames.PUSH_OP,
+			payload: {
+				force
+			}
+		});
 	}
 
 	changeIp(ip: string) {
