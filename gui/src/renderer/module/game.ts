@@ -75,6 +75,20 @@ export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, boa
 	}
 }
 
+function searchUnusedId(tbl: Common.Table, color: Common.Color) {
+	let checkSheet = [false, false];
+	for (let y = 0; y < tbl.h; ++y) {
+		for (let x = 0; x < tbl.w; ++x) {
+			if (tbl.arr[y][x].agent >= 0 && tbl.arr[y][x].color == color)
+				checkSheet[tbl.arr[y][x].agent] = true;
+		}
+	}
+	for (let i = 0; i < checkSheet.length; ++i) {
+		if (!checkSheet[i]) return i;
+	}
+	return -1;
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
@@ -128,16 +142,16 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			board: boardCopy
 		};
 	case ActionNames.TOGGLE_AGENT:
-		let agentTurnout = state.agentTurnout.slice();
 		state.highlight.match({
 			Some: p => {
-				let agent = boardCopy.arr[p.y][p.x].agent;
+				let agent = state.board.arr[p.y][p.x].agent;
+				let color = state.board.arr[p.y][p.x].color;
+				if (color == Common.Color.Neut) return;
 				if (agent >= 0) {
-					agentTurnout.push(agent);
 					boardCopy.arr[p.y][p.x].agent = -1;
 				}
-				else if (agentTurnout.length > 0) {
-					boardCopy.arr[p.y][p.x].agent = agentTurnout.pop();
+				else {
+					boardCopy.arr[p.y][p.x].agent = searchUnusedId(state.board, color);
 				}
 			},
 			None: () => {}
@@ -145,7 +159,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: boardCopy,
-			agentTurnout
 		};
 	default:
 		return state;
