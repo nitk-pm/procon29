@@ -90,7 +90,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			// ハイライトされた箇所がなければクリック箇所にエージェントが居るか確認してハイライト
 			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
-				Some: p => None,
+				Some: p => Option(action.payload.pos),
 				None: () => {
 					return Option(to);
 				}
