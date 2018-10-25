@@ -208,7 +208,6 @@ export const Game = withStyles(styles)(
 						</div>
 						<div className='carefull-buttons'>
 							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
-							<Button onClick={() => props.actions.undo()} color='secondary' variant='contained'>Undo</Button>
 							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
 						</div>
 						{suggest}

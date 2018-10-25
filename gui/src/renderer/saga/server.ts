@@ -145,16 +145,6 @@ function* pushOp(socket: WebSocket) {
 	}
 }
 
-function* pushUndo(socket: WebSocket) {
-	while(true) {
-		yield Effects.take(ActionNames.UNDO);
-		const msg = JSON.stringify({
-			type: 'undo',
-		});
-		socket.send(msg);
-	}
-}
-
 function* pushIgnoreSolver(socket: WebSocket) {
 	while(true) {
 		yield Effects.take(ActionNames.IGNORE_SOLVER);
@@ -171,7 +161,6 @@ function* pushIgnoreSolver(socket: WebSocket) {
 // Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
 function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
-	yield Effects.fork(pushUndo, socket);
 	yield Effects.fork(pushIgnoreSolver, socket);
 }
 
