@@ -94,6 +94,7 @@
           tbl: this.board,
           // TODO
           turn: this.turn,
+          color: this.color,
         });
       },
     },
