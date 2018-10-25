@@ -44,7 +44,7 @@ export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, boa
 	let destColorIsEnemys =
 		board.arr[from.y][from.x].color != Common.Color.Neut &&
 		board.arr[from.y][from.x].color != color;
-	if (contigused && (isClear || !destColorIsEnemys)) {
+	if (contigused && (isClear || !destColorIsEnemys) && board.arr[from.y][from.x].color == color) {
 		let ops = removeOp(origOps, from);
 		if (to.x == from.x && to.y == from.y) {
 			return ops;
@@ -78,17 +78,7 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			let highlight = state.highlight.match({
 				Some: p => None,
 				None: () => {
-					if (state.board.arr[y][x].agent >= 0) {
- 						if (state.board.arr[y][x].color == state.color) {
-							return Option(to);
-						}
-						if (state.state == Store.UIState.Alone && state.board.arr[y][x].color != 'Neut') {
-							return Option(to);
-						}
-					}
-					else {
-						return None;
-					}
+					return Option(to);
 				}
 			});
 
