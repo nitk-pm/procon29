@@ -44,6 +44,7 @@ export interface GameProps extends WithStyles<typeof styles>{
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
 	turn: number;
+	score: {red: number; blue: number;};
 }
 
 export const Game = withStyles(styles)(
@@ -182,12 +183,26 @@ export const Game = withStyles(styles)(
 								<DoneIcon />
 							</Button>
 						</div>
-						<Typography variant='h4'>
-							{ 'time: ' + time }
-						</Typography>
-						<Typography variant='h4'>
-							{ 'turn: ' + props.turn }
-						</Typography>
+						<table>
+							<tbody>
+								<tr>
+									<td>{'time'}</td>
+									<td>{time}</td>
+								</tr>
+								<tr>
+									<td>{'turn'}</td>
+									<td>{props.turn}</td>
+								</tr>
+								<tr>
+									<td>{'red'}</td>
+									<td>{props.score.red}</td>
+								</tr>
+								<tr>
+									<td>{'blue'}</td>
+									<td>{props.score.blue}</td>
+								</tr>
+							</tbody>
+						</table>
 						<div>
 							<label>
 								<input id='up' type='radio' name='dir' value='up' checked={this.props.dir == 'up'} onChange={() => this.props.actions.changeDir('up')}/>
