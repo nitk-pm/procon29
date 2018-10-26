@@ -17,7 +17,6 @@ import vibe.d;
 import procon29.server.board;
 
 Board board;
-Board[] hist;
 // operation購読者のsocketのリスト
 WebSocket[] opSubscribers;
 // 接続してるSokcet
@@ -25,6 +24,7 @@ WebSocket[] sockets;
 
 Operation[] blueOp, redOp;
 bool blueOpPushed, redOpPushed;
+bool refuseBluePush, refuseRedPush;
 
 enum LocalHost = ["::1", "127.0.0.1"];
 enum LabAddress = ["192.168.42.151"];
@@ -73,6 +73,14 @@ string genReplyMsg(string type, JSONValue json) {
 	res["type"] = JSONValue(type);
 	res["payload"] = json;
 	return res.toString;
+}
+
+string genDistributeBoardMsg() {
+	JSONValue payload;
+	payload["board"] = board.jsonOfBoard;
+	payload["turn"] = JSONValue(turn);
+	payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
+	return genReplyMsg("distribute-board", payload);
 }
 
 enum OpState {
@@ -252,28 +260,35 @@ Board deepCopy(Board board) {
 void handlePush(JSONValue msg) {
 	switch (msg["color"].str) {
 		case "Red":
-			redOp = msg["payload"].operationsOfJson(Color.Red);
-			redOpPushed = true;
+			if (refuseRedPush) {
+				refuseRedPush = false;
+			}
+			else {
+				redOp = msg["payload"].operationsOfJson(Color.Red);
+				redOpPushed = true;
+			}
 			break;
 		case "Blue":
-			blueOp = msg["payload"].operationsOfJson(Color.Blue);
-			blueOpPushed = true;
+			if (refuseBluePush) {
+				refuseBluePush = false;
+			}
+			else {
+				blueOp = msg["payload"].operationsOfJson(Color.Blue);
+				blueOpPushed = true;
+			}
 			break;
 		default:
 			assert (false);
 	}
 	if (redOpPushed && blueOpPushed) {
-		hist ~= board.deepCopy;
 		board = solve(board, blueOp ~ redOp);
 		
 		JSONValue payload;
 		timekeeper.stop;
 		timekeeper.reset;
 
-		payload["board"] = board.jsonOfBoard;
-		payload["turn"] = JSONValue(--turn);
-		payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-		auto reply = genReplyMsg("distribute-board", payload);
+		--turn;
+		auto reply = genDistributeBoardMsg();
 		reply.writeln;
 
 		foreach(sock; sockets) {
@@ -281,6 +296,8 @@ void handlePush(JSONValue msg) {
 		}
 		writeln("-------------------------------------------------------------");
 
+		refuseRedPush = false;
+		refuseBluePush = false;
 		redOpPushed = false;
 		blueOpPushed = false;
 		timekeeper.start;
@@ -305,10 +322,7 @@ void handleConn(scope WebSocket sock) {
 		switch (msg["type"].str) {
 		case "req-board":
 			JSONValue payload;
-			payload["board"] = board.jsonOfBoard;
-			payload["turn"] = JSONValue(turn);
-			payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-			auto reply = genReplyMsg("distribute-board", payload);
+			auto reply = genDistributeBoardMsg();
 			sock.send(reply);
 			break;
 		case "subscribe-op":
@@ -318,20 +332,14 @@ void handleConn(scope WebSocket sock) {
 		case "push":
 			handlePush(msg);
 			break;
-		case "undo":
-			if (hist.length > 0) {
-				writeln("undo");
-				board = hist[$-1];
-				--hist.length;
-				JSONValue payload;
-				payload["board"] = board.jsonOfBoard;
-				payload["turn"] = JSONValue(++turn);
-				payload["time"] = timekeeper.peek.total!"msecs".to!float / 1000.0f;
-				auto reply = genReplyMsg("distribute-board", payload);
-				foreach(subscriber; sockets) {
-					subscriber.send(reply);
-				}
-			}
+		case "push-force":
+			auto _refuseRedPush = refuseRedPush;
+			auto _refuseBluePush = refuseBluePush;
+			refuseRedPush = false;
+			refuseBluePush = false;
+			handlePush(msg);
+			refuseRedPush = _refuseRedPush;
+			refuseBluePush = _refuseBluePush;
 			break;
 		case "req-op":
 			switch (msg["color"].str) {
@@ -350,8 +358,23 @@ void handleConn(scope WebSocket sock) {
 		case "clear-op":
 			redOp = [];
 			blueOp = [];
+			refuseRedPush = !redOpPushed;
+			refuseBluePush = !blueOpPushed;
 			redOpPushed = false;
 			blueOpPushed = false;
+			break;
+		case "push-board":
+			redOp = [];
+			blueOp = [];
+			refuseRedPush = !redOpPushed;
+			refuseBluePush = !blueOpPushed;
+			redOpPushed = false;
+			blueOpPushed = false;
+			board = msg["payload"]["arr"].boardOfJson;
+			auto reply = genDistributeBoardMsg();
+			foreach (subscriber; sockets) {
+				subscriber.send(reply);
+			}
 			break;
 		default:
 			assert(false);

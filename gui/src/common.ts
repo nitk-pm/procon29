@@ -68,9 +68,30 @@ export function loadOperations(json: Array<any> ): Operation[] {
 	});
 }
 
+export function validCheck(tbl: Table) {
+	let redCnt = 0, blueCnt = 0;
+	for (let y = 0; y < tbl.h; ++y) {
+		for (let x = 0; x < tbl.w; ++x) {
+			if (tbl.arr[y][x].agent >= 0) {
+				if (tbl.arr[y][x].color == Color.Red) ++redCnt;
+				else ++blueCnt;
+			}
+		}
+	}
+	return redCnt == 2 && blueCnt == 2;
+}
+
 export function calcBaseDir(dir: string) {
 	let baseAngle = 0.0;
 
+}
+
+export function deepCopy(tbl: Table) {
+	return {
+		h: tbl.h,
+		w: tbl.w,
+		arr: tbl.arr.map(l => l.map(s => ({...s,})))
+	};
 }
 
 export function calcDir(dir: string, origin: {x: number, y: number}, target: {x: number, y: number}) {

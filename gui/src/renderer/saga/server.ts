@@ -16,7 +16,8 @@ export enum ActionNames {
 	PUSH_OP = 'IGOKABADDI_PUSH_OP',
 	RESET_TIME = 'IGOKABADDI_RESET_TIME',
 	UNDO = 'IGOKABADDI_UNDO',
-	IGNORE_SOLVER = 'IGOKABADDI_IGNORE'
+	IGNORE_SOLVER = 'IGOKABADDI_IGNORE',
+	PUSH_BOARD = 'IGOKABADDI_BOARD'
 }
 
 export type IgnoreSolverAction = {
@@ -27,8 +28,15 @@ export type UndoAction = {
 	type: ActionNames.UNDO;
 }
 
+export type PushBoardAction = {
+	type: ActionNames.PUSH_BOARD;
+}
+
 export type PushOp = {
 	type: ActionNames.PUSH_OP;
+	payload: {
+		force: boolean;
+	}
 }
 
 export type ConnectAction = {
@@ -125,33 +133,30 @@ function* pushOp(socket: WebSocket) {
 			if (state == Store.UIState.Alone) {
 				const rivalOps = yield Effects.select(Store.getRivalOps);
 				const rivalMsg = JSON.stringify({
-					type: 'push',
+					type: 'push-force',
 					color: rivalColor,
 					payload: rivalOps
 				});
 				socket.send(rivalMsg);
+				const msg = JSON.stringify({
+					type: 'push-force',
+					color,
+					payload: ops
+				});
+				socket.send(msg);
 			}
 			// メッセージ作成
-			const msg = JSON.stringify({
-				type: 'push',
-				color,
-				payload: ops
-			});
-			socket.send(msg);
-
+			else {
+				const msg = JSON.stringify({
+					type: 'push',
+					color,
+					payload: ops
+				});
+				socket.send(msg);
+			}
 		}, socket);
 		// メッセージを投げるのとは独立にGUIの操作を無効化する。
 		yield Effects.put({type: AppModule.ActionNames.FREEZE});
-	}
-}
-
-function* pushUndo(socket: WebSocket) {
-	while(true) {
-		yield Effects.take(ActionNames.UNDO);
-		const msg = JSON.stringify({
-			type: 'undo',
-		});
-		socket.send(msg);
 	}
 }
 
@@ -168,11 +173,23 @@ function* pushIgnoreSolver(socket: WebSocket) {
 	}
 }
 
+function* pushBoard(socket: WebSocket) {
+	while(true) {
+		yield Effects.take(ActionNames.PUSH_BOARD);
+		let board = yield Effects.select(Store.getBoard);
+		const msg = JSON.stringify({
+			type: 'push-board',
+			payload: board
+		});
+		socket.send(msg);
+	}
+}
+
 // Saga内のPushMsgActionが投げられるとWebSocketからpayloadをstringifyして流す
 function* sendMsg(socket: WebSocket) {
 	yield Effects.fork(pushOp, socket);
-	yield Effects.fork(pushUndo, socket);
 	yield Effects.fork(pushIgnoreSolver, socket);
+	yield Effects.fork(pushBoard, socket);
 }
 
 function wait(ms: number) {

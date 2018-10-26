@@ -49,6 +49,7 @@ export type State = {
 	dir: string;
 	colorMap: Array<{forward: string; back: string}>;
 	turn: number;
+	boardIsValid: boolean;
 }
 
 
@@ -67,7 +68,8 @@ export const initialState: State = {
 	time: 0.0,
 	dir: 'up',
 	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}],
-	turn: 0
+	turn: 0,
+	boardIsValid: true
 };
 
 export const getServerInfo = (state: State) => state.server;
@@ -76,3 +78,4 @@ export const getRivalOps = (state: State) => state.rivalOps;
 export const getColor = (state: State) => state.color;
 export const getTime = (state: State) => state.time;
 export const getState = (state: State) => state.state;
+export const getBoard = (state: State) => state.board;
