@@ -13,8 +13,13 @@ import * as ServerSaga from '../saga/server';
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
-	done () {
-		return this.dispatch({type: ServerSaga.ActionNames.PUSH_OP});
+	done (force: boolean) {
+		return this.dispatch({
+			type: ServerSaga.ActionNames.PUSH_OP,
+			payload: {
+				force
+			}
+		});
 	}
 
 	changeIp(ip: string) {
@@ -84,15 +89,38 @@ export class ActionDispatcher {
 		});
 	}
 
-	undo() {
-		this.dispatch({
-			type: ServerSaga.ActionNames.UNDO
-		});
-	}
-
 	ignoreSolver() {
 		this.dispatch({
 			type: ServerSaga.ActionNames.IGNORE_SOLVER
+		});
+	}
+
+	handleKeyDown(e: any) {
+		let color;
+		switch (e.code) {
+		case 'KeyA':
+			return this.dispatch({
+				type: GameModule.ActionNames.TOGGLE_AGENT,
+			});
+		case 'KeyS':
+			return this.dispatch({
+				type: GameModule.ActionNames.UNSET_HIGHLIGHT
+			});
+		case 'KeyQ': color = Common.Color.Red; break;
+		case 'KeyW': color = Common.Color.Neut; break;
+		case 'KeyE': color = Common.Color.Blue; break;
+		}
+		return this.dispatch({
+			type: GameModule.ActionNames.CHANGE_COLOR,
+			payload: {
+				color
+			}
+		});
+	}
+
+	submitBoard() {
+		this.dispatch({
+			type: ServerSaga.ActionNames.PUSH_BOARD
 		});
 	}
 }
@@ -111,6 +139,7 @@ export default ReactRedux.connect(
 		rivalOps: state.rivalOps,
 		turn: state.turn,
 		score: state.score,
+		boardIsValid: state.boardIsValid
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
 )(GameComponent.Game);

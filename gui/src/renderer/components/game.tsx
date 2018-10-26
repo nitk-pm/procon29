@@ -19,6 +19,8 @@ import { withStyles, WithStyles } from '@material-ui/core/styles';
 import * as Store from '../store';
 import { Option } from 'monapt';
 
+import * as GameModule from '../module/game';
+
 const styles={
 	input: {
 		margin: '1vh'
@@ -45,10 +47,16 @@ export interface GameProps extends WithStyles<typeof styles>{
 	colorMap: Array<{back: string; forward: string}>;
 	turn: number;
 	score: {red: number; blue: number;};
+	boardIsValid: boolean;
 }
 
 export const Game = withStyles(styles)(
 	class extends React.Component<GameProps> {
+		componentDidMount() {
+			document.onkeydown = (e: any) => {
+				this.props.actions.handleKeyDown(e);
+			};
+		}
 		render() {
 			let page;
 			const classes = this.props.classes;
@@ -178,7 +186,7 @@ export const Game = withStyles(styles)(
 								color='primary'
 								aria-label='done'
 								disabled={props.freeze}
-								onClick={() => props.actions.done()}
+								onClick={() => props.actions.done(props.state == Store.UIState.Alone)}
 								>
 								<DoneIcon />
 							</Button>
@@ -223,8 +231,8 @@ export const Game = withStyles(styles)(
 						</div>
 						<div className='carefull-buttons'>
 							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
-							<Button onClick={() => props.actions.undo()} color='secondary' variant='contained'>Undo</Button>
 							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
+							<Button onClick={() => props.actions.submitBoard()} color='secondary' variant='contained' disabled={!this.props.boardIsValid}>Submit board</Button>
 						</div>
 						{suggest}
 					</div>);

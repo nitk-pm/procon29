@@ -5,7 +5,25 @@ import * as Common from '../../common';
 import { None, Option } from 'monapt';
 
 export enum ActionNames {
-	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE'
+	CLICK_SQUARE = 'IGOKABADDI_CLICK_SQUARE',
+	CHANGE_COLOR = 'IGOKABADDI_CANGE_COLOR',
+	TOGGLE_AGENT = 'IGOKABADDI_TOGGLE_AGENT',
+	UNSET_HIGHLIGHT = 'IGOKABADDI_UNSET_HIGHLIGHT'
+}
+
+export type UnsetHighLightAction = {
+	type: ActionNames.UNSET_HIGHLIGHT;
+}
+
+export type ChangeColorAction = {
+	type: ActionNames.CHANGE_COLOR;
+	payload: {
+		color: Common.Color;
+	}
+}
+
+export type ToggleAgentAction = {
+	type: ActionNames.TOGGLE_AGENT;
 }
 
 export enum ClickType {
@@ -44,7 +62,7 @@ export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, boa
 	let destColorIsEnemys =
 		board.arr[from.y][from.x].color != Common.Color.Neut &&
 		board.arr[from.y][from.x].color != color;
-	if (contigused && (isClear || !destColorIsEnemys)) {
+	if (contigused && (isClear || !destColorIsEnemys) && board.arr[from.y][from.x].color == color) {
 		let ops = removeOp(origOps, from);
 		if (to.x == from.x && to.y == from.y) {
 			return ops;
@@ -62,12 +80,27 @@ export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, boa
 	}
 }
 
+function searchUnusedId(tbl: Common.Table, color: Common.Color) {
+	let checkSheet = [false, false];
+	for (let y = 0; y < tbl.h; ++y) {
+		for (let x = 0; x < tbl.w; ++x) {
+			if (tbl.arr[y][x].agent >= 0 && tbl.arr[y][x].color == color)
+				checkSheet[tbl.arr[y][x].agent] = true;
+		}
+	}
+	for (let i = 0; i < checkSheet.length; ++i) {
+		if (!checkSheet[i]) return i;
+	}
+	return -1;
+}
+
 /*
  * 手番切替時、cofigを参照して状態遷移
  * ターン終了時には盤面をlogに追加し、histをクリア
  * 操作を一度行う度にlogに盤面を保存
  */
 export function reducer(state: Store.State = Store.initialState, action: Action.T): Store.State {
+	let boardCopy = Common.deepCopy(state.board);
 	switch (action.type) {
 	case ActionNames.CLICK_SQUARE:
 		if (!state.freeze) {
@@ -76,19 +109,12 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			// ハイライトされた箇所がなければクリック箇所にエージェントが居るか確認してハイライト
 			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
-				Some: p => None,
+				Some: p => {
+					if (p == action.payload.pos) return None;
+					else return Option(action.payload.pos);
+				},
 				None: () => {
-					if (state.board.arr[y][x].agent >= 0) {
- 						if (state.board.arr[y][x].color == state.color) {
-							return Option(to);
-						}
-						if (state.state == Store.UIState.Alone && state.board.arr[y][x].color != 'Neut') {
-							return Option(to);
-						}
-					}
-					else {
-						return None;
-					}
+					return Option(to);
 				}
 			});
 
@@ -114,6 +140,40 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		else {
 			return state;
 		}
+	case ActionNames.CHANGE_COLOR:
+		state.highlight.match({
+			Some: p => { boardCopy.arr[p.y][p.x].color = action.payload.color; },
+			None: () => {}
+		});
+		return {
+			...state,
+			board: boardCopy
+		};
+	case ActionNames.TOGGLE_AGENT:
+		state.highlight.match({
+			Some: p => {
+				let agent = state.board.arr[p.y][p.x].agent;
+				let color = state.board.arr[p.y][p.x].color;
+				if (color == Common.Color.Neut) return;
+				if (agent >= 0) {
+					boardCopy.arr[p.y][p.x].agent = -1;
+				}
+				else {
+					boardCopy.arr[p.y][p.x].agent = searchUnusedId(state.board, color);
+				}
+			},
+			None: () => {}
+		});
+		return {
+			...state,
+			board: boardCopy,
+			boardIsValid: Common.validCheck(boardCopy)
+		};
+	case ActionNames.UNSET_HIGHLIGHT:
+		return {
+			...state,
+			highlight: None
+		};
 	default:
 		return state;
 	}
