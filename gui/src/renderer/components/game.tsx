@@ -140,21 +140,23 @@ export const Game = withStyles(styles)(
 				);
 			}
 			else {
-				let heartAngle, spadeAngle;
-				for (let i = 0; i < this.props.rivalOps.length; ++i) {
-					let op = this.props.rivalOps[i];
-					let id =
-						this
-						.props
-						.board
-						.arr[op.from.y][op.from.x]
-						.agent;
-					console.log(id);
-					if (this.props.colorMap[id].back == 'red') {
-						heartAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI/2;
-					}
-					else {
-						spadeAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI*3/2;
+				let heartAngle = 0.0, spadeAngle = 0.0;
+				// ad-hoc
+				if (this.props.board.arr.length > 1) {
+					for (let i = 0; i < this.props.rivalOps.length; ++i) {
+						let op = this.props.rivalOps[i];
+						let id =
+							this
+							.props
+							.board
+							.arr[op.from.y][op.from.x]
+							.agent;
+						if (this.props.colorMap[id].back == 'red') {
+							heartAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI/2;
+						}
+						else {
+							spadeAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI*3/2;
+						}
 					}
 				}
 				let genRotate = (dir: number) => ({

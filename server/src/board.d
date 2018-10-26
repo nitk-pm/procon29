@@ -4,6 +4,8 @@ import std.stdio;
 import std.file;
 import std.json;
 import std.conv;
+import std.algorithm.iteration;
+import std.range;
 
 enum Color { Red, Blue, Neut }
 struct Square {
@@ -21,7 +23,7 @@ unittest {
 	assert(Pos(1, 2) == Pos(1, 2));
 }
 
-enum OpType { Move, Clear, Stop }
+enum OpType { Move = "Move", Clear = "Clear", Stop = "Stop" }
 
 struct Operation {
 	OpType type;
@@ -91,8 +93,21 @@ Operation[] operationsOfJson(JSONValue json, in Color color) {
 	}
 	return ops;
 }
+auto jsonOfPos(Pos p) {
+	JSONValue json;
+	json["x"] = JSONValue(p.x);
+	json["y"] = JSONValue(p.y);
+	return json;
+}
+auto jsonOfOperation(Operation operation) {
+	JSONValue json;
+	json["type"] = JSONValue(operation.type);
+	json["to"] = jsonOfPos(operation.to);
+	json["from"] = jsonOfPos(operation.from);
+	return json;
+}
 
 JSONValue jsonOfOperations(Operation[] operations) {
-	//TODO 実装しろ
-	return JSONValue(0);
+
+	return JSONValue(operations.map!(op => op.jsonOfOperation).array);
 }
