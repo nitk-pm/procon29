@@ -242,10 +242,16 @@ function* flow() {
 					state: payload.state
 				}
 			});
+			socket.send(JSON.stringify({type: 'req-board'}));
 			// UserならOperationの配信リストに自身を加えるよう要請
 			if (payload.state == Store.UIState.User) {
 				socket.send(JSON.stringify({
 					type: 'subscribe-op',
+					color: payload.color,
+					payload: {}
+				}));
+				socket.send(JSON.stringify({
+					type: 'req-op',
 					color: payload.color,
 					payload: {}
 				}));
@@ -261,7 +267,6 @@ function* flow() {
 	yield Effects.put({type: ServerModule.ActionNames.CONNECT, payload:{socket}});
 	// 初めての接続なので盤面の配信をサーバに要求
 	// FIXME colorを選択可能に
-	socket.send(JSON.stringify({type: 'req-board'}));
 	yield Effects.fork(listenMsg, socket);
 	yield Effects.fork(sendMsg, socket);
 	yield Effects.fork(runTimer);
