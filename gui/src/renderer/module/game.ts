@@ -142,7 +142,11 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		}
 	case ActionNames.CHANGE_COLOR:
 		state.highlight.match({
-			Some: p => { boardCopy.arr[p.y][p.x].color = action.payload.color; },
+			Some: p => {
+				if (boardCopy.arr[p.y][p.x].agent < 0) {
+					boardCopy.arr[p.y][p.x].color = action.payload.color;
+				}
+			},
 			None: () => {}
 		});
 		return {
