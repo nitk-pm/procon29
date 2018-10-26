@@ -6,8 +6,9 @@ import procon.calc;
 import procon.greedySearch;
 import std.math;
 import std.typecons;
+import std.conv: to;
 import std.stdio;
-import std.algorithm :min;
+import std.algorithm :min,max;
 import std.json;
 import procon.decoder;
 import procon.example;
@@ -17,15 +18,6 @@ import procon.encoder;
 	展開：あるノードの取る盤面からランダムに1ターン進めた盤面をもつ子ノードたちを作ること
 */
 
-pure int pow(int a,int n){//a^n
-	return n>1?a*(pow(a,n-1)):a;
-}
-unittest{
-assert(pow(1,3)==1);
-assert(pow(2,3)==8);
-assert(pow(3,2)==9);
-assert(pow(-2,3)==-8);
-}
 immutable int searchLimit=5000;
 immutable double EPS= 1e-9;
 struct MCTNode{
@@ -36,7 +28,8 @@ struct MCTNode{
 	int visits=0; //訪問回数
 	int evalution=0;
 	int scoreIncrease=0;
-	float UCB1Score=0; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
+	int agentDistance=0;
+	double UCB1Score=-INF; //TODO :のちのちUCB1値とOperationの合理性を合わせて評価する予定、勝ち2回分優遇みたいな。
 	int depth=0;//深さで回すターンが決まる
 	Board board;
 	int[2] enemyMove;
@@ -45,7 +38,7 @@ struct MCTNode{
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 struct MCT{
-	const int threshold=15;//展開するかどうかの訪問回数のしきい値
+	const int threshold=40;//展開するかどうかの訪問回数のしきい値
 	const int expandWidth=10;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
@@ -55,28 +48,30 @@ struct MCT{
 	MCTNode[] nodes;
 	
 	//係数たち
-	float C1=10.0;//勝率の重み
-	float C2=2.0;//探索回数の少なさの重み
-	float C3=2.0;//evalの増値の重み
-	float C4=2.0;//スコアの増値の重み
+	double C1=50.0;//勝率の重み
+	double C2=10.0;//探索回数の少なさの重み
+	double C3=20.0;//evalの増値の重み
+	double C4=60.0;//スコアの増値の重み
+	double C5=200.0;//エージェントの距離
 
 	private void calculateUCB1(){
 		foreach(i;1..nodes.length){
 			if (nodes[i].visits==0){
-				nodes[i].UCB1Score=INF;
+				nodes[i].UCB1Score=1e10;
 			}
 			else {
 				nodes[i].UCB1Score=
 							+C1*nodes[i].wins/nodes[i].visits
 							+C2*sqrt(2*log(totalVisitsCount)/nodes[i].visits)
-							+C3*nodes[i].evalution
-							+C4*pow(nodes[i].scoreIncrease,3);
-			}
+							+C3*nodes[i].evalution*abs(nodes[i].evalution)
+							+C4*nodes[i].scoreIncrease*abs(nodes[i].scoreIncrease*nodes[i].scoreIncrease)*nodes[i].depth
+							+C5*nodes[i].agentDistance*abs(nodes[i].agentDistance);
+								}
 		}
 	}
 	void visitNode(){
 		this.calculateUCB1();
-		float bestUCB1=0;
+		double bestUCB1=-1e10;
 		int visitedNodeIdx=0;
 		foreach (currentNode;this.nodes){
 			if (currentNode.UCB1Score>=bestUCB1){
@@ -135,7 +130,7 @@ struct MCT{
 		child.enemyMove=greedySearch(this.enemyColor,child.board);
 		{
 		Operation[2] tmpOp;
-		tmpOp=color==Color.Red?child.operations.redOp:child.operations.blueOp;
+		tmpOp=color==Color.Red?child.operations.blueOp:child.operations.redOp;
 		child.evalution=evalute(color,enemyColor,parent.board,tmpOp)-parent.evalution;
 		}
 		{
@@ -146,6 +141,7 @@ struct MCT{
 		else
 		child.scoreIncrease=(childCalc.Blue-childCalc.Red)-(parentCalc.Blue-parentCalc.Red);
 		}
+		child.agentDistance=calcAgentsDistance(color,child.board);
 		++this.size;
 		nodes~=child;
 		nodes[expandNodeIdx].childNodesIdx~=child.ownIdx;
@@ -166,16 +162,23 @@ struct MCT{
 		int bestVisitsCount=0;
 		nodes.length.writeln();
 		assert(nodes.length>2);
-		auto bestOp=nodes[1].operations;//型を書くのがめんどくさい
-		foreach(currentNode;nodes){
-			if (currentNode.depth==1){
-				if (bestVisitsCount < currentNode.visits){
-					bestVisitsCount=currentNode.visits;
-					bestOp=currentNode.operations;
+		auto bestID=0;//型を書くのがめんどくさい
+		foreach(i;0..nodes.length){
+			if (nodes[i].depth==1){
+				if (bestVisitsCount < nodes[i].visits){
+					bestVisitsCount=nodes[i].visits;
+					bestID=i.to!int;
+		write("id : ");bestID.writeln;
+		write("visits : ");bestVisitsCount.writeln;
+		write("win/try : " );writeln(nodes[bestID].wins/nodes[bestID].visits.to!double);
+		write("evalution : ");nodes[bestID].evalution.writeln;
+		write("scoreIncrease : ");nodes[bestID].scoreIncrease.writeln;
+		write("agentDistance : ");nodes[bestID].agentDistance.writeln;
+		write("totalScore : ");nodes[bestID].UCB1Score.writeln;
 				}
 			}
-		}
-		bestVisitsCount.writeln;
+		}	
+		auto bestOp=nodes[bestID].operations;
 		if (this.color==Color.Red)
 			return bestOp.redOp;
 		else
@@ -189,10 +192,11 @@ JSONValue MCTSearch(Color color,int turn,Board board){
 	assert(mct.color!=mct.enemyColor);
 	assert(board.cells.length>20);
 	assert(turn>=0);
-	mct.searchDepth=min(3,board.cells.length/20,turn);//盤面は対称なので10%のさらに半分
+	mct.searchDepth=min(max(3,board.cells.length/20),turn);//盤面は対称なので10%のさらに半分
 	mct.searchDepth.writeln;
 	MCTNode root;
 	root.board=board;
+	root.evalution=evalute(color,board);
 	root.enemyMove=greedySearch(mct.enemyColor,root.board);
 	mct.nodes~=root;
 	foreach(i;0..searchLimit){

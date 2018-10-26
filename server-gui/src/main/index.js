@@ -46,9 +46,11 @@ app.on('activate', () => {
   }
 });
 
+// callback-hell
 ipcMain.on('launch', (event, arg) => {
+  console.log(arg);
   fs.open('board.json', 'w', (err, fd) => {
-    fs.write(fd, JSON.stringify(arg.tbl.tbl.arr, null, 1), () => {
+    fs.write(fd, JSON.stringify(arg.tbl.arr, null, 1), () => {
       exec(`./server -b ./board.json -t ${arg.turn}`, (err, stdout, stderr) => {
         if (err) {
           console.log(`err: ${err}`);
@@ -56,6 +58,15 @@ ipcMain.on('launch', (event, arg) => {
           console.log(`stderr: ${stderr}`);
         }
       });
+      setTimeout(() => {
+        exec(`./solver -c ${arg.color}`, (err, stdout, stderr) => {
+          if (err) {
+            console.log(`err: ${err}`);
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+          }
+        });
+      }, 1000);
     });
   });
 });
