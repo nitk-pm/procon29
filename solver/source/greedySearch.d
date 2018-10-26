@@ -1,14 +1,23 @@
 module procon.greedySearch;
 
-import std.algorithm : min;
+import std.algorithm : max,min;
 import std.json;
+import std.math:pow,abs;
 import std.conv;
 import std.typecons;
 import procon.container;
 import procon.encoder;
 import procon.simulator;
-import procon.searchPreprocess:abs;
+import procon.searchPreprocess;
 //import procon.mct;
+
+unittest{
+assert(pow(1,3)==1);
+assert(pow(2,3)==8);
+assert(pow(3,2)==9);
+assert(pow(-2,3)==-8);
+}
+
 
 int[2] greedySearch(in Color color,in Board board){
 	Node[] candidateList;
@@ -21,7 +30,7 @@ int[2] greedySearch(in Color color,in Board board){
 			int[2] directions=[0:direction1,1:direction2];
 			int[2] noMoves=[0:8,1:8];//動かない
 			auto tmp=proceedGameWithoutOp(color,cpBoard,noMoves,directions);
-			node.evalPoint=evalute(color,tmp);
+			node.evalPoint=evalute(color,tmp)+calcAgentsDistance(color,tmp);
 			node.directions=directions;
 			candidateList~=node;
 		}
@@ -44,7 +53,6 @@ pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operatio
 	Board board;
 	board.cells=origBoard.cells.dup;
 	board.width=origBoard.width;
-	auto agents=searchAgentInitialPos(board);
 	foreach(op;operations){
 		int idx=idx(op.to.x,op.to.y,board.width-2);
 		if (board.cells[idx].color==enemyColor)
@@ -53,7 +61,6 @@ pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operatio
 			board.cells[idx].color=myColor;
 		}
 	}
-	int agentDistance=calcAgentsDistance(agents,board.width);
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
@@ -63,15 +70,13 @@ pure nothrow int evalute(Color myColor,Color enemyColor,Board origBoard,Operatio
 			blueEval+=board.cells[i].priority;
 	}
 	if (myColor==Color.Red)
-		return redEval-blueEval+agentDistance;
+		return redEval-blueEval;
 	else
-		return blueEval-redEval+agentDistance;
+		return blueEval-redEval;
 }
 
 @safe @nogc
 pure nothrow int evalute(Color color,Board board){
-	auto agents=searchAgentInitialPos(board);
-	int agentDistance=calcAgentsDistance(agents,board.width);
 	int redEval=0;
 	int blueEval=0;
 	foreach(i;0..board.cells.length){
@@ -81,12 +86,14 @@ pure nothrow int evalute(Color color,Board board){
 			blueEval+=board.cells[i].priority;
 	}
 	if (color==Color.Red)
-		return redEval-blueEval+agentDistance;
+		return redEval-blueEval;
 	else
-		return blueEval-redEval+agentDistance;
+		return blueEval-redEval;
 }
 @safe @nogc
-pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
+pure nothrow int calcAgentsDistance(in Color color,in Board board){
+	int width=board.width;
+	auto agents=searchAgentInitialPos(board);
 	int distanceSum=0;
 	int redCnt=0,blueCnt=0;
 	Pos[2] redPos,bluePos;
@@ -100,14 +107,19 @@ pure nothrow int calcAgentsDistance(in Agent[4] agents,in int width){
 			bluePos[blueCnt++].y=agent.pos/width;
 		}
 	}
-	foreach(i;0..2){
-		int minEnemyDist=100;
-		foreach(j;0..2){
-			minEnemyDist=min(minEnemyDist,min(abs(redPos[i].x-bluePos[j].x),abs(redPos[i].y-bluePos[j].y)));//赤Aから青Aへ最短何ターンで到達できるか
-		}
-		distanceSum-=minEnemyDist;//敵が近ければ引かれる数が小さく(近いほどよい)
-	}
-	distanceSum-=min(abs(redPos[0].x-redPos[1].x),abs(redPos[0].y-redPos[1].y));//味方と近ければ足される数が小さく(遠いほどよい)
+	int tmpDist1=calcMinDist(redPos[0],bluePos[1])+calcMinDist(redPos[1],bluePos[0]);
+	int tmpDist2=calcMinDist(redPos[0],bluePos[0])+calcMinDist(redPos[1],bluePos[1]);
+	int enemyDist=min(tmpDist1,tmpDist2);
+	distanceSum-=enemyDist;
+	//if (color==Color.Red)
+		//distanceSum-=pow(calcMinDist(redPos[0],redPos[1]),2);
+	//else 
+	//	distanceSum-=pow(calcMinDist(bluePos[0],bluePos[1]),2);
 	return distanceSum;
-
+}
+@safe @nogc
+private pure nothrow int calcMinDist(in Pos aPos,in Pos bPos){
+	int xDist=abs(aPos.x-bPos.x);
+	int yDist=abs(aPos.y-bPos.y);
+	return max(xDist,yDist);
 }
