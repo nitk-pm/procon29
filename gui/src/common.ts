@@ -119,3 +119,80 @@ export function calcDir(dir: string, origin: {x: number, y: number}, target: {x:
 	}
 	return Math.atan2(dy_, dx_) + baseDir;
 }
+
+type TreatedSquare = {
+	color: Color;
+	score: number;
+	agent: number;
+	visited: boolean;
+}
+
+type TreatedTable = {
+	arr: TreatedSquare[][];
+	w: number;
+	h: number;
+}
+
+function addSpaceForFootprint(tbl: Table) {
+	let arr = tbl.arr.map(l => l.map(s => ({...s, visited: false})));
+	return {
+		h: tbl.h,
+		w: tbl.w,
+		arr
+	};
+}
+
+function sweepFootprint(tbl: TreatedTable) {
+	let arr = tbl.arr.map(l => l.map(s => ({color: s.color, agent: s.agent, score: s.score})));
+	return {
+		h: tbl.h,
+		w: tbl.w,
+		arr
+	};
+}
+
+function calcSurround(p: Pos, tbl: TreatedTable, color: Color) {
+	if (tbl.arr[p.y][p.x].visited) return 0;
+	if (tbl.arr[p.y][p.x].color == color) return 0;
+	if (p.x == 0 || p.x == tbl.w - 1 || p.y == 0 || p.y == tbl.h - 1) return -Infinity;
+	tbl.arr[p.y][p.x].visited = true;
+	let peripheralScore = 0;
+	for (let dx = -1; dx <= 1; ++dx) {
+		peripheralScore += calcSurround({x: p.x+dx, y: p.y}, tbl, color);
+	}
+	for (let dy = -1; dy <= 1; ++dy) {
+		peripheralScore += calcSurround({x: p.x, y: p.y+dy}, tbl, color);
+	}
+	return Math.abs(tbl.arr[p.y][p.x].score) + peripheralScore;
+}
+
+function calcSurroundTotal(tbl: TreatedTable, color: Color) {
+	let total = 0;
+	for (let x = 0; x < tbl.w; ++x) {
+		for (let y = 0; y < tbl.h; ++y) {
+			total += Math.max(calcSurround({x, y}, tbl, color), 0);
+		}
+	}
+	return total;
+}
+
+function calcScoreOnColor(tbl: Table, color: Color) {
+	let total = 0;
+	for (let x = 0; x < tbl.w; ++x) {
+		for (let y = 0; y < tbl.h; ++y) {
+			if (tbl.arr[y][x].color == color)
+				total += tbl.arr[y][x].score;
+		}
+	}
+	return total;
+}
+
+export function calcScore(tbl: Table) {
+	let redScore =
+		calcSurroundTotal(addSpaceForFootprint(tbl), Color.Red)
+		+ calcScoreOnColor(tbl, Color.Red);
+	let blueScore =
+		calcSurroundTotal(addSpaceForFootprint(tbl), Color.Blue)
+		+ calcScoreOnColor(tbl, Color.Blue);
+	return { red: redScore, blue: blueScore };
+}

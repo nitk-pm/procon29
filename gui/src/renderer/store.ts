@@ -49,6 +49,7 @@ export type State = {
 	dir: string;
 	colorMap: Array<{forward: string; back: string}>;
 	turn: number;
+	score: {red: number; blue: number};
 	boardIsValid: boolean;
 }
 
@@ -69,6 +70,7 @@ export const initialState: State = {
 	dir: 'up',
 	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}],
 	turn: 0,
+	score: {blue: 0, red: 0},
 	boardIsValid: true
 };
 

@@ -138,6 +138,7 @@ export default ReactRedux.connect(
 		colorMap: state.colorMap,
 		rivalOps: state.rivalOps,
 		turn: state.turn,
+		score: state.score,
 		boardIsValid: state.boardIsValid
 	}),
 	(dispatch: Redux.Dispatch<Actions.T>) => ({actions: new ActionDispatcher(dispatch)})
