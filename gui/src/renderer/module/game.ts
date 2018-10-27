@@ -57,6 +57,7 @@ function isContiguoused(p1: Common.Pos, p2: Common.Pos) {
 }
 
 export function updateOps(from: Common.Pos, to: Common.Pos, type: ClickType, board: Common.Table, origOps: Common.Operation[], color: Common.Color) {
+	if (board.arr[from.y][from.x].agent < 0) return origOps;
 	let contigused = isContiguoused(from, to);
 	let isClear = type == ClickType.Right;
 	let destColorIsEnemys =
@@ -106,8 +107,6 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		if (!state.freeze) {
 			let {x, y} = action.payload.pos;
 			let to = action.payload.pos;
-			// ハイライトされた箇所がなければクリック箇所にエージェントが居るか確認してハイライト
-			// 既にハイライト済みならハイライトの削除
 			let highlight = state.highlight.match({
 				Some: p => {
 					if (p == action.payload.pos) return None;
