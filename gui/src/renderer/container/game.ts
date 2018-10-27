@@ -109,6 +109,7 @@ export class ActionDispatcher {
 		case 'KeyQ': color = Common.Color.Red; break;
 		case 'KeyW': color = Common.Color.Neut; break;
 		case 'KeyE': color = Common.Color.Blue; break;
+		default: return;
 		}
 		return this.dispatch({
 			type: GameModule.ActionNames.CHANGE_COLOR,
