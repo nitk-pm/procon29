@@ -145,17 +145,23 @@ export const Game = withStyles(styles)(
 				if (this.props.board.arr.length > 1) {
 					for (let i = 0; i < this.props.rivalOps.length; ++i) {
 						let op = this.props.rivalOps[i];
+						console.log(op.from);
+						console.log(this.props.board.arr[op.from.y][op.from.x]);
 						let id =
 							this
 							.props
 							.board
 							.arr[op.from.y][op.from.x]
 							.agent;
+						let rev = {
+							upsidedown: this.props.dir == 'up' || this.props.dir == 'down',
+							rightsideleft: this.props.dir == 'right' || this.props.dir == 'left',
+						};
 						if (this.props.colorMap[id].back == 'red') {
-							heartAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI/2;
+							heartAngle = Common.calcDir(this.props.dir, op.from, op.to, rev) + Math.PI/2;
 						}
 						else {
-							spadeAngle = Common.calcDir(this.props.dir, op.from, op.to) + Math.PI*3/2;
+							spadeAngle = Common.calcDir(this.props.dir, op.from, op.to, rev) + Math.PI*3/2;
 						}
 					}
 				}
