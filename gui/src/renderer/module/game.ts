@@ -154,12 +154,20 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			board: boardCopy
 		};
 	case ActionNames.TOGGLE_AGENT:
+		let ops = state.ops;
+		let rivalOps = state.rivalOps;
 		state.highlight.match({
 			Some: p => {
 				let agent = state.board.arr[p.y][p.x].agent;
 				let color = state.board.arr[p.y][p.x].color;
 				if (color == Common.Color.Neut) return;
 				if (agent >= 0) {
+					if (boardCopy.arr[p.y][p.x].color == state.color) {
+						ops = removeOp(state.ops, p);
+					}
+					else {
+						rivalOps = removeOp(state.rivalOps, p);
+					}
 					boardCopy.arr[p.y][p.x].agent = -1;
 				}
 				else {
@@ -171,7 +179,9 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 		return {
 			...state,
 			board: boardCopy,
-			boardIsValid: Common.validCheck(boardCopy)
+			boardIsValid: Common.validCheck(boardCopy),
+			ops,
+			rivalOps
 		};
 	case ActionNames.UNSET_HIGHLIGHT:
 		return {
