@@ -38,8 +38,8 @@ struct MCTNode{
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 struct MCT{
-	const int threshold=40;//展開するかどうかの訪問回数のしきい値
-	const int expandWidth=10;//一回の展開で開く状態の数
+	const int threshold=20;//展開するかどうかの訪問回数のしきい値
+	const int expandWidth=5;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
 	private int size=0;//最初にrootNodeをぶちこむので
