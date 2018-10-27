@@ -106,10 +106,10 @@ export function calcDir(dir: string, origin: {x: number, y: number}, target: {x:
 		break;
 	case 'right':
 		dx_ = dy;
-		dy_ = dx;
+		dy_ = -dx;
 		break;
 	case 'down':
-		dx_ = dx;
+		dx_ = -dx;
 		dy_ = -dy;
 		break;
 	case 'left':
