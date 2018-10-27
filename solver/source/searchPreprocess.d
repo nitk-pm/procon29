@@ -3,7 +3,7 @@ module procon.searchPreprocess;
 import std.conv;
 import procon.container;
 
-private immutable int INF = 100000;
+private immutable int INF = 100;
 
 @safe @nogc
 pure nothrow int abs(in int a){
