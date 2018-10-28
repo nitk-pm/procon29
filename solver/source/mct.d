@@ -38,8 +38,8 @@ struct MCTNode{
 	bool isLeaf(){return childNodesIdx.length<1;}
 }
 struct MCT{
-	const int threshold=40;//展開するかどうかの訪問回数のしきい値
-	const int expandWidth=10;//一回の展開で開く状態の数
+	const int threshold=20;//展開するかどうかの訪問回数のしきい値
+	const int expandWidth=5;//一回の展開で開く状態の数
 	Color color;//チームの色
 	Color enemyColor;
 	private int size=0;//最初にrootNodeをぶちこむので
@@ -52,7 +52,7 @@ struct MCT{
 	double C2=10.0;//探索回数の少なさの重み
 	double C3=20.0;//evalの増値の重み
 	double C4=60.0;//スコアの増値の重み
-	double C5=200.0;//エージェントの距離
+	double C5=20.0;//エージェントの距離
 
 	private void calculateUCB1(){
 		foreach(i;1..nodes.length){

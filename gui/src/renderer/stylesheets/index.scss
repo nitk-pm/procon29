@@ -64,7 +64,7 @@ body {
 	height: 7vh;
 }
 
-.board-row-right {
+.board-row-left {
 	flex-direction: column;
 	width: 7vh;
 }
@@ -74,9 +74,13 @@ body {
 	height: 7vh;
 }
 
-.board-row-left {
+.board-row-right {
 	flex-direction: column-reverse;
 	width: 7vh;
+}
+
+.board-row {
+	display: flex;
 }
 
 .square {

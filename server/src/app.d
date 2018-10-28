@@ -255,6 +255,11 @@ Board deepCopy(Board board) {
 	return board.map!(line => line.map!(square => square).array).array;
 }
 
+void safeSend(WebSocket sock, string msg) {
+	if (sock.connected)
+		sock.send(msg);
+}
+
 // red, blue共にoperationが揃ったら盤面を更新して配信
 // 片方だけしか来て無ければOperationの購読者だけに配信
 void handlePush(JSONValue msg) {
@@ -292,7 +297,7 @@ void handlePush(JSONValue msg) {
 		reply.writeln;
 
 		foreach(sock; sockets) {
-			sock.send(reply);
+			sock.safeSend(reply);
 		}
 		writeln("-------------------------------------------------------------");
 
@@ -308,7 +313,7 @@ void handlePush(JSONValue msg) {
 		auto reply = genReplyMsg("distribute-op", msg["payload"]);
 		writeln("reply: ", reply);
 		foreach (sock; opSubscribers) {
-			sock.send(reply);
+			sock.safeSend(reply);
 		}
 	}
 }
@@ -323,7 +328,7 @@ void handleConn(scope WebSocket sock) {
 		case "req-board":
 			JSONValue payload;
 			auto reply = genDistributeBoardMsg();
-			sock.send(reply);
+			sock.safeSend(reply);
 			break;
 		case "subscribe-op":
 			//TODO 重複排除処理
@@ -345,11 +350,11 @@ void handleConn(scope WebSocket sock) {
 			switch (msg["color"].str) {
 			case "Red":
 				auto reply= genReplyMsg("distribute-op", blueOp.jsonOfOperations);
-				sock.send(reply);
+				sock.safeSend(reply);
 				break;
 			case "Blue":
 				auto reply= genReplyMsg("distribute-op", redOp.jsonOfOperations);
-				sock.send(reply);
+				sock.safeSend(reply);
 				break;
 			default:
 				assert (false);
@@ -373,7 +378,7 @@ void handleConn(scope WebSocket sock) {
 			board = msg["payload"]["arr"].boardOfJson;
 			auto reply = genDistributeBoardMsg();
 			foreach (subscriber; sockets) {
-				subscriber.send(reply);
+				subscriber.safeSend(reply);
 			}
 			break;
 		default:

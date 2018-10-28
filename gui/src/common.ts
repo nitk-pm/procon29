@@ -94,10 +94,16 @@ export function deepCopy(tbl: Table) {
 	};
 }
 
-export function calcDir(dir: string, origin: {x: number, y: number}, target: {x: number, y: number}) {
+export function calcDir(dir: string, origin: {x: number, y: number}, target: {x: number, y: number},
+	rev: {upsidedown: boolean, rightsideleft: boolean} = {upsidedown: false, rightsideleft: false}
+) {
 	let baseDir = Math.PI;
 	let dy = target.y - origin.y;
 	let dx = target.x - origin.x;
+	if (rev.upsidedown)
+		dy = -dy;
+	if (rev.rightsideleft)
+		dx = -dx;
 	let dx_, dy_;
 	switch (dir) {
 	case 'up':
@@ -106,10 +112,10 @@ export function calcDir(dir: string, origin: {x: number, y: number}, target: {x:
 		break;
 	case 'right':
 		dx_ = dy;
-		dy_ = dx;
+		dy_ = -dx;
 		break;
 	case 'down':
-		dx_ = dx;
+		dx_ = -dx;
 		dy_ = -dy;
 		break;
 	case 'left':

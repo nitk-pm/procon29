@@ -132,7 +132,8 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 	case ActionNames.ALONE_MODE:
 		return {
 			...state,
-			state: Store.UIState.Alone
+			state: Store.UIState.Alone,
+			rivalOps: []
 		};
 	case ActionNames.UPDATE_TURN:
 		return {
