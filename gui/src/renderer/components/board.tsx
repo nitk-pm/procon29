@@ -21,7 +21,8 @@ export class Square extends React.Component<SquareProps> {
 		case Common.Color.Neut: styleName = "square neut"; break
 		}
 		let img = null;
-		let scoreStyle;
+		let containerOpacity = this.props.highlight ? 0.6 : 1.0;
+		let scoreStyle, squareStyle;
 		if (this.props.square.agent >= 0) {
 			let imgPath = './icons/material-design-icons/baseline-adjust-24px.svg';
 			img = <img src={imgPath} className='square-icon'/>;
@@ -29,11 +30,19 @@ export class Square extends React.Component<SquareProps> {
 				backgroundColor: this.props.colorMap[this.props.square.agent].back,
 				color: this.props.colorMap[this.props.square.agent].forward
 			};
+			squareStyle = {
+				opacity:  containerOpacity
+			}
 		}
-		let containerOpacity = this.props.highlight ? 0.6 : 1.0;
+		else {
+			let brightness = this.props.square.score * 16 + 127;
+			squareStyle = {
+				backgroundColor : 'rgb('+brightness+', '+brightness+', '+brightness+')'
+			}
+		}
 		return (
 		<div className={styleName}
-			style={{ opacity: containerOpacity }}
+			style={squareStyle}
 			onClick={() => this.props.actions.lclick(this.props.pos)}
 			onContextMenu={() => this.props.actions.rclick(this.props.pos)}>
 			<div className="square-iconbox">
