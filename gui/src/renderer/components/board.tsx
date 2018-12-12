@@ -4,18 +4,10 @@ import { ActionDispatcher } from '../container/board';
 import * as Common from '../../common';
 import { Option, None } from 'monapt';
 
-enum SquareState {
-	Wait,
-	Clear,
-	Move
-}
-
 interface SquareProps {
 	square: Common.Square;
 	pos: Store.Pos;
 	actions: ActionDispatcher;
-	dir: number; // rad MoveまたはClearの場合
-	state: SquareState;
 	highlight: boolean;
 	colorMap: Array<{back: string; forward: string}>
 }
@@ -28,25 +20,11 @@ export class Square extends React.Component<SquareProps> {
 		case Common.Color.Blue: styleName = "square blue"; break
 		case Common.Color.Neut: styleName = "square neut"; break
 		}
-		const imgStyle = {
-			transform: 'rotate(' + this.props.dir + 'rad)'
-		};
 		let img = null;
 		let scoreStyle;
 		if (this.props.square.agent >= 0) {
-			let imgPath;
-			switch (this.props.state) {
-			case SquareState.Wait:
-				imgPath = './icons/material-design-icons/baseline-adjust-24px.svg';
-				break;
-			case SquareState.Clear:
-				imgPath = './icons/material-design-icons/outline-forward-24px.svg';
-				break;
-			case SquareState.Move:
-				imgPath = './icons/material-design-icons/baseline-forward-24px.svg';
-				break;
-			}
-			img = <img style={imgStyle} src={imgPath} className='square-icon'/>;
+			let imgPath = './icons/material-design-icons/baseline-adjust-24px.svg';
+			img = <img src={imgPath} className='square-icon'/>;
 			scoreStyle = {
 				backgroundColor: this.props.colorMap[this.props.square.agent].back,
 				color: this.props.colorMap[this.props.square.agent].forward
@@ -70,8 +48,6 @@ interface BoardProps {
 	table: Common.Table;
 	actions: ActionDispatcher;
 	highlight: Option<Common.Pos>;
-	operation: Array<Common.Operation>;
-	rivalOperation: Array<Common.Operation>;
 	dir: string;
 	colorMap: Array<{back: string; forward: string}>
 }
@@ -88,41 +64,16 @@ export class Board extends React.Component<BoardProps> {
 		let isHighlighted = (x: number, y: number) => this.props.highlight.match({
 				Some: p => p.x == x && p.y == y,
 				None: () => false});
-
-		let baseDir = 0;
-
-		// FIXME 読みにくくないですか
-		let calcIconAndDir = (pos: Common.Pos, ops: Array<Common.Operation>) => {
-			for(var i=0; i < ops.length; ++i) {
-				if (ops[i].from.x == pos.x && ops[i].from.y == pos.y) {
-					//baseDir = Common.calcBaseDir(this.props.dir);
-					//let dir = Math.atan2(ops[i].to.y-pos.y, ops[i].to.x-pos.x);
-					let dir = Common.calcDir(this.props.dir, ops[i].to, ops[i].from);
-					let state = SquareState.Wait;
-					if (ops[i].type == Common.OperationType.Move) {
-						state = SquareState.Move;
-					}
-					else if (ops[i].type == Common.OperationType.Clear){
-						state = SquareState.Clear;
-					}
-					return {dir, state};
-				}
-			}
-			return {dir: 0, state: SquareState.Wait};
-		};
 		return (
 			<div className={"board-root board-root-"+this.props.dir}>{
 				this.props.table.arr.map((line, y)  =>
 					<div className={"board-row board-row-"+this.props.dir} key={y}>{
 						line.map((square, x) => {
-							let {dir, state} = calcIconAndDir({x, y}, this.props.operation.concat(this.props.rivalOperation));
 							return (<Square
 								actions={this.props.actions}
 								square={square}
 								pos={{x, y}}
 								key={x*height+y}
-								dir={dir}
-								state={state}
 								colorMap={this.props.colorMap}
 								highlight={isHighlighted(x, y)}
 							/>);
