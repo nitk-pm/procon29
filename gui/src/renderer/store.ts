@@ -45,7 +45,6 @@ export type State = {
 	ops: Common.Operation[];
 	highlight: Option<Common.Pos>;
 	freeze: boolean;
-	time: number;
 	dir: string;
 	colorMap: Array<{forward: string; back: string}>;
 	turn: number;
@@ -66,7 +65,6 @@ export const initialState: State = {
 	ops: [],
 	highlight: None,
 	freeze: true,
-	time: 0.0,
 	dir: 'up',
 	colorMap: [{forward: 'black', back: 'red'}, {forward: 'white', back:'black'}],
 	turn: 0,
@@ -78,6 +76,5 @@ export const getServerInfo = (state: State) => state.server;
 export const getOps = (state: State) => state.ops;
 export const getRivalOps = (state: State) => state.rivalOps;
 export const getColor = (state: State) => state.color;
-export const getTime = (state: State) => state.time;
 export const getState = (state: State) => state.state;
 export const getBoard = (state: State) => state.board;

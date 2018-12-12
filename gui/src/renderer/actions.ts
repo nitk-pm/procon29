@@ -2,7 +2,6 @@ import * as AppbarModule from './module/appbar';
 import * as AppModule from './module/app';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
-import * as TimeModule from './module/time';
 import * as ServerSaga from './saga/server';
 
 export type T =
@@ -24,10 +23,4 @@ export type T =
 	| ServerModule.ConnectAction
 	| ServerModule.ConnectFailAction
 	| ServerSaga.ConnectAction
-	| ServerSaga.PushOp
 	| ServerSaga.ReceiveMsgAction
-	| ServerSaga.ResetTimeAction
-	| ServerSaga.UndoAction
-	| ServerSaga.IgnoreSolverAction
-	| ServerSaga.PushBoardAction
-	| TimeModule.UpdateTimeAction;

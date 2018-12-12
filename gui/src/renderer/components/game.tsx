@@ -41,7 +41,6 @@ export interface GameProps extends WithStyles<typeof styles>{
 	ip: string;
 	port: string;
 	freeze: boolean;
-	time: number;
 	dir: string;
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
