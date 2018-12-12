@@ -36,7 +36,8 @@ export function reducer(state: Store.State = Store.initialState, action: Action.
 			Some: from => {
 				let tbl = Common.deepCopy(state.board);
 				if (state.board.arr[to.y][to.x].agent < 0) {
-					tbl.arr[to.y][to.x] = state.board.arr[from.y][from.x];
+					tbl.arr[to.y][to.x].color = state.board.arr[from.y][from.x].color;
+					tbl.arr[to.y][to.x].agent = state.board.arr[from.y][from.x].agent;
 					tbl.arr[from.y][from.x].color = Common.Color.Neut;
 					tbl.arr[from.y][from.x].agent = -1;
 					return {
