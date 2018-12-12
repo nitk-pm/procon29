@@ -7,7 +7,6 @@ import * as AppModule from './module/app';
 import * as AppbarModule from './module/appbar';
 import * as GameModule from './module/game';
 import * as ServerModule from './module/server';
-import * as TimeModule from './module/time';
 import { rootSaga } from './saga/server';
 import * as Redux from 'redux';
 
@@ -34,7 +33,6 @@ function combinePartialReducers(reducers: any, initialState: any) {
 }
 let combinedReducer = combinePartialReducers({
 	server: ServerModule.reducer,
-	time: TimeModule.reducer
 },
 	Store.initialState
 );

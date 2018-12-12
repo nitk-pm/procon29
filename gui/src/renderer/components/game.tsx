@@ -41,7 +41,6 @@ export interface GameProps extends WithStyles<typeof styles>{
 	ip: string;
 	port: string;
 	freeze: boolean;
-	time: number;
 	dir: string;
 	rivalOps: Array<Common.Operation>;
 	colorMap: Array<{back: string; forward: string}>;
@@ -52,11 +51,6 @@ export interface GameProps extends WithStyles<typeof styles>{
 
 export const Game = withStyles(styles)(
 	class extends React.Component<GameProps> {
-		componentDidMount() {
-			document.onkeydown = (e: any) => {
-				this.props.actions.handleKeyDown(e);
-			};
-		}
 		render() {
 			let page;
 			const classes = this.props.classes;
@@ -83,38 +77,13 @@ export const Game = withStyles(styles)(
 								onChange={(e) => props.actions.changePort(e.target.value)}/>
 						</div>
 						<div className='button-container'>
-							<div className='player-or-user'>
-								<Button
-									className={classes.button}
-									variant='contained'
-									color='primary'
-									onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
-									Player
-								</Button>
-								<Button
-									className={classes.button}
-									variant='contained'
-									color='primary'
-									onClick={() => props.actions.connectAsUser(Common.Color.Blue)}>
-									User
-								</Button>
-							</div>
-							<div>
-								<Button
-									className={classes.button}
-									variant='contained'
-									color='secondary'
-									onClick={() => props.actions.connectAsPlayer(Common.Color.Red)}>
-									Player
-								</Button>
-								<Button
-									className={classes.button}
-									variant='contained'
-									color='secondary'
-									onClick={() => props.actions.connectAsUser(Common.Color.Red)}>
-									User
-								</Button>
-							</div>
+							<Button
+								className={classes.button}
+								variant='contained'
+								color='primary'
+								onClick={() => props.actions.connectAsPlayer(Common.Color.Blue)}>
+								Launch!
+							</Button>
 						</div>
 						<input
 							accept='application/json,.json'
@@ -130,7 +99,7 @@ export const Game = withStyles(styles)(
 						{errorMsg}
 					</div>);
 			}
-			else if (props.state == Store.UIState.Viewer) {
+			else {
 				page = (
 					<div>
 						<div className='board-container'>
@@ -138,112 +107,6 @@ export const Game = withStyles(styles)(
 						</div>
 					</div>
 				);
-			}
-			else {
-				let heartAngle = 0.0, spadeAngle = 0.0;
-				// ad-hoc
-				if (this.props.board.arr.length > 1) {
-					for (let i = 0; i < this.props.rivalOps.length; ++i) {
-						let op = this.props.rivalOps[i];
-						console.log(op.from);
-						console.log(this.props.board.arr[op.from.y][op.from.x]);
-						let id =
-							this
-							.props
-							.board
-							.arr[op.from.y][op.from.x]
-							.agent;
-						let rev = {
-							upsidedown: this.props.dir == 'up' || this.props.dir == 'down',
-							rightsideleft: this.props.dir == 'right' || this.props.dir == 'left',
-						};
-						if (this.props.colorMap[id].back == 'red') {
-							heartAngle = Common.calcDir(this.props.dir, op.from, op.to, rev) + Math.PI/2;
-						}
-						else {
-							spadeAngle = Common.calcDir(this.props.dir, op.from, op.to, rev) + Math.PI*3/2;
-						}
-					}
-				}
-				let genRotate = (dir: number) => ({
-					transform: 'rotate(' + dir + 'rad)'
-				});
-				let msg = props.freeze ? (<span>waiting for server response</span>) : null;
-				let time = props.time.toFixed(1);
-				let suggest = props.state == Store.UIState.User || props.state == Store.UIState.Alone ? (
-					<div className='suggest-container'>
-						<div className='suggest-heart' style={genRotate(heartAngle)}>
-							♥
-						</div>
-						<div className='suggest-spade' style={genRotate(spadeAngle)}>
-							♠
-						</div>
-					</div>
-				) : null;
-				page = (
-					<div>
-						<div className='board-container'>
-							<Board table={props.board}/>
-						</div>
-						<div className='info-container'>
-							{msg}
-						</div>
-						<div className='fab'>
-							<Button
-								variant='fab'
-								color='primary'
-								aria-label='done'
-								disabled={props.freeze}
-								onClick={() => props.actions.done(props.state == Store.UIState.Alone)}
-								>
-								<DoneIcon />
-							</Button>
-						</div>
-						<table>
-							<tbody>
-								<tr>
-									<td>{'time'}</td>
-									<td>{time}</td>
-								</tr>
-								<tr>
-									<td>{'turn'}</td>
-									<td>{props.turn}</td>
-								</tr>
-								<tr>
-									<td>{'red'}</td>
-									<td>{props.score.red}</td>
-								</tr>
-								<tr>
-									<td>{'blue'}</td>
-									<td>{props.score.blue}</td>
-								</tr>
-							</tbody>
-						</table>
-						<div>
-							<label>
-								<input id='up' type='radio' name='dir' value='up' checked={this.props.dir == 'up'} onChange={() => this.props.actions.changeDir('up')}/>
-								up
-							</label>
-							<label>
-								<input id='right' type='radio' name='dir' value='right' checked={this.props.dir == 'right'}  onChange={() => this.props.actions.changeDir('right')}/>
-								right
-							</label>
-							<label>
-								<input id='down' type='radio' name='dir' value='down' checked={this.props.dir == 'down'}  onChange={() => this.props.actions.changeDir('down')}/>
-								down
-							</label>
-							<label>
-								<input id='left' type='radio' name='dir' value='left' checked={this.props.dir == 'left'} onChange={() => this.props.actions.changeDir('left')}/>
-								left
-							</label>
-						</div>
-						<div className='carefull-buttons'>
-							<Button onClick={() => this.props.actions.swapSuit()} color='secondary' variant='contained'>Swap Suit</Button>
-							<Button onClick={() => props.actions.ignoreSolver()} color='secondary' variant='contained'>Ignore solver</Button>
-							<Button onClick={() => props.actions.submitBoard()} color='secondary' variant='contained' disabled={!this.props.boardIsValid}>Submit board</Button>
-						</div>
-						{suggest}
-					</div>);
 			}
 			return (
 				<div className='game-root'>

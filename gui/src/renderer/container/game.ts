@@ -13,15 +13,6 @@ import * as ServerSaga from '../saga/server';
 export class ActionDispatcher {
 	constructor(private dispatch: (action: Actions.T) => void) {}
 
-	done (force: boolean) {
-		return this.dispatch({
-			type: ServerSaga.ActionNames.PUSH_OP,
-			payload: {
-				force
-			}
-		});
-	}
-
 	changeIp(ip: string) {
 		this.dispatch({type: ServerModule.ActionNames.CHANGE_IP_ADDRESS, payload: {ip}});
 	}
@@ -82,48 +73,6 @@ export class ActionDispatcher {
 			}
 		});
 	}
-
-	swapSuit() {
-		this.dispatch({
-			type: AppModule.ActionNames.SWAP_SUIT
-		});
-	}
-
-	ignoreSolver() {
-		this.dispatch({
-			type: ServerSaga.ActionNames.IGNORE_SOLVER
-		});
-	}
-
-	handleKeyDown(e: any) {
-		let color;
-		switch (e.code) {
-		case 'KeyA':
-			return this.dispatch({
-				type: GameModule.ActionNames.TOGGLE_AGENT,
-			});
-		case 'KeyS':
-			return this.dispatch({
-				type: GameModule.ActionNames.UNSET_HIGHLIGHT
-			});
-		case 'KeyQ': color = Common.Color.Red; break;
-		case 'KeyW': color = Common.Color.Neut; break;
-		case 'KeyE': color = Common.Color.Blue; break;
-		default: return;
-		}
-		return this.dispatch({
-			type: GameModule.ActionNames.CHANGE_COLOR,
-			payload: {
-				color
-			}
-		});
-	}
-
-	submitBoard() {
-		this.dispatch({
-			type: ServerSaga.ActionNames.PUSH_BOARD
-		});
-	}
 }
 
 export default ReactRedux.connect(
@@ -132,7 +81,6 @@ export default ReactRedux.connect(
 		port: state.server.port,
 		state: state.state,
 		freeze: state.freeze,
-		time: state.time,
 		board: state.board,
 		server: state.server,
 		dir: state.dir,
