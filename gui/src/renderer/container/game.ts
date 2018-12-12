@@ -95,29 +95,6 @@ export class ActionDispatcher {
 		});
 	}
 
-	handleKeyDown(e: any) {
-		let color;
-		switch (e.code) {
-		case 'KeyA':
-			return this.dispatch({
-				type: GameModule.ActionNames.TOGGLE_AGENT,
-			});
-		case 'KeyS':
-			return this.dispatch({
-				type: GameModule.ActionNames.UNSET_HIGHLIGHT
-			});
-		case 'KeyQ': color = Common.Color.Red; break;
-		case 'KeyW': color = Common.Color.Neut; break;
-		case 'KeyE': color = Common.Color.Blue; break;
-		}
-		return this.dispatch({
-			type: GameModule.ActionNames.CHANGE_COLOR,
-			payload: {
-				color
-			}
-		});
-	}
-
 	submitBoard() {
 		this.dispatch({
 			type: ServerSaga.ActionNames.PUSH_BOARD

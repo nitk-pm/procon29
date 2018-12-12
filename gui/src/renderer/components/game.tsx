@@ -52,11 +52,6 @@ export interface GameProps extends WithStyles<typeof styles>{
 
 export const Game = withStyles(styles)(
 	class extends React.Component<GameProps> {
-		componentDidMount() {
-			document.onkeydown = (e: any) => {
-				this.props.actions.handleKeyDown(e);
-			};
-		}
 		render() {
 			let page;
 			const classes = this.props.classes;
